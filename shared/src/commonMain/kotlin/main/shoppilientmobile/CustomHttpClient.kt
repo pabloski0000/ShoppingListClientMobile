@@ -1,4 +1,3 @@
-import httpBodyStrucutres.*
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.*
@@ -8,6 +7,9 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.json.Json
+import main.shoppilientmobile.domain.User
+import main.shoppilientmobile.httpBodyStructures.JsonStructure
 import startWithExceptions.UserCouldNotBeRegisteredException
 import kotlin.reflect.KSuspendFunction1
 
@@ -15,6 +17,7 @@ class CustomHttpClient(
     httpClientEngine: HttpClientEngine? = null
 ){
     private val httpClient: HttpClient
+    private var accessToken: String? = null
 
     init {
         httpClient = if (httpClientEngine == null){
@@ -27,7 +30,10 @@ class CustomHttpClient(
     fun buildHttpClientWithoutEngine(): HttpClient{
         return HttpClient() {
             install(ContentNegotiation) {
-                json()
+                json(Json {
+                    prettyPrint = true
+                    isLenient = true
+                })
             }
         }
     }
@@ -35,28 +41,29 @@ class CustomHttpClient(
     fun buildHttpClientWithEngine(engine: HttpClientEngine): HttpClient{
         return HttpClient(engine){
             install(ContentNegotiation){
-                json()
+                json(Json {
+                    prettyPrint = true
+                    isLenient = true
+                })
             }
         }
     }
 
-    fun registerAdmin(requestBody: JsonStructure.UserRegistration):
-            JsonStructure.SecurityToken {
-        val securityTokenResponse: JsonStructure.SecurityToken
+    fun registerUser(user: User) {
+        val requestBody = JsonStructure.UserRegistration(user.getNickname())
         val response = runPostRequest(
             url = "https://lista-de-la-compra-pabloski.herokuapp.com/api/users/register-user-admin",
             requestBody = requestBody,
         )
         val statusCode = response.status
         if (isStatusCodeIn2XXRange(statusCode))
-            securityTokenResponse = interpretJsonObject(response)
+            accessToken = interpretJsonObject<JsonStructure.SecurityToken>(response).accessToken
         else
             throw UserCouldNotBeRegisteredException("""
                     Admin could not be registered due to a server error. Error info:
                         Status code: $statusCode
                         Server error message: ${interpretJsonObject<JsonStructure.ServerErrorMessage>(response)}
                 """.trimIndent())
-        return securityTokenResponse
     }
 
     fun getAllProducts(accessToken: String): List<JsonStructure.Product> {
@@ -110,8 +117,8 @@ class CustomHttpClient(
                 append("Authorization", "Bearer $accessToken")
             }
         }
-        requestBuilder.contentType(ContentType.Application.Json)
-        requestBuilder.accept(ContentType.Any)
+        requestBuilder.header("Accept", "*/*")
+        requestBuilder.header("Content-Type", "application/json")
         if (requestBody != null)
             requestBuilder.setBody(requestBody)
 
@@ -135,14 +142,14 @@ class CustomHttpClient(
         return httpClient.put(httpRequestBuilder)
     }
 
-    inline fun <reified T: JsonStructure> interpretJsonObject(response: HttpResponse): T{
+    private inline fun <reified T: JsonStructure> interpretJsonObject(response: HttpResponse): T{
         return runBlocking { response.body() }
     }
-    inline fun <reified T: List<JsonStructure>> interpretJsonList(response: HttpResponse): T{
+    private inline fun <reified T: List<JsonStructure>> interpretJsonList(response: HttpResponse): T{
         return runBlocking { response.body() }
     }
 
-    fun isStatusCodeIn2XXRange(statusCode: HttpStatusCode): Boolean{
+    private fun isStatusCodeIn2XXRange(statusCode: HttpStatusCode): Boolean{
         return statusCode.value in 200..299
     }
 }

@@ -31,6 +31,11 @@ fun GreetingView(text: String) {
     Text(text = text)
 }
 
+@Composable
+fun saySomethingElse(){
+    Text(text = "Something else")
+}
+
 @Preview
 @Composable
 fun DefaultPreview() {

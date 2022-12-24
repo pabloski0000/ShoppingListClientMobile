@@ -1,11 +1,13 @@
-package unitTests
+package main.shoppilientmobile.unitTests
 
 import CustomHttpClient
-import httpBodyStrucutres.JsonStructure
+import main.shoppilientmobile.httpBodyStructures.JsonStructure
 import io.ktor.client.engine.mock.*
 import io.ktor.http.*
 import io.ktor.http.content.*
 import kotlinx.coroutines.runBlocking
+import main.shoppilientmobile.domain.Role
+import main.shoppilientmobile.domain.User
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -15,26 +17,22 @@ class RequestsTest {
     val messageInformingOfStrangeBehaviourInMockEngine = "assert request headers are correct" +
             " cannot be done due to a strange behaviour in ktor library"
     @Test
-    fun assertAdminRegistrationRequestIsCorrect(){
+    fun assertUserRegistrationRequestIsCorrect(){
         val mockEngine = MockEngine{ request ->
-            TODO(messageInformingOfStrangeBehaviourInMockEngine)
+            //TODO(messageInformingOfStrangeBehaviourInMockEngine)
             assertJsonBodyIsCorrect(request.body, getAdminRegistrationJsonRequestFormat())
             respond(
-                content = "field not relevant for this test",
+                content = "{\"accessToken\":\"jkalsdjflkasd.asjlkdfjaslkdjf.sdjflasjñdl\"}",
+                headers = headersOf("Content-Type", "application/json")
             )
         }
         customHttpClient = CustomHttpClient(mockEngine)
+        customHttpClient.registerUser(User("pabloski0000", Role.ADMIN))
     }
 
     private fun getAdminRegistrationJsonRequestFormat(): Regex{
         return """
-            ^\{"nickName":( )?"\w{0,15}"}$
-        """.trimIndent().toRegex()
-    }
-
-    private fun getAdminRegistrationJsonResponseFormat(): Regex{
-        return """
-            ^\{"accessToken":( )?"\w{0,15}"}$
+            ^\{(\n)?( )*"nickName":( )?"\w{0,15}"(\n)?}${'$'}
         """.trimIndent().toRegex()
     }
 
@@ -42,7 +40,7 @@ class RequestsTest {
     fun assertProductAdditionRequestIsCorrect(){
         val expectedResponse = JsonStructure.Product("123465789", "hamburger")
         val mockEngine = MockEngine{ request ->
-            TODO(messageInformingOfStrangeBehaviourInMockEngine)
+            //TODO(messageInformingOfStrangeBehaviourInMockEngine)
             assertJsonBodyIsCorrect(request.body, getProductAdditionJsonFormat())
             respond(
                 content = """{"id": "${expectedResponse.id}", "name": "${expectedResponse.name}"}""",
@@ -69,7 +67,7 @@ class RequestsTest {
 
     private fun getProductAdditionJsonFormat(): Regex{
         return """
-            ^\{"name":( )?"\w{0,50}"}$
+            ^\{"name":( )?"\w{0,50}"( )*}$
         """.trimIndent().toRegex()
     }
 
