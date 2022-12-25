@@ -1,14 +1,19 @@
 package main.shoppilientmobile.android
 
 import android.os.Bundle
+import android.widget.Space
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import main.shoppilientmobile.Greeting
+import main.shoppilientmobile.domain.Role
+import main.shoppilientmobile.domain.User
+import main.shoppilientmobile.domain.registerUserToList
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,7 +24,26 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    GreetingView(Greeting().greet())
+                    var nickname by remember {
+                        mutableStateOf("")
+                    }
+                    Column {
+                        TextField(
+                            value = nickname,
+                            onValueChange = {
+                                nickname = it
+                            },
+                            label = {
+                                Text(text = "Nickname")
+                            }
+                        )
+                        
+                        Button(onClick = {
+                            registerUserToList(User(nickname, Role.NORMAL))
+                        }) {
+                            Text(text = "Register")
+                        }
+                    }
                 }
             }
         }
@@ -29,11 +53,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun GreetingView(text: String) {
     Text(text = text)
-}
-
-@Composable
-fun saySomethingElse(){
-    Text(text = "Something else")
 }
 
 @Preview
