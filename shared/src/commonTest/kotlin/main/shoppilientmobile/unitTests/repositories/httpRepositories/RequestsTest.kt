@@ -1,6 +1,6 @@
-package main.shoppilientmobile.unitTests
+package main.shoppilientmobile.unitTests.repositories.httpRepositories
 
-import CustomHttpClient
+import ApiServerImpl
 import main.shoppilientmobile.httpBodyStructures.JsonStructure
 import io.ktor.client.engine.mock.*
 import io.ktor.http.*
@@ -13,27 +13,42 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class RequestsTest {
-    var customHttpClient: CustomHttpClient = CustomHttpClient()
+    var customHttpClient: ApiServerImpl = ApiServerImpl()
     val messageInformingOfStrangeBehaviourInMockEngine = "assert request headers are correct" +
             " cannot be done due to a strange behaviour in ktor library"
     @Test
-    fun assertUserRegistrationRequestIsCorrect(){
+    fun assertUserAsAdminRegistrationRequestIsCorrect(){
         val mockEngine = MockEngine{ request ->
             //TODO(messageInformingOfStrangeBehaviourInMockEngine)
-            assertJsonBodyIsCorrect(request.body, getAdminRegistrationJsonRequestFormat())
+            assertJsonBodyIsCorrect(request.body, getUserRegistrationJsonRequestFormat())
             respond(
                 content = "{\"accessToken\":\"jkalsdjflkasd.asjlkdfjaslkdjf.sdjflasjñdl\"}",
                 headers = headersOf("Content-Type", "application/json")
             )
         }
-        customHttpClient = CustomHttpClient(mockEngine)
-        customHttpClient.registerUserAsAdmin(User("pabloski0000", Role.ADMIN))
+        customHttpClient = ApiServerImpl(mockEngine)
+        customHttpClient.registerAdminUser(User("pabloski0000", Role.ADMIN))
     }
 
-    private fun getAdminRegistrationJsonRequestFormat(): Regex{
+    private fun getUserRegistrationJsonRequestFormat(): Regex{
         return """
             ^\{(\n)?( )*"nickName":( )?"\w{0,15}"(\n)?}${'$'}
         """.trimIndent().toRegex()
+    }
+
+    @Test
+    fun assertNormalUserRegistrationRequestIsCorrect(){
+        val mockEngine = MockEngine{ request ->
+            //TODO(messageInformingOfStrangeBehaviourInMockEngine)
+            assertJsonBodyIsCorrect(request.body, getUserRegistrationJsonRequestFormat())
+            respond(
+                content = "",
+                status = HttpStatusCode.NoContent,
+                headers = headersOf("Content-Type", "application/json"),
+            )
+        }
+        customHttpClient = ApiServerImpl(mockEngine)
+        customHttpClient.registerBasicUser(User("pabloski", Role.BASIC))
     }
 
     @Test
@@ -48,7 +63,7 @@ class RequestsTest {
                 headers = headersOf(HttpHeaders.ContentType, "application/json")
             )
         }
-        customHttpClient = CustomHttpClient(mockEngine)
+        customHttpClient = ApiServerImpl(mockEngine)
 
         val httpResponse = customHttpClient.addProduct(
             requestBody = JsonStructure.ProductAddition(""),

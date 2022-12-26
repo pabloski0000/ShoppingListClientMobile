@@ -2,6 +2,7 @@ package main.shoppilientmobile.unitTests.domain
 
 import main.shoppilientmobile.domain.Product
 import main.shoppilientmobile.domain.ShoppingListImpl
+import main.shoppilientmobile.domain.User
 import kotlin.test.*
 
 class ShoppingListImplTest {
@@ -10,6 +11,11 @@ class ShoppingListImplTest {
     @BeforeTest
     fun setUp(){
         shoppingList = ShoppingListImpl()
+    }
+
+    @Test
+    fun assertItRegistersUserCorrectly(){
+        //shoppingList.registerUser(User("pabloski"))
     }
 
     @Test

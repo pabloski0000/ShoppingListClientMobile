@@ -9,6 +9,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import main.shoppilientmobile.android.views.ChooseAdminOrUserRoleScreen
+import main.shoppilientmobile.android.views.IntroduceNicknameScreen
+import main.shoppilientmobile.domain.Role
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,7 +21,22 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    ChooseAdminOrUserRoleScreen { println(it.name) }
+                    var roleChosen by remember {
+                        mutableStateOf(false)
+                    }
+                    var role: Role =  remember { Role.BASIC }
+                    var nickname: String
+                    if (! roleChosen) {
+                        ChooseAdminOrUserRoleScreen {
+                            role = it
+                            roleChosen = true
+                        }
+                    } else {
+                        IntroduceNicknameScreen {
+                            nickname = it
+                            println("nickname: $nickname, role: ${role.name}")
+                        }
+                    }
                 }
             }
         }

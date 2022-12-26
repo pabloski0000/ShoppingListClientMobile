@@ -8,14 +8,15 @@ import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
+import main.shoppilientmobile.ApiServer
 import main.shoppilientmobile.domain.User
 import main.shoppilientmobile.httpBodyStructures.JsonStructure
 import startWithExceptions.UserCouldNotBeRegisteredException
 import kotlin.reflect.KSuspendFunction1
 
-class CustomHttpClient(
+class ApiServerImpl(
     httpClientEngine: HttpClientEngine? = null
-){
+): ApiServer {
     private val httpClient: HttpClient
     private var accessToken: String? = null
 
@@ -49,21 +50,39 @@ class CustomHttpClient(
         }
     }
 
-    fun registerUserAsAdmin(user: User) {
+    override fun registerAdminUser(user: User) {
         val requestBody = JsonStructure.UserRegistration(user.getNickname())
         val response = runPostRequest(
             url = "https://lista-de-la-compra-pabloski.herokuapp.com/api/users/register-user-admin",
             requestBody = requestBody,
         )
         val statusCode = response.status
-        if (isStatusCodeIn2XXRange(statusCode))
-            accessToken = interpretJsonObject<JsonStructure.SecurityToken>(response).accessToken
-        else
-            throw UserCouldNotBeRegisteredException("""
-                    Admin could not be registered due to a server error. Error info:
-                        Status code: $statusCode
-                        Server error message: ${interpretJsonObject<JsonStructure.ServerErrorMessage>(response)}
-                """.trimIndent())
+        if (! isStatusCodeIn2XXRange(statusCode))
+            throwExceptionToInformClientOfUnregisteredUser(
+                buildDefaultMessageToInformClient(
+                    affectedEntity = "User",
+                    statusCode = statusCode.value,
+                    serverErrorResposne = interpretJsonObject(response),
+                )
+            )
+        accessToken = interpretJsonObject<JsonStructure.SecurityToken>(response).accessToken
+    }
+
+    override fun registerBasicUser(user: User) {
+        val requestBody = JsonStructure.UserRegistration(user.getNickname())
+        val response = runPostRequest(
+            url = "https://lista-de-la-compra-pabloski.herokuapp.com/api/users/register-user",
+            requestBody = requestBody,
+        )
+        val statusCode = response.status
+        if (! isStatusCodeIn2XXRange(statusCode))
+            throwExceptionToInformClientOfUnregisteredUser(
+                buildDefaultMessageToInformClient(
+                    affectedEntity = "User",
+                    statusCode = statusCode.value,
+                    serverErrorResposne = interpretJsonObject(response),
+                )
+            )
     }
 
     fun getAllProducts(accessToken: String): List<JsonStructure.Product> {
@@ -74,22 +93,39 @@ class CustomHttpClient(
     }
 
     fun addProduct(accessToken: String, requestBody: JsonStructure.ProductAddition): JsonStructure.Product{
-        val createdProductResponse: JsonStructure.Product
         val response = runPostRequest(
             url = "https://lista-de-la-compra-pabloski.herokuapp.com/api/products",
             requestBody = requestBody,
             accessToken = accessToken
         )
         val statusCode = response.status
-        if (isStatusCodeIn2XXRange(statusCode))
-            createdProductResponse = interpretJsonObject(response)
-        else
-            throw UserCouldNotBeRegisteredException("""
-                    Product could not be added due to a server error. Error info:
-                        Status code: ${statusCode.value}
-                        Server error message: ${interpretJsonObject<JsonStructure.ServerErrorMessage>(response)}
-                """.trimIndent())
-        return createdProductResponse
+        if (! isStatusCodeIn2XXRange(statusCode))
+            throwExceptionToInformClientOfUnregisteredUser(
+                buildDefaultMessageToInformClient(
+                affectedEntity = "Product",
+                statusCode = statusCode.value,
+                serverErrorResposne = interpretJsonObject(response),
+                )
+            )
+        return interpretJsonObject(response)
+    }
+
+    fun throwExceptionToInformClientOfUnregisteredUser(
+        message: String = "User could not be registered"
+    ) {
+        throw UserCouldNotBeRegisteredException(message)
+    }
+
+    fun buildDefaultMessageToInformClient(
+        affectedEntity: String,
+        statusCode: Int,
+        serverErrorResposne: JsonStructure.ServerErrorMessage
+    ): String {
+        return """
+            $affectedEntity could not be added due to a server error. Error info:
+                Status code: $statusCode
+                Server error message: $serverErrorResposne}
+            """.trimIndent()
     }
 
     fun modifyProduct(accessToken: String, productId: String, newProduct: JsonStructure.ProductAddition) {

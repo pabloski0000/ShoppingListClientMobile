@@ -1,6 +1,6 @@
 package main.shoppilientmobile.domain
 
-import main.shoppilientmobile.domain.api.ShoppingList
+import main.shoppilientmobile.domain.domainExposure.ShoppingList
 import main.shoppilientmobile.domain.exceptions.ProductAlreadyExistsException
 import main.shoppilientmobile.domain.exceptions.ProductDoesNotExistException
 

@@ -1,4 +1,4 @@
-package main.shoppilientmobile.domain.api
+package main.shoppilientmobile.domain.domainExposure
 
 import main.shoppilientmobile.domain.Product
 

@@ -1,7 +1,7 @@
 package main.shoppilientmobile.unitTests.application.mocks
 
 import main.shoppilientmobile.domain.Product
-import main.shoppilientmobile.domain.api.ShoppingList
+import main.shoppilientmobile.domain.domainExposure.ShoppingList
 
 class ShoppingListMock: AbstractShoppingListMock(), ShoppingList {
 

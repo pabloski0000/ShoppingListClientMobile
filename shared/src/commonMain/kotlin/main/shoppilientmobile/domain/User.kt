@@ -1,10 +1,10 @@
 package main.shoppilientmobile.domain
 
-import CustomHttpClient
+import ApiServerImpl
 
 enum class Role {
     ADMIN,
-    NORMAL
+    BASIC
 }
 
 class User(private val nickname: String, private val role: Role){
@@ -14,7 +14,7 @@ class User(private val nickname: String, private val role: Role){
     fun getRole(): Role{
         return when(role){
             Role.ADMIN -> Role.ADMIN
-            Role.NORMAL -> Role.NORMAL
+            Role.BASIC -> Role.BASIC
         }
     }
     override fun equals(other: Any?): Boolean {
@@ -33,7 +33,7 @@ class User(private val nickname: String, private val role: Role){
 }
 
 fun registerUserToList(user: User){
-    val serverApi = CustomHttpClient()
-    serverApi.registerUserAsAdmin(user)
+    val serverApi = ApiServerImpl()
+    serverApi.registerAdminUser(user)
 }
 

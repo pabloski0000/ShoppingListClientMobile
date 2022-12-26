@@ -11,7 +11,9 @@ import androidx.compose.ui.Modifier
 import main.shoppilientmobile.domain.Role
 
 @Composable
-fun ChooseAdminOrUserRoleScreen(taskAfterRoleElection: (Role) -> Unit) {
+fun ChooseAdminOrUserRoleScreen(
+    taskAfterRoleElection: (chosenRole: Role) -> Unit,
+) {
     UserChoice(taskAfterRoleElection)
 }
 
@@ -26,7 +28,7 @@ fun UserChoice(taskAfterRoleElection: (Role) -> Unit) {
             taskAfterRoleElection(Role.ADMIN)
         }
         UserButton {
-            taskAfterRoleElection(Role.NORMAL)
+            taskAfterRoleElection(Role.BASIC)
         }
     }
 }
