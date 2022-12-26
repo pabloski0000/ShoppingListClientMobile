@@ -9,7 +9,7 @@ import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import main.shoppilientmobile.ApiServer
-import main.shoppilientmobile.domain.User
+import main.shoppilientmobile.domain.domainExposure.User
 import main.shoppilientmobile.httpBodyStructures.JsonStructure
 import startWithExceptions.UserCouldNotBeRegisteredException
 import kotlin.reflect.KSuspendFunction1

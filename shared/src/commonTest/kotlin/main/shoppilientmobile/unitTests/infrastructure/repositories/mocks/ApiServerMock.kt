@@ -1,7 +1,7 @@
-package main.shoppilientmobile.unitTests.repositories.mocks
+package main.shoppilientmobile.unitTests.infrastructure.repositories.mocks
 
 import main.shoppilientmobile.ApiServer
-import main.shoppilientmobile.domain.User
+import main.shoppilientmobile.domain.domainExposure.User
 
 class ApiServerMock: ApiServer {
     var registerAdminUserMethodCalled = false

@@ -1,6 +1,7 @@
-package main.shoppilientmobile.application.repositories
+package main.shoppilientmobile.application.applicationExposure.repositories
 
-import main.shoppilientmobile.domain.User
+import main.shoppilientmobile.domain.domainExposure.User
+
 
 interface UserRepository {
     fun getUsers(): List<User>

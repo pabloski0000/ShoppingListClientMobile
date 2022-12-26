@@ -1,4 +1,4 @@
-package main.shoppilientmobile.application.exceptions
+package main.shoppilientmobile.application.applicationExposure.exceptions
 
 class InconsistencyBetweenLocalAndRepositoryException(message: String): RuntimeException(message) {
 }

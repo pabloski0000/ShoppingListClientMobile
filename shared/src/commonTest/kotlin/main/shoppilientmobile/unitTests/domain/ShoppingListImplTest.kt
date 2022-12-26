@@ -1,8 +1,9 @@
 package main.shoppilientmobile.unitTests.domain
 
+import main.shoppilientmobile.application.UserBuilderImpl
 import main.shoppilientmobile.domain.Product
 import main.shoppilientmobile.domain.ShoppingListImpl
-import main.shoppilientmobile.domain.User
+import main.shoppilientmobile.domain.domainExposure.User
 import kotlin.test.*
 
 class ShoppingListImplTest {
@@ -76,6 +77,17 @@ class ShoppingListImplTest {
         assertTrue {
             shoppingList.contains(product)
         }
+    }
+
+    @Test
+    fun assertItRegistersUsersCorrectly() {
+        val registeredUsers = mutableListOf<User>()
+        for (i in 0..9) {
+            registeredUsers.add(UserBuilderImpl().giveItANickname("jklasjf$i").build())
+            shoppingList.registerUser(registeredUsers[i])
+        }
+
+        assertEquals(registeredUsers, shoppingList.getRegisteredUsers())
     }
 
     private fun buildProduct(description: String = "any") =  Product(description)

@@ -1,8 +1,8 @@
 package main.shoppilientmobile.application
 
-import main.shoppilientmobile.application.exceptions.InconsistencyBetweenLocalAndRepositoryException
-import main.shoppilientmobile.application.exceptions.ProductCouldNotBeAddedException
-import main.shoppilientmobile.application.repositories.ShoppingListRepository
+import main.shoppilientmobile.application.applicationExposure.exceptions.InconsistencyBetweenLocalAndRepositoryException
+import main.shoppilientmobile.application.applicationExposure.exceptions.ProductCouldNotBeAddedException
+import main.shoppilientmobile.application.applicationExposure.repositories.ShoppingListRepository
 import main.shoppilientmobile.domain.Product
 import main.shoppilientmobile.domain.domainExposure.ShoppingList
 

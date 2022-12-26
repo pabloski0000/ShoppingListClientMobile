@@ -1,4 +1,4 @@
-package main.shoppilientmobile.unitTests.repositories.httpRepositories
+package main.shoppilientmobile.unitTests.infrastructure.repositories.apiServer
 
 import ApiServerImpl
 import main.shoppilientmobile.httpBodyStructures.JsonStructure
@@ -6,8 +6,8 @@ import io.ktor.client.engine.mock.*
 import io.ktor.http.*
 import io.ktor.http.content.*
 import kotlinx.coroutines.runBlocking
-import main.shoppilientmobile.domain.Role
-import main.shoppilientmobile.domain.User
+import main.shoppilientmobile.application.UserBuilderImpl
+import main.shoppilientmobile.domain.domainExposure.User
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -27,7 +27,7 @@ class RequestsTest {
             )
         }
         customHttpClient = ApiServerImpl(mockEngine)
-        customHttpClient.registerAdminUser(User("pabloski0000", Role.ADMIN))
+        customHttpClient.registerAdminUser(UserBuilderImpl().setRole(User.Role.ADMIN).build())
     }
 
     private fun getUserRegistrationJsonRequestFormat(): Regex{
@@ -48,7 +48,7 @@ class RequestsTest {
             )
         }
         customHttpClient = ApiServerImpl(mockEngine)
-        customHttpClient.registerBasicUser(User("pabloski", Role.BASIC))
+        customHttpClient.registerBasicUser(UserBuilderImpl().build())
     }
 
     @Test

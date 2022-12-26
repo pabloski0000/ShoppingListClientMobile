@@ -1,11 +1,13 @@
 package main.shoppilientmobile.domain
 
 import main.shoppilientmobile.domain.domainExposure.ShoppingList
+import main.shoppilientmobile.domain.domainExposure.User
 import main.shoppilientmobile.domain.exceptions.ProductAlreadyExistsException
 import main.shoppilientmobile.domain.exceptions.ProductDoesNotExistException
 
 class ShoppingListImpl: ShoppingList {
-    private val products: MutableList<Product> = mutableListOf()
+    private val subscribedUsers = mutableListOf<User>()
+    private val products = mutableListOf<Product>()
 
     override fun getProducts(): List<Product> {
         return products
@@ -31,5 +33,13 @@ class ShoppingListImpl: ShoppingList {
 
     override fun contains(product: Product): Boolean {
         return products.contains(product)
+    }
+
+    override fun registerUser(user: User) {
+        subscribedUsers.add(user)
+    }
+
+    override fun getRegisteredUsers(): List<User> {
+        return subscribedUsers.toList()
     }
 }

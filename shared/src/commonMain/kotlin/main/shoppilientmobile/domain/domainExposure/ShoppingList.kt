@@ -8,4 +8,6 @@ interface ShoppingList {
     fun modifyProduct(oldProduct: Product, newProduct: Product)
     fun removeProduct(product: Product)
     fun contains(product: Product): Boolean
+    fun registerUser(user: User)
+    fun getRegisteredUsers(): List<User>
 }
