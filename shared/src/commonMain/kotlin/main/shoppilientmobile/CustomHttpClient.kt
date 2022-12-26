@@ -49,7 +49,7 @@ class CustomHttpClient(
         }
     }
 
-    fun registerUser(user: User) {
+    fun registerUserAsAdmin(user: User) {
         val requestBody = JsonStructure.UserRegistration(user.getNickname())
         val response = runPostRequest(
             url = "https://lista-de-la-compra-pabloski.herokuapp.com/api/users/register-user-admin",

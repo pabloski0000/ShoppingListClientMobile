@@ -34,6 +34,6 @@ class User(private val nickname: String, private val role: Role){
 
 fun registerUserToList(user: User){
     val serverApi = CustomHttpClient()
-    serverApi.registerUser(user)
+    serverApi.registerUserAsAdmin(user)
 }
 

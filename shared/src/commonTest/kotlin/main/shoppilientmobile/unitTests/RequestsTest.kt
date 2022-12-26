@@ -27,7 +27,7 @@ class RequestsTest {
             )
         }
         customHttpClient = CustomHttpClient(mockEngine)
-        customHttpClient.registerUser(User("pabloski0000", Role.ADMIN))
+        customHttpClient.registerUserAsAdmin(User("pabloski0000", Role.ADMIN))
     }
 
     private fun getAdminRegistrationJsonRequestFormat(): Regex{
@@ -67,7 +67,7 @@ class RequestsTest {
 
     private fun getProductAdditionJsonFormat(): Regex{
         return """
-            ^\{"name":( )?"\w{0,50}"( )*}$
+            ^\{(\n)?( )*"name":( )?"\w{0,50}"(\n)?}${'$'}
         """.trimIndent().toRegex()
     }
 
