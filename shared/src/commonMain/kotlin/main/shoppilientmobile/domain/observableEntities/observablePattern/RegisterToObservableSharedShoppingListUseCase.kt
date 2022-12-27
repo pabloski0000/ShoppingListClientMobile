@@ -1,5 +1,5 @@
 package main.shoppilientmobile.domain.observableEntities.observablePattern
 
-interface SharedShoppingListObservable {
+interface RegisterToObservableSharedShoppingListUseCase {
     fun registerObserver(observer: SharedShoppingListObserver)
 }

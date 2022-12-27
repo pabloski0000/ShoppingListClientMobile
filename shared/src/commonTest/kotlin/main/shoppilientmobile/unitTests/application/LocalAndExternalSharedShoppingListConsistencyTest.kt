@@ -1,73 +1,63 @@
 package main.shoppilientmobile.unitTests.application
 
-import main.shoppilientmobile.application.AddProductUseCase
 import main.shoppilientmobile.application.ExternalSharedShoppingListSynchronizer
+import main.shoppilientmobile.application.UserBuilderImpl
 import main.shoppilientmobile.domain.Product
-import main.shoppilientmobile.unitTests.application.mocks.ShoppingListMock
+import main.shoppilientmobile.domain.domainExposure.User
+import main.shoppilientmobile.unitTests.application.mocks.ObservableSharedShoppingListMock
+import main.shoppilientmobile.unitTests.application.mocks.SharedShoppingListMock
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class LocalAndExternalSharedShoppingListConsistencyTest {
-    private lateinit var localShoppingListMock: ShoppingListMock
-    private lateinit var externalShoppingListMock: ShoppingListMock
-    private lateinit var localProductAddition: AddProductUseCase
+class ExternalSharedShoppingListSynchronizationTest {
+    private lateinit var localShoppingListMock: ObservableSharedShoppingListMock
+    private lateinit var externalShoppingListMock: SharedShoppingListMock
     private lateinit var externalSharedShoppingListSynchronizer: ExternalSharedShoppingListSynchronizer
 
     @BeforeTest
     fun setUp(){
-        localShoppingListMock = ShoppingListMock()
-        externalShoppingListMock = ShoppingListMock()
-        localProductAddition = AddProductUseCase(localShoppingListMock)
+        localShoppingListMock = ObservableSharedShoppingListMock()
+        externalShoppingListMock = SharedShoppingListMock()
         externalSharedShoppingListSynchronizer = ExternalSharedShoppingListSynchronizer(
+            localShoppingListMock,
             externalShoppingListMock,
-
         )
     }
 
     @Test
-    fun followsUseCaseCorrectly(){
-        val productToAdd = buildProduct()
-        localProductAddition.addProduct(productToAdd)
-        assertProductIsInShoppingList(productToAdd)
-        assertProductIsInShoppingListRepository(productToAdd)
+    fun assertItSynchronizesExternalSharedShoppingListCorrectly(){
+        val product = buildProduct(productDescription = "banana")
+        addProduct(product)
+        assertExternalSharedShoppingListHasSameContent()
+        val modifiedProduct = product.copy(description = "apple")
+        modifyProduct(product, modifiedProduct)
+        assertExternalSharedShoppingListHasSameContent()
+        removeProduct(modifiedProduct)
+        assertExternalSharedShoppingListHasSameContent()
+        registerUser(UserBuilderImpl().build())
+        assertExternalSharedShoppingListHasSameContent()
     }
 
-    private fun assertProductIsInShoppingList(productToAdd: Product){
-        assertEquals(productToAdd, localShoppingListMock.getProducts().first())
+    private fun addProduct(product: Product) {
+        localShoppingListMock.addProduct(product)
     }
 
-    private fun assertProductIsInShoppingListRepository(productToAdd: Product){
-        assertEquals(productToAdd, shoppingListRepositoryMock.getProducts().first())
+    private fun modifyProduct(existingProduct: Product, modifiedProduct: Product) {
+        localShoppingListMock.modifyProduct(existingProduct, modifiedProduct)
     }
 
-    @Test
-    fun maintainDataConsistencyWhenRepositoryFails(){
-        val productToAdd = buildProduct()
-        shoppingListRepositoryMock.throwExceptionOnNextMethodCall()
-        try {
-            localProductAddition.addProduct(productToAdd)
-        } catch (e: Exception) {
-
-        }
-        assertShoppingListAndItsRepositoryHasTheSameData()
+    private fun removeProduct(product: Product) {
+        localShoppingListMock.addProduct(product)
     }
 
-    private fun assertShoppingListAndItsRepositoryHasTheSameData(){
-        assertEquals(localShoppingListMock.getProducts(), shoppingListRepositoryMock.getProducts())
+    private fun registerUser(user: User) {
+        localShoppingListMock.registerUser(user)
     }
 
-    @Test
-    fun maintainDataConsistencyWhenProductIsNotAddedOnLocalShoppingList(){
-        val productToAdd = buildProduct()
-        localShoppingListMock.throwExceptionOnNextMethodCall()
-        try {
-            localProductAddition.addProduct(productToAdd)
-        } catch (e: Exception) {
-
-        }
-        assertShoppingListAndItsRepositoryHasTheSameData()
+    private fun assertExternalSharedShoppingListHasSameContent() {
+        assertEquals(localShoppingListMock.getProducts(), externalShoppingListMock.getProducts())
     }
 
-    private fun buildProduct() = Product("description")
+    private fun buildProduct(productDescription: String = "default") = Product(productDescription)
 }

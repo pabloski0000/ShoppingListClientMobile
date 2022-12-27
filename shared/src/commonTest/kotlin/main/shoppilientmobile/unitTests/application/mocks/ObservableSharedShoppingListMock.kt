@@ -1,14 +1,14 @@
-package main.shoppilientmobile.domain.observableEntities
+package main.shoppilientmobile.unitTests.application.mocks
 
 import main.shoppilientmobile.domain.Product
-import main.shoppilientmobile.domain.SharedShoppingListImpl
+import main.shoppilientmobile.domain.domainExposure.ObservableSharedShoppingList
 import main.shoppilientmobile.domain.domainExposure.User
 import main.shoppilientmobile.domain.observableEntities.observablePattern.SharedShoppingListObserver
 
-class SharedShoppingListObservableImpl: SharedShoppingListImpl() {
-    private val observers: MutableList<SharedShoppingListObserver> = mutableListOf()
+class ObservableSharedShoppingListMock: SharedShoppingListMock(), ObservableSharedShoppingList {
+    private val observers = mutableListOf<SharedShoppingListObserver>()
 
-    fun registerObserver(observer: SharedShoppingListObserver) {
+    override fun registerObserver(observer: SharedShoppingListObserver) {
         observers.add(observer)
     }
 

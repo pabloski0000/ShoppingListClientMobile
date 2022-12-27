@@ -4,7 +4,7 @@ import main.shoppilientmobile.domain.Product
 import main.shoppilientmobile.domain.domainExposure.SharedShoppingList
 import main.shoppilientmobile.domain.domainExposure.User
 
-open class ShoppingListMock: SharedShoppingList {
+open class SharedShoppingListMock: SharedShoppingList {
     private val subscribedUsers = mutableListOf<User>()
     private val productList: MutableList<Product> = mutableListOf()
     private var throwExceptionOnNextMethodCall = false

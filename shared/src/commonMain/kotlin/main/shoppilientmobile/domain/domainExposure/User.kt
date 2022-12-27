@@ -1,5 +1,8 @@
 package main.shoppilientmobile.domain.domainExposure
 
+import main.shoppilientmobile.domain.observableEntities.observablePattern.SharedShoppingListObserver
+import main.shoppilientmobile.domain.sharedShoppingList.ProductAdditionObserver
+
 interface User {
     enum class Role {
         ADMIN,

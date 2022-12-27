@@ -1,3 +1,3 @@
 package main.shoppilientmobile.domain
 
-class Product(val description: String)
+data class Product(val description: String)
