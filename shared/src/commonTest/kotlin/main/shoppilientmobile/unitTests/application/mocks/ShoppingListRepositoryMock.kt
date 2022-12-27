@@ -1,9 +1,7 @@
 package main.shoppilientmobile.unitTests.application.mocks
 
-import main.shoppilientmobile.application.applicationExposure.repositories.ShoppingListRepository
-import main.shoppilientmobile.domain.Product
-import main.shoppilientmobile.domain.domainExposure.User
+import main.shoppilientmobile.application.applicationExposure.repositories.ServerSharedShoppingList
 
-class ShoppingListRepositoryMock: ShoppingListMock(), ShoppingListRepository {
+class ShoppingListRepositoryMock: ShoppingListMock(), ServerSharedShoppingList {
 
 }

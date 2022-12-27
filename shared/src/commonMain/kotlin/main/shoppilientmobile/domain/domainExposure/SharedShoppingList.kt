@@ -2,7 +2,7 @@ package main.shoppilientmobile.domain.domainExposure
 
 import main.shoppilientmobile.domain.Product
 
-interface ShoppingList {
+interface SharedShoppingList {
     fun getProducts(): List<Product>
     fun addProduct(product: Product)
     fun modifyProduct(oldProduct: Product, newProduct: Product)

@@ -2,19 +2,19 @@ package main.shoppilientmobile.unitTests.infrastructure.repositories
 
 import main.shoppilientmobile.application.UserBuilderImpl
 import main.shoppilientmobile.domain.domainExposure.User
-import main.shoppilientmobile.repositories.ShoppingListRepositoryImpl
+import main.shoppilientmobile.repositories.SharedShoppingListServerImpl
 import main.shoppilientmobile.unitTests.infrastructure.repositories.mocks.ApiServerMock
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
 class ShoppingListRepositoryImplTest {
-    private lateinit var userRepositoryImpl: ShoppingListRepositoryImpl
+    private lateinit var userRepositoryImpl: SharedShoppingListServerImpl
     private lateinit var apiServerMock: ApiServerMock
     @BeforeTest
     fun setUp() {
         apiServerMock = ApiServerMock()
-        userRepositoryImpl = ShoppingListRepositoryImpl(apiServerMock)
+        userRepositoryImpl = SharedShoppingListServerImpl(apiServerMock)
     }
 
     @Test

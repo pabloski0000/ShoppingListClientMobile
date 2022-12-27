@@ -2,16 +2,16 @@ package main.shoppilientmobile.unitTests.domain
 
 import main.shoppilientmobile.application.UserBuilderImpl
 import main.shoppilientmobile.domain.Product
-import main.shoppilientmobile.domain.ShoppingListImpl
+import main.shoppilientmobile.domain.SharedShoppingListImpl
 import main.shoppilientmobile.domain.domainExposure.User
 import kotlin.test.*
 
 class ShoppingListImplTest {
-    private lateinit var shoppingList: ShoppingListImpl
+    private lateinit var shoppingList: SharedShoppingListImpl
 
     @BeforeTest
     fun setUp(){
-        shoppingList = ShoppingListImpl()
+        shoppingList = SharedShoppingListImpl()
     }
 
     @Test

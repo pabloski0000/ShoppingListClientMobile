@@ -1,14 +1,13 @@
 package main.shoppilientmobile.repositories
 
 import main.shoppilientmobile.ApiServer
-import main.shoppilientmobile.application.applicationExposure.repositories.ShoppingListRepository
-import main.shoppilientmobile.application.applicationExposure.repositories.UserRepository
+import main.shoppilientmobile.application.applicationExposure.repositories.ServerSharedShoppingList
 import main.shoppilientmobile.domain.Product
 import main.shoppilientmobile.domain.domainExposure.User
 
-class ShoppingListRepositoryImpl(
+class SharedShoppingListServerImpl(
     private val apiServer: ApiServer
-): ShoppingListRepository {
+): ServerSharedShoppingList {
 
     override fun getProducts(): List<Product> {
         TODO("Not yet implemented")

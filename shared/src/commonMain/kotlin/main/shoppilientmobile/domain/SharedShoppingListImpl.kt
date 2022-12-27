@@ -1,11 +1,11 @@
 package main.shoppilientmobile.domain
 
-import main.shoppilientmobile.domain.domainExposure.ShoppingList
+import main.shoppilientmobile.domain.domainExposure.SharedShoppingList
 import main.shoppilientmobile.domain.domainExposure.User
 import main.shoppilientmobile.domain.exceptions.ProductAlreadyExistsException
 import main.shoppilientmobile.domain.exceptions.ProductDoesNotExistException
 
-class ShoppingListImpl: ShoppingList {
+open class SharedShoppingListImpl: SharedShoppingList {
     private val subscribedUsers = mutableListOf<User>()
     private val products = mutableListOf<Product>()
 
