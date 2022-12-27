@@ -34,7 +34,4 @@ class RegisterUserUseCaseImplTest {
                     shoppingListRepositoryMock.getRegisteredUsers().size == 1
         }
     }
-
-    @Test
-    fun assertDataConsistencyWhen
 }
