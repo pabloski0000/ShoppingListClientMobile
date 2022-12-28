@@ -1,14 +1,14 @@
 package main.shoppilientmobile.application
 
+import main.shoppilientmobile.application.applicationExposure.ExternalSharedShoppingList
 import main.shoppilientmobile.domain.Product
-import main.shoppilientmobile.domain.domainExposure.SharedShoppingList
 import main.shoppilientmobile.domain.domainExposure.User
 import main.shoppilientmobile.domain.observableEntities.observablePattern.RegisterToObservableSharedShoppingListUseCase
 import main.shoppilientmobile.domain.observableEntities.observablePattern.SharedShoppingListObserver
 
 class ExternalSharedShoppingListSynchronizer(
     registerObserverToSharedShoppingListUseCase: RegisterToObservableSharedShoppingListUseCase,
-    private val externalSharedShoppingList: SharedShoppingList,
+    private val externalSharedShoppingList: ExternalSharedShoppingList,
 ): SharedShoppingListObserver {
     init {
         registerObserverToSharedShoppingListUseCase.registerObserver(this)

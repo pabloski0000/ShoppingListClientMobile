@@ -1,19 +1,19 @@
 package main.shoppilientmobile.unitTests.infrastructure.repositories.apiServer
 
-import ApiServerImpl
+import ServerRequests
 import main.shoppilientmobile.httpBodyStructures.JsonStructure
 import io.ktor.client.engine.mock.*
 import io.ktor.http.*
 import io.ktor.http.content.*
 import kotlinx.coroutines.runBlocking
 import main.shoppilientmobile.application.UserBuilderImpl
-import main.shoppilientmobile.domain.domainExposure.User
+import main.shoppilientmobile.domain.domainExposure.UserRole
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class RequestsTest {
-    var customHttpClient: ApiServerImpl = ApiServerImpl()
+    var customHttpClient: ServerRequests = ServerRequests()
     val messageInformingOfStrangeBehaviourInMockEngine = "assert request headers are correct" +
             " cannot be done due to a strange behaviour in ktor library"
     @Test
@@ -26,8 +26,8 @@ class RequestsTest {
                 headers = headersOf("Content-Type", "application/json")
             )
         }
-        customHttpClient = ApiServerImpl(mockEngine)
-        customHttpClient.registerAdminUser(UserBuilderImpl().setRole(User.Role.ADMIN).build())
+        customHttpClient = ServerRequests(mockEngine)
+        customHttpClient.registerAdminUser(UserBuilderImpl().setRole(UserRole.ADMIN).build())
     }
 
     private fun getUserRegistrationJsonRequestFormat(): Regex{
@@ -47,7 +47,7 @@ class RequestsTest {
                 headers = headersOf("Content-Type", "application/json"),
             )
         }
-        customHttpClient = ApiServerImpl(mockEngine)
+        customHttpClient = ServerRequests(mockEngine)
         customHttpClient.registerBasicUser(UserBuilderImpl().build())
     }
 
@@ -63,7 +63,7 @@ class RequestsTest {
                 headers = headersOf(HttpHeaders.ContentType, "application/json")
             )
         }
-        customHttpClient = ApiServerImpl(mockEngine)
+        customHttpClient = ServerRequests(mockEngine)
 
         val httpResponse = customHttpClient.addProduct(
             requestBody = JsonStructure.ProductAddition(""),

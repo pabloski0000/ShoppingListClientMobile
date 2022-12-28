@@ -3,7 +3,7 @@ package main.shoppilientmobile.unitTests.application
 import main.shoppilientmobile.application.RegisterUserUseCaseImpl
 import main.shoppilientmobile.application.UserBuilderImpl
 import main.shoppilientmobile.application.applicationExposure.UserRegistrationData
-import main.shoppilientmobile.application.applicationExposure.UserRole
+import main.shoppilientmobile.application.applicationExposure.Role
 import main.shoppilientmobile.unitTests.application.mocks.SharedShoppingListMock
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -24,7 +24,7 @@ class RegisterUserUseCaseTest {
 
     @Test
     fun assertItRegistersUserCorrectly() {
-        registerUserUseCase.registerUser(UserRegistrationData("pa", UserRole.ADMIN))
+        registerUserUseCase.registerUser(UserRegistrationData("pa", Role.ADMIN))
         assertTrue {
             shoppingListMock.getRegisteredUsers().size == 1
         }

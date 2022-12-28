@@ -3,9 +3,9 @@ package main.shoppilientmobile.application
 import main.shoppilientmobile.application.applicationExposure.RegisterUserUseCase
 import main.shoppilientmobile.application.applicationExposure.UserBuilder
 import main.shoppilientmobile.application.applicationExposure.UserRegistrationData
-import main.shoppilientmobile.application.applicationExposure.UserRole
+import main.shoppilientmobile.application.applicationExposure.Role
 import main.shoppilientmobile.domain.domainExposure.SharedShoppingList
-import main.shoppilientmobile.domain.domainExposure.User
+import main.shoppilientmobile.domain.domainExposure.UserRole
 
 class RegisterUserUseCaseImpl(
     private val sharedShoppingList: SharedShoppingList,
@@ -20,10 +20,10 @@ class RegisterUserUseCaseImpl(
         )
     }
 
-    private fun adaptUserRole(userRole: UserRole): User.Role {
+    private fun adaptUserRole(userRole: Role): UserRole {
         return when(userRole) {
-            UserRole.ADMIN -> User.Role.ADMIN
-            UserRole.BASIC -> User.Role.BASIC
+            Role.ADMIN -> UserRole.ADMIN
+            Role.BASIC -> UserRole.BASIC
         }
     }
 

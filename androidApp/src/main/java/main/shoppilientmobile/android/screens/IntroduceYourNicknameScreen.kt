@@ -1,4 +1,4 @@
-package main.shoppilientmobile.android.views
+package main.shoppilientmobile.android.screens
 
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions

@@ -1,18 +1,23 @@
 package main.shoppilientmobile.unitTests.infrastructure.repositories.mocks
 
-import main.shoppilientmobile.ApiServer
+import main.shoppilientmobile.ServerApi
 import main.shoppilientmobile.domain.domainExposure.User
 
-class ApiServerMock: ApiServer {
+class ApiServerMock: ServerApi {
+    private val registeredUsers = mutableListOf<User>()
     var registerAdminUserMethodCalled = false
     var registerBasicUserMethodCalled = false
 
-    override fun registerAdminUser(user: User) {
+    fun registerAdminUser(user: User) {
         registerAdminUserMethodCalled = true
     }
 
-    override fun registerBasicUser(user: User) {
+    fun registerBasicUser(user: User) {
         registerBasicUserMethodCalled = true
+    }
+
+    override fun registerUser(user: User) {
+        registeredUsers.add(user)
     }
 
 }

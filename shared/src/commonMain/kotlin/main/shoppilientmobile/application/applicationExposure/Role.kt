@@ -1,6 +1,6 @@
 package main.shoppilientmobile.application.applicationExposure
 
-enum class UserRole {
+enum class Role {
     ADMIN,
     BASIC
 }

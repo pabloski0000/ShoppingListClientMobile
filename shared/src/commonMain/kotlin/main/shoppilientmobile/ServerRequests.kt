@@ -8,15 +8,14 @@ import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
-import main.shoppilientmobile.ApiServer
 import main.shoppilientmobile.domain.domainExposure.User
 import main.shoppilientmobile.httpBodyStructures.JsonStructure
 import startWithExceptions.UserCouldNotBeRegisteredException
 import kotlin.reflect.KSuspendFunction1
 
-class ApiServerImpl(
+class ServerRequests(
     httpClientEngine: HttpClientEngine? = null
-): ApiServer {
+) {
     private val httpClient: HttpClient
     private var accessToken: String? = null
 
@@ -50,7 +49,7 @@ class ApiServerImpl(
         }
     }
 
-    override fun registerAdminUser(user: User) {
+    fun registerAdminUser(user: User) {
         val requestBody = JsonStructure.UserRegistration(user.getNickname())
         val response = runPostRequest(
             url = "https://lista-de-la-compra-pabloski.herokuapp.com/api/users/register-user-admin",
@@ -68,7 +67,7 @@ class ApiServerImpl(
         accessToken = interpretJsonObject<JsonStructure.SecurityToken>(response).accessToken
     }
 
-    override fun registerBasicUser(user: User) {
+    fun registerBasicUser(user: User) {
         val requestBody = JsonStructure.UserRegistration(user.getNickname())
         val response = runPostRequest(
             url = "https://lista-de-la-compra-pabloski.herokuapp.com/api/users/register-user",

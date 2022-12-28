@@ -2,23 +2,24 @@ package main.shoppilientmobile.unitTests.application
 
 import main.shoppilientmobile.application.ExternalSharedShoppingListSynchronizer
 import main.shoppilientmobile.application.UserBuilderImpl
+import main.shoppilientmobile.application.applicationExposure.ExternalSharedShoppingList
 import main.shoppilientmobile.domain.Product
 import main.shoppilientmobile.domain.domainExposure.User
+import main.shoppilientmobile.unitTests.application.mocks.ExternalSharedShoppingListMock
 import main.shoppilientmobile.unitTests.application.mocks.ObservableSharedShoppingListMock
-import main.shoppilientmobile.unitTests.application.mocks.SharedShoppingListMock
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class ExternalSharedShoppingListSynchronizationTest {
     private lateinit var localShoppingListMock: ObservableSharedShoppingListMock
-    private lateinit var externalShoppingListMock: SharedShoppingListMock
+    private lateinit var externalShoppingListMock: ExternalSharedShoppingList
     private lateinit var externalSharedShoppingListSynchronizer: ExternalSharedShoppingListSynchronizer
 
     @BeforeTest
     fun setUp(){
         localShoppingListMock = ObservableSharedShoppingListMock()
-        externalShoppingListMock = SharedShoppingListMock()
+        externalShoppingListMock = ExternalSharedShoppingListMock()
         externalSharedShoppingListSynchronizer = ExternalSharedShoppingListSynchronizer(
             localShoppingListMock,
             externalShoppingListMock,

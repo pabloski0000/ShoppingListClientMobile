@@ -1,9 +1,10 @@
 package main.shoppilientmobile.domain
 
-import ApiServerImpl
+import ServerRequests
 import main.shoppilientmobile.domain.domainExposure.User
+import main.shoppilientmobile.domain.domainExposure.UserRole
 
-class UserImpl(private var nickname: String, private val role: User.Role): User{
+class UserImpl(private var nickname: String, private val role: UserRole): User{
     override fun getId(): String {
         TODO("Not yet implemented")
     }
@@ -16,10 +17,10 @@ class UserImpl(private var nickname: String, private val role: User.Role): User{
         return nickname
     }
 
-    override fun getRole(): User.Role{
+    override fun getRole(): UserRole{
         return when(role){
-            User.Role.ADMIN -> User.Role.ADMIN
-            User.Role.BASIC -> User.Role.BASIC
+            UserRole.ADMIN -> UserRole.ADMIN
+            UserRole.BASIC -> UserRole.BASIC
         }
     }
 
@@ -39,7 +40,7 @@ class UserImpl(private var nickname: String, private val role: User.Role): User{
 }
 
 fun registerUserToList(user: UserImpl){
-    val serverApi = ApiServerImpl()
+    val serverApi = ServerRequests()
     serverApi.registerAdminUser(user)
 }
 
