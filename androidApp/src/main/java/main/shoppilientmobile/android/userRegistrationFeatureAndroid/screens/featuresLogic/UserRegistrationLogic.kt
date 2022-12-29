@@ -1,11 +1,12 @@
-package main.shoppilientmobile.android.screensLogic
+package main.shoppilientmobile.android.userRegistrationFeatureAndroid.screens.featuresLogic
 
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import main.shoppilientmobile.android.screens.FillingNicknameScreen
-import main.shoppilientmobile.android.screens.RoleElectionScreen
+import kotlinx.coroutines.runBlocking
+import main.shoppilientmobile.android.userRegistrationFeatureAndroid.screens.FillingNicknameScreen
+import main.shoppilientmobile.android.userRegistrationFeatureAndroid.screens.RoleElectionScreen
 import main.shoppilientmobile.application.applicationExposure.RegisterUserUseCase
 import main.shoppilientmobile.application.applicationExposure.Role
 import main.shoppilientmobile.application.applicationExposure.UserRegistrationData
@@ -18,11 +19,11 @@ class UserRegistrationLogic(
 
     @Composable
     fun displayComposable() {
-        Navigation()
+        BuildNavHost()
     }
 
     @Composable
-    private fun Navigation() {
+    private fun BuildNavHost() {
         val navController = rememberNavController()
         var role: Role? = null
         NavHost(
@@ -38,9 +39,11 @@ class UserRegistrationLogic(
 
             composable(route = fillingNicknameScreen.route) {
                 fillingNicknameScreen.IntroduceNicknameScreen { nickname ->
-                    registerUserUseCase.registerUser(
-                        UserRegistrationData(nickname, role!!)
-                    )
+                    runBlocking {
+                        registerUserUseCase.registerUser(
+                            UserRegistrationData(nickname, role!!)
+                        )
+                    }
                 }
             }
         }

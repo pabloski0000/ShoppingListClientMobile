@@ -3,7 +3,7 @@ package main.shoppilientmobile.unitTests.application.mocks
 import main.shoppilientmobile.domain.Product
 import main.shoppilientmobile.domain.domainExposure.ObservableSharedShoppingList
 import main.shoppilientmobile.domain.domainExposure.User
-import main.shoppilientmobile.domain.observableEntities.observablePattern.SharedShoppingListObserver
+import main.shoppilientmobile.domain.domainExposure.SharedShoppingListObserver
 
 class ObservableSharedShoppingListMock: SharedShoppingListMock(), ObservableSharedShoppingList {
     private val observers = mutableListOf<SharedShoppingListObserver>()

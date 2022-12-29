@@ -8,8 +8,7 @@ import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
-import main.shoppilientmobile.domain.domainExposure.User
-import main.shoppilientmobile.httpBodyStructures.JsonStructure
+import main.shoppilientmobile.userRegistrationFeature.dataSources.apis.jsonStructures.JsonStructure
 import startWithExceptions.UserCouldNotBeRegisteredException
 import kotlin.reflect.KSuspendFunction1
 
@@ -47,41 +46,6 @@ class ServerRequests(
                 })
             }
         }
-    }
-
-    fun registerAdminUser(user: User) {
-        val requestBody = JsonStructure.UserRegistration(user.getNickname())
-        val response = runPostRequest(
-            url = "https://lista-de-la-compra-pabloski.herokuapp.com/api/users/register-user-admin",
-            requestBody = requestBody,
-        )
-        val statusCode = response.status
-        if (! isStatusCodeIn2XXRange(statusCode))
-            throwExceptionToInformClientOfUnregisteredUser(
-                buildDefaultMessageToInformClient(
-                    affectedEntity = "User",
-                    statusCode = statusCode.value,
-                    serverErrorResposne = interpretJsonObject(response),
-                )
-            )
-        accessToken = interpretJsonObject<JsonStructure.SecurityToken>(response).accessToken
-    }
-
-    fun registerBasicUser(user: User) {
-        val requestBody = JsonStructure.UserRegistration(user.getNickname())
-        val response = runPostRequest(
-            url = "https://lista-de-la-compra-pabloski.herokuapp.com/api/users/register-user",
-            requestBody = requestBody,
-        )
-        val statusCode = response.status
-        if (! isStatusCodeIn2XXRange(statusCode))
-            throwExceptionToInformClientOfUnregisteredUser(
-                buildDefaultMessageToInformClient(
-                    affectedEntity = "User",
-                    statusCode = statusCode.value,
-                    serverErrorResposne = interpretJsonObject(response),
-                )
-            )
     }
 
     fun getAllProducts(accessToken: String): List<JsonStructure.Product> {

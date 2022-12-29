@@ -1,4 +1,4 @@
-package main.shoppilientmobile.android.screens
+package main.shoppilientmobile.android.userRegistrationFeatureAndroid.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

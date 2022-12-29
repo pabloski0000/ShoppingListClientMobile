@@ -1,4 +1,4 @@
-package main.shoppilientmobile.application
+package main.shoppilientmobile.userRegistrationFeature.useCases
 
 import main.shoppilientmobile.application.applicationExposure.RegisterUserUseCase
 import main.shoppilientmobile.application.applicationExposure.UserBuilder
@@ -6,13 +6,14 @@ import main.shoppilientmobile.application.applicationExposure.UserRegistrationDa
 import main.shoppilientmobile.application.applicationExposure.Role
 import main.shoppilientmobile.domain.domainExposure.SharedShoppingList
 import main.shoppilientmobile.domain.domainExposure.UserRole
+import main.shoppilientmobile.userRegistrationFeature.repositories.UserRepository
 
 class RegisterUserUseCaseImpl(
-    private val sharedShoppingList: SharedShoppingList,
+    private val userRepository: UserRepository,
     private val userBuilder: UserBuilder,
 ): RegisterUserUseCase {
-    override fun registerUser(registrationData: UserRegistrationData) {
-        sharedShoppingList.registerUser(
+    override suspend fun registerUser(registrationData: UserRegistrationData) {
+        userRepository.registerUser(
             userBuilder
                 .giveItANickname(registrationData.nickname)
                 .setRole(adaptUserRole(registrationData.role))

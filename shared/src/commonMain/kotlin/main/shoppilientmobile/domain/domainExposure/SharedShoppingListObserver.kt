@@ -1,4 +1,4 @@
-package main.shoppilientmobile.domain.observableEntities.observablePattern
+package main.shoppilientmobile.domain.domainExposure
 
 import main.shoppilientmobile.domain.sharedShoppingList.ProductAdditionObserver
 import main.shoppilientmobile.domain.sharedShoppingList.ProductDeletionObserver

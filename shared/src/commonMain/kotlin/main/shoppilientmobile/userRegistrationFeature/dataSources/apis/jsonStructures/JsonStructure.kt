@@ -1,4 +1,4 @@
-package main.shoppilientmobile.httpBodyStructures
+package main.shoppilientmobile.userRegistrationFeature.dataSources.apis.jsonStructures
 
 sealed class JsonStructure {
     @kotlinx.serialization.Serializable

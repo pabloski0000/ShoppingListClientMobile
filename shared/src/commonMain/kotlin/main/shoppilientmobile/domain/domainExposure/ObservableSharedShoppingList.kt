@@ -1,7 +1,5 @@
 package main.shoppilientmobile.domain.domainExposure
 
-import main.shoppilientmobile.domain.observableEntities.observablePattern.RegisterToObservableSharedShoppingListUseCase
-
-interface ObservableSharedShoppingList: RegisterToObservableSharedShoppingListUseCase {
-
+interface ObservableSharedShoppingList: SharedShoppingList {
+    fun registerObserver(observer: SharedShoppingListObserver)
 }

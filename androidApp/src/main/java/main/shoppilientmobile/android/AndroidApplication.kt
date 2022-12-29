@@ -1,8 +1,8 @@
 package main.shoppilientmobile.android
 
 import android.app.Application
-import main.shoppilientmobile.android.androidApplication.containers.UserRegistrationContainer
+import main.shoppilientmobile.android.core.AndroidContainer
 
 class AndroidApplication: Application() {
-    val userRegistrationContainer = UserRegistrationContainer()
+    val androidContainer = AndroidContainer()
 }

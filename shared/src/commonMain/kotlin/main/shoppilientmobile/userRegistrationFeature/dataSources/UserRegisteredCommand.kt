@@ -1,12 +1,12 @@
-package main.shoppilientmobile.application
+package main.shoppilientmobile.userRegistrationFeature.dataSources
 
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
-import main.shoppilientmobile.httpBodyStructures.JsonStructure
+import main.shoppilientmobile.userRegistrationFeature.dataSources.apis.jsonStructures.JsonStructure
 
-class RegisterAdminUserRequest(
+class UserRegisteredCommand(
     private val host: String,
     private val httpClient: HttpClient,
     private val httpRequestBuilder: HttpRequestBuilder,

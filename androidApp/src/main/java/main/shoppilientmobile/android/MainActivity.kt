@@ -8,28 +8,33 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import main.shoppilientmobile.android.androidApplication.containers.UserRegistrationContainer
-import main.shoppilientmobile.android.screensLogic.UserRegistrationLogic
+import main.shoppilientmobile.android.core.AndroidContainer
+import main.shoppilientmobile.android.userRegistrationFeatureAndroid.screens.featuresLogic.UserRegistrationLogic
 
 class MainActivity : ComponentActivity() {
-    private lateinit var androidApplication: AndroidApplication
-    private lateinit var userRegistrationContainer: UserRegistrationContainer
-    private lateinit var userRegistrationScreenLogic: UserRegistrationLogic
+    private lateinit var userRegistrationLogic: UserRegistrationLogic
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        androidApplication = application as AndroidApplication
-        userRegistrationContainer = androidApplication.userRegistrationContainer
-        userRegistrationScreenLogic = userRegistrationContainer.userRegistrationScreenLogic
+        buildProject()
         setContent {
             MyApplicationTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
+                    color = MaterialTheme.colors.background,
                 ) {
-                    userRegistrationScreenLogic.displayComposable()
+                    userRegistrationLogic.displayComposable()
                 }
             }
         }
+    }
+
+    private fun buildProject() {
+        val androidContainer = (application as AndroidApplication).androidContainer
+        buildUserRegistrationFeature(androidContainer)
+    }
+
+    private fun buildUserRegistrationFeature(androidContainer: AndroidContainer) {
+        userRegistrationLogic = androidContainer.userRegistrationLogic
     }
 }
 

@@ -4,13 +4,18 @@ import ServerRequests
 import main.shoppilientmobile.domain.domainExposure.User
 import main.shoppilientmobile.domain.domainExposure.UserRole
 
-class UserImpl(private var nickname: String, private val role: UserRole): User{
-    override fun getId(): String {
-        TODO("Not yet implemented")
+class UserImpl(private val nickname: String, private val role: UserRole): User{
+    private val minimumNicknameLength = 3
+    private val maximumNicknameLength = 20
+
+    init {
+        if (nickname.length !in minimumNicknameLength..maximumNicknameLength)
+            throw RuntimeException("User nickname needs to be between" +
+                    " $minimumNicknameLength and $maximumNicknameLength characters")
     }
 
-    override fun changeNickname(newNickname: String) {
-        nickname = newNickname
+    override fun getId(): String {
+        TODO("Not yet implemented")
     }
 
     override fun getNickname(): String{
@@ -37,10 +42,5 @@ class UserImpl(private var nickname: String, private val role: UserRole): User{
     override fun hashCode(): Int {
         return nickname.hashCode()
     }
-}
-
-fun registerUserToList(user: UserImpl){
-    val serverApi = ServerRequests()
-    serverApi.registerAdminUser(user)
 }
 

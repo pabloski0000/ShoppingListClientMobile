@@ -28,7 +28,7 @@ class ExternalSharedShoppingListImpl(
     }
 
     override fun registerUser(user: User) {
-
+        serverApi.registerUser(user)
     }
 
     override fun getRegisteredUsers(): List<User> {
