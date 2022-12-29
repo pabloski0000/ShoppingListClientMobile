@@ -1,0 +1,9 @@
+package main.shoppilientmobile.sharedContainers
+
+import main.shoppilientmobile.application.ExternalSharedShoppingListSynchronizer
+import main.shoppilientmobile.application.applicationExposure.ExternalSharedShoppingList
+import main.shoppilientmobile.application.containers.UserRegistraitionApplicationLayerContainer
+
+object UserRegistrationSharedContainer {
+
+}
