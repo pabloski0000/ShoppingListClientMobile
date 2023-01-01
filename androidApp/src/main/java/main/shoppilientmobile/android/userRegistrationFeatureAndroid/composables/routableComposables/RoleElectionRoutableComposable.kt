@@ -1,4 +1,4 @@
-package main.shoppilientmobile.android.userRegistrationFeatureAndroid.screens
+package main.shoppilientmobile.android.userRegistrationFeatureAndroid.composables.routableComposables
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,28 +10,39 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import main.shoppilientmobile.application.applicationExposure.Role
 
-class RoleElectionScreen: Screen {
-    override val route: String = "role_election_screen"
+interface RoleElectionViewModel {
+    fun onRoleChosen(userRole: Role)
+}
 
-    @Composable
-    fun ChooseAdminOrUserRoleScreen(
-        onRoleChosen: (chosenRole: Role) -> Unit,
-    ) {
-        UserChoice(onRoleChosen)
+class RoleElectionRoutableComposable: RoutableComposable {
+    override val route: String = CompanionObject.route
+    companion object CompanionObject {
+        const val route = "role_election_screen"
     }
 
     @Composable
-    private fun UserChoice(taskAfterRoleElection: (Role) -> Unit) {
+    fun RoleElection(
+        viewModel: RoleElectionViewModel,
+    ) {
+        UserChoice(
+            onRoleChosen = { role ->
+                viewModel.onRoleChosen(role)
+            }
+        )
+    }
+
+    @Composable
+    private fun UserChoice(onRoleChosen: (Role) -> Unit) {
         Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.SpaceAround,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             AdminButton {
-                taskAfterRoleElection(Role.ADMIN)
+                onRoleChosen(Role.ADMIN)
             }
             UserButton {
-                taskAfterRoleElection(Role.BASIC)
+                onRoleChosen(Role.BASIC)
             }
         }
     }

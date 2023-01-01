@@ -1,8 +1,8 @@
 package main.shoppilientmobile.domain
 
-import ServerRequests
 import main.shoppilientmobile.domain.domainExposure.User
 import main.shoppilientmobile.domain.domainExposure.UserRole
+import main.shoppilientmobile.domain.exceptions.InvalidUserNicknameException
 
 class UserImpl(private val nickname: String, private val role: UserRole): User{
     private val minimumNicknameLength = 3
@@ -10,7 +10,7 @@ class UserImpl(private val nickname: String, private val role: UserRole): User{
 
     init {
         if (nickname.length !in minimumNicknameLength..maximumNicknameLength)
-            throw RuntimeException("User nickname needs to be between" +
+            throw InvalidUserNicknameException("User nickname needs to be between" +
                     " $minimumNicknameLength and $maximumNicknameLength characters")
     }
 
