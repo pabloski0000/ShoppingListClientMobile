@@ -22,7 +22,7 @@ kotlin {
 
     sourceSets {
         val commonMain by getting {
-            dependencies{
+            dependencies {
                 implementation("io.ktor:ktor-server-content-negotiation-jvm:$ktor_version")
                 implementation("io.ktor:ktor-server-core-jvm:$ktor_version")
                 implementation("io.ktor:ktor-serialization-jackson-jvm:$ktor_version")
@@ -41,7 +41,11 @@ kotlin {
                 implementation("io.ktor:ktor-client-mock:$ktor_version")
             }
         }
-        val androidMain by getting
+        val androidMain by getting {
+            dependencies {
+                implementation("androidx.datastore:datastore-preferences:1.0.0")
+            }
+        }
         val androidTest by getting
         val iosX64Main by getting
         val iosArm64Main by getting
