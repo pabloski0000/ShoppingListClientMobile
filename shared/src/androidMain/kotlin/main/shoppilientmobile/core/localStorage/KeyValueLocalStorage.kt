@@ -1,4 +1,4 @@
-package main.shoppilientmobile.localStorage
+package main.shoppilientmobile.core.localStorage
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -6,11 +6,12 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import main.shoppilientmobile.core.localStorage.exceptions.NotFoundKeyException
 
-actual class LocalStorage(
+actual class KeyValueLocalStorage(
     private val dataStore: DataStore<Preferences>
 ) {
-    actual suspend fun save(key: String, value: String) {
+    actual suspend fun put(key: String, value: String) {
         dataStore.edit { mutablePreferences ->
             mutablePreferences[stringPreferencesKey(key)] = value
         }

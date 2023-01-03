@@ -12,7 +12,8 @@ class RegisterUserUseCaseImpl(
     private val userRepository: UserRepository,
     private val userBuilder: UserBuilder,
 ): RegisterUserUseCase {
-    override fun registerUser(registrationData: UserRegistrationData) {
+
+    override suspend fun registerUser(registrationData: UserRegistrationData) {
         userRepository.registerUser(
             userBuilder
                 .giveItANickname(registrationData.nickname)

@@ -11,9 +11,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import main.shoppilientmobile.android.userRegistrationFeatureAndroid.stateHolders.UserInformationMessageUiState
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.stateHolders.UserRegistrationViewModel
 
 interface FillNicknameViewModel {
+    fun getUserInformationMessage(): State<UserInformationMessageUiState>
     fun onNicknameIntroduced(nickname: String)
 }
 
@@ -25,7 +27,7 @@ class FillNicknameRoutableComposable: RoutableComposable {
 
     @Composable
     fun FillNickname(
-        viewModel: UserRegistrationViewModel,
+        viewModel: FillNicknameViewModel,
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -42,7 +44,11 @@ class FillNicknameRoutableComposable: RoutableComposable {
                     horizontal = 50.dp
                 )
             ) {
-                ErrorMessage(errorMessage = viewModel.getErrorMessage().value)
+                val userInformationMessageUiState by viewModel.getUserInformationMessage()
+                ProcessInformationMessage(
+                    message = userInformationMessageUiState.message,
+                    letterColor = userInformationMessageUiState.color
+                )
             }
         }
     }
@@ -66,12 +72,13 @@ class FillNicknameRoutableComposable: RoutableComposable {
     }
     
     @Composable
-    private fun ErrorMessage(
-        errorMessage: String,
+    private fun ProcessInformationMessage(
+        message: String,
+        letterColor: Color
     ) {
         Text(
-            text = errorMessage,
-            color = Color.Red,
+            text = message,
+            color = letterColor,
         )
     }
 }

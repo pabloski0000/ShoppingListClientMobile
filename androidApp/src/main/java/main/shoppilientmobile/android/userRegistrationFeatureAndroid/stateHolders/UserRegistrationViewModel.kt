@@ -1,8 +1,12 @@
 package main.shoppilientmobile.android.userRegistrationFeatureAndroid.stateHolders
 
 import androidx.compose.runtime.*
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.composables.routableComposables.FillNicknameRoutableComposable
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.composables.routableComposables.FillNicknameViewModel
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.composables.routableComposables.RoleElectionRoutableComposable
@@ -22,7 +26,10 @@ class UserRegistrationViewModel(
     private var navController: NavController? = null
     private lateinit var userNickname: String
     private lateinit var userRole: Role
-    private var errorMessage = mutableStateOf("")
+    private val userInformationMessageUiState = mutableStateOf(UserInformationMessageUiState(
+        message = "",
+        color = Color.Blue,
+    ))
 
 
     override fun onRoleChosen(role: Role) {
@@ -32,33 +39,52 @@ class UserRegistrationViewModel(
 
     override fun onNicknameIntroduced(nickname: String) {
         userNickname = nickname
-        registerUser()
-    }
-
-    fun registerUser() {
-        informUserOfResult {
-            registerUserUseCase.registerUser(
-                UserRegistrationData(userNickname, userRole)
+        val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
+            informUserDependingOnTheException(throwable)
+        }
+        runBlocking(coroutineExceptionHandler) {
+            async {
+                registerUser()
+            }
+            userInformationMessageUiState.value = UserInformationMessageUiState(
+                message = "Registering...",
+                color = Color.Blue,
             )
         }
     }
 
-    fun getErrorMessage(): MutableState<String> {
-        return errorMessage
+    private suspend fun registerUser() {
+        registerUserUseCase.registerUser(
+            UserRegistrationData(userNickname, userRole)
+        )
+    }
+
+    override fun getUserInformationMessage(): State<UserInformationMessageUiState> {
+        return userInformationMessageUiState
     }
 
     fun setNavController(_navController: NavController) {
         navController = _navController
     }
 
-    private fun informUserOfResult(task: () -> Unit) {
-        try {
-            task()
-            errorMessage.value = ""
-        } catch (e: InvalidUserNicknameException) {
-            errorMessage.value = "Invalid nickname"
-        } catch (e: RemoteDataSourceException) {
-            errorMessage.value = "Remote error. Hold on thirty seconds and try again, sorryyyyy :("
+    private fun <T> informUserDependingOnTheException(exception: T) {
+        when(exception) {
+            is InvalidUserNicknameException -> {
+                val userInformationMessage = UserInformationMessageUiState(
+                    message = "Invalid nickname",
+                    color = Color.Red
+                )
+                userInformationMessageUiState.value = userInformationMessage
+            }
+            is RemoteDataSourceException -> {
+                val userInformationMessage = UserInformationMessageUiState(
+                    message = "Remote error. Hold on thirty seconds and try again, sorryyyyy :(",
+                    color = Color.Red
+                )
+                userInformationMessageUiState.value = userInformationMessage
+            }
         }
     }
 }
+
+data class UserInformationMessageUiState(val message: String, val color: Color)

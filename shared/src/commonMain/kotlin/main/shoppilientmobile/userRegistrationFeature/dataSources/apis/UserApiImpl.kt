@@ -14,7 +14,7 @@ import kotlin.reflect.KSuspendFunction1
 class UserApiImpl(
     private val serializableHttpClient: HttpClient
 ): UserApi {
-    override fun registerAdminUser(user: User): JsonStructure.SecurityToken {
+    override fun registerAdminUser(user: User): SecurityToken {
         val requestBody = JsonStructure.UserRegistration(user.getNickname())
         val response = runPostRequest(
             url = "https://lista-de-la-compra-pabloski.herokuapp.com/api/users/register-user-admin",
@@ -29,7 +29,7 @@ class UserApiImpl(
                     serverErrorResposne = interpretJsonObject(response),
                 )
             )
-        return interpretJsonObject(response)
+        return interpretJsonObject<JsonStructure.SecurityToken>(response).accessToken
     }
 
     override fun registerUser(user: User) {

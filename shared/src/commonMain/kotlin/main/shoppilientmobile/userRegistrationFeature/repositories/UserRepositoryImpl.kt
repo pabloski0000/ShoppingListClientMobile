@@ -6,7 +6,7 @@ import main.shoppilientmobile.userRegistrationFeature.dataSources.UserRemoteData
 class UserRepositoryImpl(
     private val userRemoteDataSource: UserRemoteDataSource
 ): UserRepository {
-    override fun registerUser(user: User) {
+    override suspend fun registerUser(user: User) {
         userRemoteDataSource.registerUser(user)
     }
 }

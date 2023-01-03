@@ -1,5 +1,5 @@
 package main.shoppilientmobile.application.applicationExposure
 
 interface RegisterUserUseCase {
-    fun registerUser(user: UserRegistrationData)
+    suspend fun registerUser(user: UserRegistrationData)
 }

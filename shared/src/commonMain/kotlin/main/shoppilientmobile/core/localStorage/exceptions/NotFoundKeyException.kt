@@ -1,4 +1,4 @@
-package main.shoppilientmobile.localStorage
+package main.shoppilientmobile.core.localStorage.exceptions
 
 class NotFoundKeyException(
     message: String

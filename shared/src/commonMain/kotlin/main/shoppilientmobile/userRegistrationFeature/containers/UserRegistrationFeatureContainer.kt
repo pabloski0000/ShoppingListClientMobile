@@ -3,6 +3,8 @@ package main.shoppilientmobile.userRegistrationFeature.containers
 import main.shoppilientmobile.application.UserBuilderImpl
 import main.shoppilientmobile.application.applicationExposure.RegisterUserUseCase
 import main.shoppilientmobile.core.builders.SerializableHttpClientBuilder
+import main.shoppilientmobile.core.localStorage.KeyValueLocalStorage
+import main.shoppilientmobile.core.localStorage.SecurityTokenKeeper
 import main.shoppilientmobile.userRegistrationFeature.dataSources.UserRemoteDataSourceImpl
 import main.shoppilientmobile.userRegistrationFeature.dataSources.apis.UserApiImpl
 import main.shoppilientmobile.userRegistrationFeature.repositories.UserRepositoryImpl
@@ -14,7 +16,10 @@ class UserRegistrationFeatureContainer {
     )
     private val userRepositoryImpl = UserRepositoryImpl(
         userRemoteDataSource = UserRemoteDataSourceImpl(
-            userApi = userApiImpl
+            userApi = userApiImpl,
+            securityTokenKeeper = SecurityTokenKeeper(
+
+            )
         )
     )
     val registerUserUseCase: RegisterUserUseCase = RegisterUserUseCaseImpl(
