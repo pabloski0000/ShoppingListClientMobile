@@ -1,12 +1,20 @@
 package main.shoppilientmobile.android.core
 
+import android.content.Context
+import main.shoppilientmobile.android.createListFeature.stateHolders.ShoppingListViewModel
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.stateHolders.UserRegistrationViewModel
-import main.shoppilientmobile.android.userRegistrationFeatureAndroid.stateHolders.UserRegistrationViewModelBuilder
-import main.shoppilientmobile.userRegistrationFeature.containers.UserRegistrationFeatureContainer
+import main.shoppilientmobile.userRegistrationFeature.containers.SharedAndroidContainer
 
-class AndroidContainer {
-    private val userRegistrationFeatureContainer = UserRegistrationFeatureContainer()
+class AndroidContainer(
+    private val context: Context,
+) {
+    private val sharedAndroidContainer = SharedAndroidContainer(
+        context = context
+    )
     val userRegistrationViewModel = UserRegistrationViewModel(
-        registerUserUseCase = userRegistrationFeatureContainer.registerUserUseCase,
+        registerUserUseCase = sharedAndroidContainer.registerUserUseCase
+    )
+    val shoppingListViewModel = ShoppingListViewModel(
+        productRepository = sharedAndroidContainer.productRepository
     )
 }

@@ -6,15 +6,16 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
+import main.shoppilientmobile.core.AsynchronousHttpClient
 import main.shoppilientmobile.domain.domainExposure.User
 import main.shoppilientmobile.userRegistrationFeature.dataSources.apis.jsonStructures.JsonStructure
 import startWithExceptions.UserCouldNotBeRegisteredException
 import kotlin.reflect.KSuspendFunction1
 
 class UserApiImpl(
-    private val serializableHttpClient: HttpClient
-): UserApi {
-    override fun registerAdminUser(user: User): SecurityToken {
+    private val httpClient: HttpClient,
+) {
+    suspend fun registerAdminUser(user: User): SecurityToken {
         val requestBody = JsonStructure.UserRegistration(user.getNickname())
         val response = runPostRequest(
             url = "https://lista-de-la-compra-pabloski.herokuapp.com/api/users/register-user-admin",
@@ -32,7 +33,7 @@ class UserApiImpl(
         return interpretJsonObject<JsonStructure.SecurityToken>(response).accessToken
     }
 
-    override fun registerUser(user: User) {
+    suspend fun registerBasicUser(user: User) {
         val requestBody = JsonStructure.UserRegistration(user.getNickname())
         val response = runPostRequest(
             url = "https://lista-de-la-compra-pabloski.herokuapp.com/api/users/register-user",
@@ -96,7 +97,7 @@ class UserApiImpl(
     }
 
     private suspend fun sendPostRequest(httpRequestBuilder: HttpRequestBuilder): HttpResponse {
-        return serializableHttpClient.post(httpRequestBuilder)
+        return httpClient.post(httpRequestBuilder)
     }
 
     private inline fun <reified T: JsonStructure> interpretJsonObject(response: HttpResponse): T{

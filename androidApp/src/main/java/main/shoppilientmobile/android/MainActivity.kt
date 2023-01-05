@@ -10,15 +10,15 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.compose.rememberNavController
+import main.shoppilientmobile.android.createListFeature.composables.ShoppingList
+import main.shoppilientmobile.android.createListFeature.composables.ShoppingListScreen
+import main.shoppilientmobile.android.createListFeature.stateHolders.ShoppingListViewModel
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.composables.RegistrationFeatureNavHost
-import main.shoppilientmobile.android.userRegistrationFeatureAndroid.composables.routableComposables.FillNicknameRoutableComposable
-import main.shoppilientmobile.android.userRegistrationFeatureAndroid.composables.routableComposables.RoleElectionRoutableComposable
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.stateHolders.UserRegistrationViewModel
-import main.shoppilientmobile.android.userRegistrationFeatureAndroid.stateHolders.UserRegistrationViewModelBuilder
 
 class MainActivity : ComponentActivity() {
     private lateinit var userRegistrationViewModel: UserRegistrationViewModel
+    private lateinit var shoppingListViewModel: ShoppingListViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,7 +29,12 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background,
                 ) {
-                    RegistrationFeatureNavHost(viewModel = userRegistrationViewModel)
+                    RegistrationFeatureNavHost(
+                        viewModel = userRegistrationViewModel,
+                    )
+                    /*ShoppingListScreen(
+                        viewModel = shoppingListViewModel,
+                    )*/
                 }
             }
         }
@@ -38,6 +43,7 @@ class MainActivity : ComponentActivity() {
     private fun buildProject() {
         val androidContainer = (application as AndroidApplication).androidContainer
         userRegistrationViewModel = androidContainer.userRegistrationViewModel
+        shoppingListViewModel = androidContainer.shoppingListViewModel
     }
 }
 

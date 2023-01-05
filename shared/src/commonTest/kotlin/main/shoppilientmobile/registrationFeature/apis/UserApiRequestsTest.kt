@@ -5,7 +5,7 @@ import io.ktor.http.*
 import io.ktor.http.content.*
 import kotlinx.coroutines.runBlocking
 import main.shoppilientmobile.application.UserBuilderImpl
-import main.shoppilientmobile.core.builders.SerializableHttpClientBuilder
+import main.shoppilientmobile.core.builders.AsynchronousHttpClientBuilder
 import main.shoppilientmobile.domain.domainExposure.UserRole
 import main.shoppilientmobile.userRegistrationFeature.dataSources.apis.UserApiImpl
 import kotlin.test.Test
@@ -28,9 +28,11 @@ class UserApiRequestsTest {
             )
         }
         userApi = UserApiImpl(
-            SerializableHttpClientBuilder().withEngine(mockEngine).build()
+            AsynchronousHttpClientBuilder().withMockEngine(mockEngine).build()
         )
-        userApi.registerAdminUser(UserBuilderImpl().setRole(UserRole.ADMIN).build())
+        runBlocking {
+            userApi.registerAdminUser(UserBuilderImpl().setRole(UserRole.ADMIN).build())
+        }
     }
 
     @Test
@@ -45,9 +47,11 @@ class UserApiRequestsTest {
             )
         }
         userApi = UserApiImpl(
-            SerializableHttpClientBuilder().withEngine(mockEngine).build()
+            AsynchronousHttpClientBuilder().withMockEngine(mockEngine).build()
         )
-        userApi.registerUser(UserBuilderImpl().build())
+        runBlocking {
+            userApi.registerBasicUser(UserBuilderImpl().build())
+        }
     }
 
     private fun getUserRegistrationJsonRequestFormat(): Regex{

@@ -1,6 +1,6 @@
 package main.shoppilientmobile.domain.domainExposure
 
-import main.shoppilientmobile.domain.Product
+import main.shoppilientmobile.createListFeature.Product
 
 interface SharedShoppingList {
     fun getProducts(): List<Product>

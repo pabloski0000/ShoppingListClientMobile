@@ -11,12 +11,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.stateHolders.UserInformationMessageUiState
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.stateHolders.UserRegistrationViewModel
+import kotlin.coroutines.coroutineContext
 
 interface FillNicknameViewModel {
     fun getUserInformationMessage(): State<UserInformationMessageUiState>
-    fun onNicknameIntroduced(nickname: String)
+    suspend fun onNicknameIntroduced(nickname: String)
 }
 
 class FillNicknameRoutableComposable: RoutableComposable {
@@ -54,7 +57,8 @@ class FillNicknameRoutableComposable: RoutableComposable {
     }
 
     @Composable
-    private fun NicknameField(onDone: (nickname: String) -> Unit) {
+    private fun NicknameField(onDone: suspend (nickname: String) -> Unit) {
+        val coroutineScope = rememberCoroutineScope()
         var nickname by remember {
             mutableStateOf("")
         }
@@ -64,7 +68,9 @@ class FillNicknameRoutableComposable: RoutableComposable {
             label = { Text(text = "Enter your nickname") },
             keyboardActions = KeyboardActions(
                 onDone = {
-                    onDone(nickname)
+                    coroutineScope.launch {
+                        onDone(nickname)
+                    }
                 }
             ),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),

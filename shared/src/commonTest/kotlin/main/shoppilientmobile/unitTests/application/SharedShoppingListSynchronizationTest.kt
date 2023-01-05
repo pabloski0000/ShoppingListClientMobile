@@ -1,8 +1,5 @@
 package main.shoppilientmobile.unitTests.application
 
-import main.shoppilientmobile.domain.Product
-import kotlin.test.assertEquals
-
 class SharedShoppingListSynchronizationTest {
 
     /*private fun assertProductIsInLocalSharedShoppingList(productToAdd: Product){

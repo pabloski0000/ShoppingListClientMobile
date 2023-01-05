@@ -4,9 +4,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.async
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.composables.routableComposables.FillNicknameRoutableComposable
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.composables.routableComposables.FillNicknameViewModel
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.composables.routableComposables.RoleElectionRoutableComposable
@@ -37,19 +35,28 @@ class UserRegistrationViewModel(
         navController?.navigate(FillNicknameRoutableComposable.route)
     }
 
-    override fun onNicknameIntroduced(nickname: String) {
+    override suspend fun onNicknameIntroduced(nickname: String) {
         userNickname = nickname
         val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
             informUserDependingOnTheException(throwable)
         }
-        runBlocking(coroutineExceptionHandler) {
-            async {
-                registerUser()
+        try {
+            coroutineScope {
+                val registrationResult = async {
+                    registerUser()
+                }
+                userInformationMessageUiState.value = UserInformationMessageUiState(
+                    message = "Registering...",
+                    color = Color.Blue,
+                )
+                registrationResult.await()
+                userInformationMessageUiState.value = UserInformationMessageUiState(
+                    message = "Registered",
+                    color = Color.Green,
+                )
             }
-            userInformationMessageUiState.value = UserInformationMessageUiState(
-                message = "Registering...",
-                color = Color.Blue,
-            )
+        } catch (e: Exception) {
+            informUserDependingOnTheException(e)
         }
     }
 

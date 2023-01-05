@@ -1,6 +1,6 @@
 package main.shoppilientmobile.unitTests.application.mocks
 
-import main.shoppilientmobile.domain.Product
+import main.shoppilientmobile.createListFeature.Product
 import main.shoppilientmobile.domain.domainExposure.SharedShoppingList
 import main.shoppilientmobile.domain.domainExposure.User
 
