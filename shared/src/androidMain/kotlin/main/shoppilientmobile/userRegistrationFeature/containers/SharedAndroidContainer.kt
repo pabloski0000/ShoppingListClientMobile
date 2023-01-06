@@ -12,6 +12,7 @@ import main.shoppilientmobile.core.localStorage.SecurityTokenKeeper
 import main.shoppilientmobile.createListFeature.dataSources.ProductRemoteDataSource
 import main.shoppilientmobile.createListFeature.dataSources.apis.ProductApi
 import main.shoppilientmobile.createListFeature.repositories.ProductRepository
+import main.shoppilientmobile.dataSources.AsynchronousHttpClientAndroid
 import main.shoppilientmobile.userRegistrationFeature.dataSources.UserRemoteDataSourceImpl
 import main.shoppilientmobile.userRegistrationFeature.dataSources.apis.UserApi
 import main.shoppilientmobile.userRegistrationFeature.dataSources.apis.UserApiWithoutKtor
@@ -33,7 +34,7 @@ class SharedAndroidContainer(
 
     private fun createRegisterUserUseCase(): RegisterUserUseCase {
         val userApi: UserApi = UserApiWithoutKtor(
-            asynchronousHttpClient = AsynchronousHttpClientImpl(),
+            asynchronousHttpClient = AsynchronousHttpClientAndroid(),
             securityTokenKeeper = SecurityTokenKeeper(
                 keyValueLocalStorage = KeyValueLocalStorage(
                     dataStore = dataStore

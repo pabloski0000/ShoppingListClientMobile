@@ -4,27 +4,32 @@ import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.*
 import io.ktor.client.engine.cio.*
+import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.logging.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.client.utils.*
-import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.utils.io.*
-import io.ktor.utils.io.bits.*
 import io.ktor.utils.io.core.*
-import io.ktor.utils.io.core.internal.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.json.*
 
-class AsynchronousHttpClientImpl(
-    httpClientEngine: HttpClientEngine? = null
+abstract class AsynchronousHttpClientImpl(
+    httpClientEngine: HttpClientEngine?
 ): AsynchronousHttpClient {
     private val httpClient: HttpClient
     init {
-        val jsonParserAndDebugLog: HttpClientConfig<*>.() -> Unit = {
+        val httpConfiguration: HttpClientConfig<*>.() -> Unit = {
+            install(HttpTimeout) {
+                requestTimeoutMillis = 55000
+            }
             install(ContentNegotiation) {
                 json(Json {
                     prettyPrint = true
@@ -36,38 +41,13 @@ class AsynchronousHttpClientImpl(
             }
         }
         httpClient = if (httpClientEngine == null) {
-            HttpClient(engineFactory = CIO, jsonParserAndDebugLog)
+            HttpClient(engineFactory = CIO, httpConfiguration)
         } else {
-            HttpClient(engine = httpClientEngine, jsonParserAndDebugLog)
+            HttpClient(engine = httpClientEngine, httpConfiguration)
         }
     }
 
-    suspend fun makeNDJsonGetRequest(url: String, headers: Map<String, String>): Flow<JsonObject> {
-        return httpClient.prepareGet(
-            block = {
-                url(url)
-                headers {
-                    headers.map { append(it.key, it.value) }
-                }
-            }
-        ).execute { httpResponse ->
-            return@execute flow<JsonObject> {
-                val byteReadChannel = httpResponse.body<ByteReadChannel>()
-                val jsonObjectAsString = StringBuilder()
-                while (! byteReadChannel.isClosedForRead) {
-                    val packet = byteReadChannel.readRemaining(DEFAULT_HTTP_BUFFER_SIZE.toLong())
-                    packet.readBytes().map { jsonSymbol ->
-                        jsonObjectAsString.append(jsonSymbol)
-                        if (isJsonObject(jsonObjectAsString.toString())) {
-                            println(jsonObjectAsString.toString())
-                            emit(Json.parseToJsonElement(jsonObjectAsString.toString()).jsonObject)
-                            jsonObjectAsString.clear()
-                        }
-                    }
-                }
-            }
-        }
-    }
+    abstract suspend fun makeNDJsonGetRequest(url: String, headers: Map<String, String>): Flow<JsonObject>
 
     private fun isJsonObject(string: String): Boolean {
         return string.matches("^\\{(\\n)?( )*\"nickName\":( )?\"\\w{0,15}\"(\\n)?}${'$'}".toRegex())
@@ -83,5 +63,7 @@ class AsynchronousHttpClientImpl(
         }.bodyAsText()
         return Json.parseToJsonElement(response).jsonObject
     }
+
+    protected fun getHttpClient() = httpClient
 }
 

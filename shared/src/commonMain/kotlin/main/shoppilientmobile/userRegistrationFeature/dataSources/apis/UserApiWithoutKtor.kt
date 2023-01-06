@@ -14,14 +14,15 @@ class UserApiWithoutKtor(
     private val asynchronousHttpClient: AsynchronousHttpClientImpl,
     securityTokenKeeper: SecurityTokenKeeper,
 ): Api(securityTokenKeeper), UserApi {
+    private val host = "https://lista-de-la-compra-pabloski.herokuapp.com"
 
     override suspend fun subscribeAdmin(user: User): Flow<JsonObject> {
-        registerAdminUser(user)
+        //registerAdminUser(user)
         return sendAdminTheCodeToConfirmRegistration()
     }
 
     private suspend fun registerAdminUser(user: User) {
-        val url = "https://lista-de-la-compra-pabloski.herokuapp.com/api/users/register-user-admin"
+        val url = "$host/api/users/register-user-admin"
         val headers = mapOf(
             "Accept" to "application/json",
             "Content-Type" to "application/json",
@@ -37,7 +38,7 @@ class UserApiWithoutKtor(
     }
 
     private suspend fun sendAdminTheCodeToConfirmRegistration(): Flow<JsonObject> {
-        val url = "https://lista-de-la-compra-pabloski.herokuapp.com/api/users/alert-admin-to-confirm-registration"
+        val url = "$host/api/users/alert-admin-to-confirm-registration"
         val headers = mapOf(
             "Authorization" to "Bearer ${super.getSecurityToken()}",
             "Accept" to "application/x-ndjson",
