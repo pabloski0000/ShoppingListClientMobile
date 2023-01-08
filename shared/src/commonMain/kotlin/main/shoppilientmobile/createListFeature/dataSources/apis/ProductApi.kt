@@ -1,24 +1,33 @@
 package main.shoppilientmobile.createListFeature.dataSources.apis
 
-import io.ktor.client.*
-import io.ktor.client.call.*
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
+import main.shoppilientmobile.core.remote.AsynchronousHttpClient
+import main.shoppilientmobile.core.remote.HttpMethod
+import main.shoppilientmobile.core.remote.HttpRequest
 import main.shoppilientmobile.createListFeature.Product
-import main.shoppilientmobile.userRegistrationFeature.dataSources.apis.jsonStructures.JsonStructure
 
 class ProductApi(
-    private val httpClient: HttpClient,
+    private val httpClient: AsynchronousHttpClient,
 ) {
     suspend fun getProducts(): List<Product> {
-        val url = "https://lista-de-la-compra-pabloski.herokuapp.com/api/products"
-        val response = httpClient.get {
-            url(url)
-            headers {
-                append("Content-Type", "application/json")
-                append("Accept", "application/json")
-            }
-        }.body<List<JsonStructure.Product>>()
-        return response.map { Product(it.name) }
+        val httpRequest = HttpRequest(
+            httpMethod = HttpMethod.GET,
+            url = "https://lista-de-la-compra-pabloski.herokuapp.com/api/products",
+            headers = mapOf(
+                "Content-Type" to "application/json",
+                "Accept" to "application/json",
+            ),
+            body = "",
+        )
+        val response = httpClient.makeRequest(httpRequest)
+        val json = Json.parseToJsonElement(response.body).jsonArray
+        return json.map { jsonElement ->
+            Product(
+                description = jsonElement.jsonObject.getValue("name").jsonPrimitive.content
+            )
+        }
     }
 }

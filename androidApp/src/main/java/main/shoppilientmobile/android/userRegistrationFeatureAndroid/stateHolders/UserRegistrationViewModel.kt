@@ -40,7 +40,7 @@ class UserRegistrationViewModel(
             coroutineScope {
                 val result = launch {
                     if (userRole == Role.BASIC) {
-                        confirmUserRegistration = registerUserUseCase.registerUser(userNickname)
+                        registerUserUseCase.registerUser(userNickname)
                     } else {
                         registerAdminUseCase.registerAdmin(userNickname)
                     }
@@ -82,6 +82,10 @@ class UserRegistrationViewModel(
 
     override fun getUserInformationMessage(): State<UserInformationMessageUiState> {
         return userInformationMessageUiState
+    }
+
+    fun getFirstNavigationRoute(): String {
+        return roleElectionComposableRoute
     }
 
     fun setNavController(_navController: NavController) {

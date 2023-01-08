@@ -17,7 +17,7 @@ fun RegistrationFeatureNavHost(
     viewModel.setNavController(navHostController)
     NavHost(
         navController = navHostController,
-        startDestination = viewModel.roleElectionComposableRoute,
+        startDestination = viewModel.getFirstNavigationRoute(),
     ) {
         composable(route = RoleElectionRoutableComposable.route) {
             RoleElectionRoutableComposable.RoleElection(

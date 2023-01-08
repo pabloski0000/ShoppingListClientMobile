@@ -7,8 +7,7 @@ import main.shoppilientmobile.userRegistrationFeature.useCases.useCasesInputOutp
 class UserRepositoryImpl(
     private val userRemoteDataSource: UserRemoteDataSource
 ): UserRepository {
-
-    override suspend fun registerAdmin(user: User) = userRemoteDataSource.registerAdmin(user)
-
-    override suspend fun registerUser(user: User) = userRemoteDataSource.registerUser(user)
+    override suspend fun saveLocalUser(user: User) {
+        TODO("Not yet implemented")
+    }
 }

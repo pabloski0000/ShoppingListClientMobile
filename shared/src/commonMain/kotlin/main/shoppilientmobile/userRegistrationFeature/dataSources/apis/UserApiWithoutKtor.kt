@@ -9,6 +9,7 @@ import kotlinx.serialization.json.jsonPrimitive
 import main.shoppilientmobile.core.localStorage.SecurityTokenKeeper
 import main.shoppilientmobile.core.remote.*
 import main.shoppilientmobile.domain.domainExposure.User
+import main.shoppilientmobile.domain.domainExposure.UserRole
 import main.shoppilientmobile.userRegistrationFeature.dataSources.UserRemoteDataSource
 import main.shoppilientmobile.userRegistrationFeature.useCases.useCasesInputOutputs.AdminRegistration
 import main.shoppilientmobile.userRegistrationFeature.entities.Registration
@@ -84,6 +85,7 @@ class UserApiWithoutKtor(
             val json = Json.parseToJsonElement(chunk).jsonObject
             Registration(
                 nickname = json.getValue("nickname").jsonPrimitive.content,
+                role = UserRole.BASIC,
                 signature = json.getValue("code").jsonPrimitive.int.toString(),
             )
         }
