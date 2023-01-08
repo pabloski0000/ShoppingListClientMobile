@@ -4,21 +4,22 @@ import android.content.Context
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.preferencesDataStoreFile
 import main.shoppilientmobile.application.UserBuilderImpl
-import main.shoppilientmobile.application.applicationExposure.RegisterUserUseCase
-import main.shoppilientmobile.core.AsynchronousHttpClientImpl
 import main.shoppilientmobile.core.builders.AsynchronousHttpClientBuilder
 import main.shoppilientmobile.core.localStorage.KeyValueLocalStorage
-import main.shoppilientmobile.core.localStorage.SecurityTokenKeeper
+import main.shoppilientmobile.core.localStorage.SecurityTokenKeeperImpl
+import main.shoppilientmobile.core.remote.AsynchronousHttpClientImpl
 import main.shoppilientmobile.createListFeature.dataSources.ProductRemoteDataSource
 import main.shoppilientmobile.createListFeature.dataSources.apis.ProductApi
 import main.shoppilientmobile.createListFeature.repositories.ProductRepository
-import main.shoppilientmobile.dataSources.AsynchronousHttpClientAndroid
-import main.shoppilientmobile.userRegistrationFeature.dataSources.UserRemoteDataSourceImpl
-import main.shoppilientmobile.userRegistrationFeature.dataSources.apis.UserApi
+import main.shoppilientmobile.dataSources.StreamingHttpClientAndroid
+import main.shoppilientmobile.userRegistrationFeature.dataSources.apis.NewUserRegistrationApi
 import main.shoppilientmobile.userRegistrationFeature.dataSources.apis.UserApiWithoutKtor
+import main.shoppilientmobile.userRegistrationFeature.repositories.RegistrationRepositoryImpl
 import main.shoppilientmobile.userRegistrationFeature.repositories.UserRepository
 import main.shoppilientmobile.userRegistrationFeature.repositories.UserRepositoryImpl
-import main.shoppilientmobile.userRegistrationFeature.useCases.RegisterUserUseCaseImpl
+import main.shoppilientmobile.userRegistrationFeature.useCases.RegisterAdminUseCase
+import main.shoppilientmobile.userRegistrationFeature.useCases.RegisterAdminUseCaseImpl
+import main.shoppilientmobile.userRegistrationFeature.useCases.RegisterUserUseCase
 
 class SharedAndroidContainer(
     private val context: Context,
@@ -28,27 +29,42 @@ class SharedAndroidContainer(
             context.preferencesDataStoreFile("preferences")
         }
     )
+    private val asynchronousHttpClient = AsynchronousHttpClientImpl()
+    private val securityTokenKeeper = SecurityTokenKeeperImpl(
+        keyValueLocalStorage = KeyValueLocalStorage(
+            dataStore = dataStore
+        )
+    )
+    private val userRepository: UserRepository = UserRepositoryImpl(
+        userRemoteDataSource = UserApiWithoutKtor(
+            httpClient = asynchronousHttpClient,
+            streamingHttpClient = StreamingHttpClientAndroid(),
+            securityTokenKeeper = securityTokenKeeper,
+        ),
+    )
+    private val userBuilder = UserBuilderImpl()
 
+    val registerAdminUseCase: RegisterAdminUseCase = createRegisterAdminUseCase()
     val registerUserUseCase: RegisterUserUseCase = createRegisterUserUseCase()
     val productRepository = createProductRepository()
 
+    private fun createRegisterAdminUseCase(): RegisterAdminUseCase {
+        return RegisterAdminUseCaseImpl(
+            userRepository = userRepository,
+            userBuilder = userBuilder,
+        )
+    }
+
     private fun createRegisterUserUseCase(): RegisterUserUseCase {
-        val userApi: UserApi = UserApiWithoutKtor(
-            asynchronousHttpClient = AsynchronousHttpClientAndroid(),
-            securityTokenKeeper = SecurityTokenKeeper(
-                keyValueLocalStorage = KeyValueLocalStorage(
-                    dataStore = dataStore
+        return RegisterUserUseCase(
+            userRepository = userRepository,
+            newUserRegistrationRepository = RegistrationRepositoryImpl(
+                newUserRegistrationRemoteDataSource = NewUserRegistrationApi(
+                    httpClient = asynchronousHttpClient,
+                    securityTokenKeeper = securityTokenKeeper,
                 )
             ),
-        )
-        val userRepository: UserRepository = UserRepositoryImpl(
-            userRemoteDataSource = UserRemoteDataSourceImpl(
-                userApi = userApi,
-            ),
-        )
-        return RegisterUserUseCaseImpl(
-            userRepository = userRepository,
-            userBuilder = UserBuilderImpl(),
+            userBuilder = userBuilder,
         )
     }
 

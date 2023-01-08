@@ -6,7 +6,6 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
-import main.shoppilientmobile.core.AsynchronousHttpClient
 import main.shoppilientmobile.domain.domainExposure.User
 import main.shoppilientmobile.userRegistrationFeature.dataSources.apis.jsonStructures.JsonStructure
 import startWithExceptions.UserCouldNotBeRegisteredException

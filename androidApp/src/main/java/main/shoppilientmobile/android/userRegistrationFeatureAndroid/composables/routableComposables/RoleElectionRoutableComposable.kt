@@ -14,11 +14,8 @@ interface RoleElectionViewModel {
     fun onRoleChosen(userRole: Role)
 }
 
-class RoleElectionRoutableComposable: RoutableComposable {
-    override val route: String = CompanionObject.route
-    companion object CompanionObject {
-        const val route = "role_election_screen"
-    }
+object RoleElectionRoutableComposable: RoutableComposable {
+    override val route: String = "role_election"
 
     @Composable
     fun RoleElection(

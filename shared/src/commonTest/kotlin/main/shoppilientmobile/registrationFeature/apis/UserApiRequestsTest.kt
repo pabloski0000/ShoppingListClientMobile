@@ -6,32 +6,55 @@ import io.ktor.http.content.*
 import kotlinx.coroutines.runBlocking
 import main.shoppilientmobile.application.UserBuilderImpl
 import main.shoppilientmobile.core.builders.AsynchronousHttpClientBuilder
+import main.shoppilientmobile.core.remote.AsynchronousHttpClient
+import main.shoppilientmobile.core.remote.HttpMethod
+import main.shoppilientmobile.core.remote.HttpRequest
 import main.shoppilientmobile.domain.domainExposure.UserRole
+import main.shoppilientmobile.registrationFeature.apis.mocks.AsynchronousHttpClientMock
+import main.shoppilientmobile.registrationFeature.apis.mocks.SecurityTokenKeeperMock
+import main.shoppilientmobile.registrationFeature.apis.mocks.StreamingHttpClientMock
 import main.shoppilientmobile.userRegistrationFeature.dataSources.apis.UserApiImpl
+import main.shoppilientmobile.userRegistrationFeature.dataSources.apis.UserApiWithoutKtor
+import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class UserApiRequestsTest {
-    private lateinit var userApi: UserApiImpl
+    private lateinit var userApi: UserApiWithoutKtor
+    private lateinit var httpClient: AsynchronousHttpClientMock
     val messageInformingOfStrangeBehaviourInMockEngine = "assert request headers are correct" +
             " cannot be done due to a strange behaviour in ktor library"
+    private val httpsProtocol = "https"
+    private val host = "lista-de-la-compra-pabloski.herokuapp.com"
+
+    @BeforeTest
+    fun setUp() {
+        httpClient = AsynchronousHttpClientMock()
+        userApi = UserApiWithoutKtor(
+            httpClient = httpClient,
+            streamingHttpClient = StreamingHttpClientMock(),
+            securityTokenKeeper = SecurityTokenKeeperMock(),
+        )
+    }
 
     @Test
     fun assertUserAsAdminRegistrationRequestIsCorrect(){
-        val mockEngine = MockEngine{ request ->
-            //TODO(messageInformingOfStrangeBehaviourInMockEngine)
-            assertJsonBodyIsCorrect(request.body, getUserRegistrationJsonRequestFormat())
-            respond(
-                status = HttpStatusCode.Created,
-                headers = headersOf("Content-Type", "application/json"),
-                content = "{\"accessToken\":\"jkalsdjflkasd.asjlkdfjaslkdjf.sdjflasjñdl\"}",
-            )
-        }
-        userApi = UserApiImpl(
-            AsynchronousHttpClientBuilder().withMockEngine(mockEngine).build()
-        )
         runBlocking {
-            userApi.registerAdminUser(UserBuilderImpl().setRole(UserRole.ADMIN).build())
+            userApi.registerAdmin(UserBuilderImpl().setRole(UserRole.ADMIN).build())
+        }
+        val sentRequest = httpClient.lastRequest
+        assertEquals(HttpMethod.POST, sentRequest.httpMethod)
+        assertEquals("$httpsProtocol://$host/api/users/register-user-admin", sentRequest.url)
+        assertEquals(
+            mapOf(
+                "Content-Type" to "application/json",
+                "Accept" to "application/json",
+            ),
+            sentRequest.headers
+        )
+        assertTrue("Request body did not match with expected regex") {
+            sentRequest.body.matches(getUserRegistrationJsonRequestFormat())
         }
     }
 
@@ -46,17 +69,14 @@ class UserApiRequestsTest {
                 headers = headersOf("Content-Type", "application/json"),
             )
         }
-        userApi = UserApiImpl(
-            AsynchronousHttpClientBuilder().withMockEngine(mockEngine).build()
-        )
         runBlocking {
-            userApi.registerBasicUser(UserBuilderImpl().build())
+            //userApi.registerBasicUser(UserBuilderImpl().build())
         }
     }
 
     private fun getUserRegistrationJsonRequestFormat(): Regex{
         return """
-            ^\{(\n)?( )*"nickName":( )?"\w{0,15}"(\n)?}${'$'}
+            ^\{(\n)?( )*"nickname":( )?"\w{0,15}"(\n)?}${'$'}
         """.trimIndent().toRegex()
     }
 

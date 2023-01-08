@@ -22,11 +22,8 @@ interface FillNicknameViewModel {
     suspend fun onNicknameIntroduced(nickname: String)
 }
 
-class FillNicknameRoutableComposable: RoutableComposable {
-    override val route: String = CompanionObject.route
-    companion object CompanionObject {
-        const val route = "filling_nickname_screen"
-    }
+object FillNicknameRoutableComposable: RoutableComposable {
+    override val route: String = "fill_nickname"
 
     @Composable
     fun FillNickname(
@@ -76,9 +73,9 @@ class FillNicknameRoutableComposable: RoutableComposable {
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
         )
     }
-    
+
     @Composable
-    private fun ProcessInformationMessage(
+    fun ProcessInformationMessage(
         message: String,
         letterColor: Color
     ) {

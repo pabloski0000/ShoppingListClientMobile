@@ -5,22 +5,22 @@ import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import kotlinx.coroutines.*
-import main.shoppilientmobile.android.userRegistrationFeatureAndroid.composables.routableComposables.FillNicknameRoutableComposable
-import main.shoppilientmobile.android.userRegistrationFeatureAndroid.composables.routableComposables.FillNicknameViewModel
-import main.shoppilientmobile.android.userRegistrationFeatureAndroid.composables.routableComposables.RoleElectionRoutableComposable
-import main.shoppilientmobile.android.userRegistrationFeatureAndroid.composables.routableComposables.RoleElectionViewModel
-import main.shoppilientmobile.application.applicationExposure.RegisterUserUseCase
+import main.shoppilientmobile.android.userRegistrationFeatureAndroid.composables.routableComposables.*
+import main.shoppilientmobile.userRegistrationFeature.useCases.RegisterAdminUseCase
 import main.shoppilientmobile.application.applicationExposure.Role
-import main.shoppilientmobile.application.applicationExposure.UserRegistrationData
 import main.shoppilientmobile.domain.exceptions.InvalidUserNicknameException
 import main.shoppilientmobile.userRegistrationFeature.dataSources.exceptions.RemoteDataSourceException
+import main.shoppilientmobile.userRegistrationFeature.useCases.RegisterUserUseCase
+import main.shoppilientmobile.userRegistrationFeature.useCases.confirmRegistrationWithSecurityCode
 
 class UserRegistrationViewModel(
+    private val registerAdminUseCase: RegisterAdminUseCase,
     private val registerUserUseCase: RegisterUserUseCase,
 ): ViewModel(), RoleElectionViewModel, FillNicknameViewModel {
-    companion object {
-        const val firstScreenRoute = RoleElectionRoutableComposable.route
-    }
+    private val roleElectionComposableRoute = RoleElectionRoutableComposable.route
+    private val fillNicknameComposableRoute = FillNicknameRoutableComposable.route
+    private val introduceUserSecurityCodeComposableRoute = IntroduceUserRegistrationCodeRoutableComposable.route
+    private lateinit var confirmUserRegistration: confirmRegistrationWithSecurityCode
     private var navController: NavController? = null
     private lateinit var userNickname: String
     private lateinit var userRole: Role
@@ -29,7 +29,6 @@ class UserRegistrationViewModel(
         color = Color.Blue,
     ))
 
-
     override fun onRoleChosen(role: Role) {
         userRole = role
         navController?.navigate(FillNicknameRoutableComposable.route)
@@ -37,33 +36,48 @@ class UserRegistrationViewModel(
 
     override suspend fun onNicknameIntroduced(nickname: String) {
         userNickname = nickname
-        val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
-            informUserDependingOnTheException(throwable)
-        }
         try {
             coroutineScope {
-                val registrationResult = async {
-                    registerUser()
+                val result = launch {
+                    if (userRole == Role.BASIC) {
+                        confirmUserRegistration = registerUserUseCase.registerUser(userNickname)
+                    } else {
+                        registerAdminUseCase.registerAdmin(userNickname)
+                    }
                 }
                 userInformationMessageUiState.value = UserInformationMessageUiState(
                     message = "Registering...",
                     color = Color.Blue,
                 )
-                registrationResult.await()
-                userInformationMessageUiState.value = UserInformationMessageUiState(
-                    message = "Registered",
-                    color = Color.Green,
-                )
+                result.join()
+                if (userRole == Role.ADMIN) {
+                    userInformationMessageUiState.value = UserInformationMessageUiState(
+                        message = "Registered",
+                        color = Color.Green,
+                    )
+                } else {
+                    navigateTo(introduceUserSecurityCodeComposableRoute)
+                }
             }
         } catch (e: Exception) {
-            informUserDependingOnTheException(e)
+            informUser(e)
         }
     }
 
-    private suspend fun registerUser() {
-        registerUserUseCase.registerUser(
-            UserRegistrationData(userNickname, userRole)
-        )
+    suspend fun onCodeIntroduced(securityCode: String) {
+        try {
+            confirmUserRegistration(securityCode)
+            userInformationMessageUiState.value = UserInformationMessageUiState(
+                message = "Registered",
+                color = Color.Green,
+            )
+        } catch (e: Exception) {
+            userInformationMessageUiState.value = UserInformationMessageUiState(
+                message = "Check out your security code if it continues failing" +
+                        " there may be a network problem",
+                color = Color.Red,
+            )
+        }
     }
 
     override fun getUserInformationMessage(): State<UserInformationMessageUiState> {
@@ -74,7 +88,7 @@ class UserRegistrationViewModel(
         navController = _navController
     }
 
-    private fun <T> informUserDependingOnTheException(exception: T) {
+    private fun <T> informUser(exception: T) {
         when(exception) {
             is InvalidUserNicknameException -> {
                 val userInformationMessage = UserInformationMessageUiState(
@@ -90,8 +104,21 @@ class UserRegistrationViewModel(
                 )
                 userInformationMessageUiState.value = userInformationMessage
             }
+            else -> {
+                userInformationMessageUiState.value = userInformationMessageUiState.value.copy(
+                    message = "Unexpected error",
+                    color = Color.Red,
+                )
+            }
         }
+    }
+
+    private fun navigateTo(composableRoute: String) {
+        navController!!.navigate(composableRoute)
+        userInformationMessageUiState.value = UserInformationMessageUiState(
+            message = ""
+        )
     }
 }
 
-data class UserInformationMessageUiState(val message: String, val color: Color)
+data class UserInformationMessageUiState(val message: String, val color: Color = Color.Red)

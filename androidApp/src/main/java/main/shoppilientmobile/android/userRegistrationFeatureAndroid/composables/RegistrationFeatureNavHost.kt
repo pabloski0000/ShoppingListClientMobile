@@ -6,6 +6,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.stateHolders.UserRegistrationViewModel
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.composables.routableComposables.FillNicknameRoutableComposable
+import main.shoppilientmobile.android.userRegistrationFeatureAndroid.composables.routableComposables.IntroduceUserRegistrationCodeRoutableComposable
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.composables.routableComposables.RoleElectionRoutableComposable
 
 @Composable
@@ -14,20 +15,23 @@ fun RegistrationFeatureNavHost(
 ) {
     val navHostController = rememberNavController()
     viewModel.setNavController(navHostController)
-    val roleElectionRoutableComposable = RoleElectionRoutableComposable()
-    val fillNicknameRoutableComposable = FillNicknameRoutableComposable()
     NavHost(
         navController = navHostController,
-        startDestination = RoleElectionRoutableComposable.route,
+        startDestination = viewModel.roleElectionComposableRoute,
     ) {
-        composable(route = roleElectionRoutableComposable.route) {
-            roleElectionRoutableComposable.RoleElection(
+        composable(route = RoleElectionRoutableComposable.route) {
+            RoleElectionRoutableComposable.RoleElection(
                 viewModel = viewModel,
             )
         }
-        composable(route = fillNicknameRoutableComposable.route) {
-            fillNicknameRoutableComposable.FillNickname(
-                viewModel = viewModel
+        composable(route = FillNicknameRoutableComposable.route) {
+            FillNicknameRoutableComposable.FillNickname(
+                viewModel = viewModel,
+            )
+        }
+        composable(route = IntroduceUserRegistrationCodeRoutableComposable.route) {
+            IntroduceUserRegistrationCodeRoutableComposable.IntroduceUserRegistrationCode(
+                viewModel = viewModel,
             )
         }
     }

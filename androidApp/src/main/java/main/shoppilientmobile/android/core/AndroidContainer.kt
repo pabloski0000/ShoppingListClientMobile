@@ -12,9 +12,10 @@ class AndroidContainer(
         context = context
     )
     val userRegistrationViewModel = UserRegistrationViewModel(
-        registerUserUseCase = sharedAndroidContainer.registerUserUseCase
+        registerAdminUseCase = sharedAndroidContainer.registerAdminUseCase,
+        registerUserUseCase = sharedAndroidContainer.registerUserUseCase,
     )
     val shoppingListViewModel = ShoppingListViewModel(
-        productRepository = sharedAndroidContainer.productRepository
+        productRepository = sharedAndroidContainer.productRepository,
     )
 }
