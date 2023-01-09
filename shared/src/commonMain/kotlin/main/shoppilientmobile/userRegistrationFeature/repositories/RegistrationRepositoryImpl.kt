@@ -1,5 +1,6 @@
 package main.shoppilientmobile.userRegistrationFeature.repositories
 
+import kotlinx.coroutines.flow.Flow
 import main.shoppilientmobile.userRegistrationFeature.dataSources.RegistrationRemoteDataSource
 import main.shoppilientmobile.userRegistrationFeature.entities.Registration
 
@@ -14,4 +15,8 @@ class RegistrationRepositoryImpl(
 
     override suspend fun validateRegistration(registration: Registration) =
         registrationRemoteDataSource.confirmUserRegistration(registration)
+
+    override suspend fun listenToRegistrations(): Flow<Registration> {
+        TODO("Not yet implemented")
+    }
 }

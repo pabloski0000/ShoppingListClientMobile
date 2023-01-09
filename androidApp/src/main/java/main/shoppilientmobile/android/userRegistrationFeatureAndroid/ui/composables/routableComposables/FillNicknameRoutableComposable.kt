@@ -1,4 +1,4 @@
-package main.shoppilientmobile.android.userRegistrationFeatureAndroid.composables.routableComposables
+package main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.composables.routableComposables
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
@@ -13,8 +13,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import main.shoppilientmobile.android.userRegistrationFeatureAndroid.stateHolders.UserInformationMessageUiState
-import main.shoppilientmobile.android.userRegistrationFeatureAndroid.stateHolders.UserRegistrationViewModel
+import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.stateHolders.UserInformationMessageUiState
+import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.stateHolders.UserRegistrationViewModel
 import kotlin.coroutines.coroutineContext
 
 interface FillNicknameViewModel {

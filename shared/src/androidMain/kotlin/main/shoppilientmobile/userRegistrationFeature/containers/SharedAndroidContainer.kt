@@ -29,29 +29,8 @@ class SharedAndroidContainer(
     private val useCasesFactory = UseCasesFactory.getInstance(context)
     val registerAdminUseCase = useCasesFactory.registerAdminUseCase
     val registerUserUseCase = useCasesFactory.registerUserUseCase
+    val listenToRegistrationsUseCase = useCasesFactory.listenToRegistrationsUseCase
     val productRepository = RepositoriesFactory.getInstance(context).productRepository
-    val registrationAlerter = AlertersFactory
-        .getInstance(useCasesFactory.listenToRegistrationsUseCase)
-        .registrationAlerter
-
-    private class AlertersFactory private constructor(
-        listenToRegistrationsUseCase: ListenToRegistrationsUseCase,
-    ) {
-        val registrationAlerter = RegistrationAlerter(
-            listenToRegistrationsUseCase = listenToRegistrationsUseCase,
-        )
-
-        companion object {
-            private var singleton: AlertersFactory? = null
-
-            fun getInstance(listenToRegistrationsUseCase: ListenToRegistrationsUseCase): AlertersFactory {
-                if (singleton == null) {
-                    singleton = AlertersFactory(listenToRegistrationsUseCase)
-                }
-                return singleton!!
-            }
-        }
-    }
 
     private class UseCasesFactory private constructor(
         context: Context,

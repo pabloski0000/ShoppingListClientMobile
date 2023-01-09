@@ -2,7 +2,7 @@ package main.shoppilientmobile.android.core
 
 import android.content.Context
 import main.shoppilientmobile.android.createListFeature.stateHolders.ShoppingListViewModel
-import main.shoppilientmobile.android.userRegistrationFeatureAndroid.stateHolders.UserRegistrationViewModel
+import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.stateHolders.UserRegistrationViewModel
 import main.shoppilientmobile.userRegistrationFeature.containers.SharedAndroidContainer
 
 class AndroidContainer(

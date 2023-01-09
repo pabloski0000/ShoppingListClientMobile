@@ -1,4 +1,4 @@
-package main.shoppilientmobile.android.userRegistrationFeatureAndroid.composables.routableComposables
+package main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.composables.routableComposables
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,7 +14,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import kotlinx.coroutines.launch
-import main.shoppilientmobile.android.userRegistrationFeatureAndroid.stateHolders.UserRegistrationViewModel
+import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.stateHolders.UserRegistrationViewModel
 
 object IntroduceUserRegistrationCodeRoutableComposable: RoutableComposable {
     override val route = "introduce_user_registration_code"

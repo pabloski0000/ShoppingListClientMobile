@@ -1,21 +1,25 @@
-package main.shoppilientmobile.android.userRegistrationFeatureAndroid.stateHolders
+package main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.stateHolders
 
-import androidx.compose.runtime.*
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
-import kotlinx.coroutines.*
-import main.shoppilientmobile.android.userRegistrationFeatureAndroid.composables.routableComposables.*
-import main.shoppilientmobile.userRegistrationFeature.useCases.RegisterAdminUseCase
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.composables.routableComposables.*
 import main.shoppilientmobile.application.applicationExposure.Role
 import main.shoppilientmobile.domain.exceptions.InvalidUserNicknameException
 import main.shoppilientmobile.userRegistrationFeature.dataSources.exceptions.RemoteDataSourceException
+import main.shoppilientmobile.userRegistrationFeature.ui.RegistrationAlerter
+import main.shoppilientmobile.userRegistrationFeature.useCases.RegisterAdminUseCase
 import main.shoppilientmobile.userRegistrationFeature.useCases.RegisterUserUseCase
 import main.shoppilientmobile.userRegistrationFeature.useCases.confirmRegistrationWithSecurityCode
 
 class UserRegistrationViewModel(
     private val registerAdminUseCase: RegisterAdminUseCase,
     private val registerUserUseCase: RegisterUserUseCase,
+    private val registrationAlerter: RegistrationAlerter,
 ): ViewModel(), RoleElectionViewModel, FillNicknameViewModel {
     private val roleElectionComposableRoute = RoleElectionRoutableComposable.route
     private val fillNicknameComposableRoute = FillNicknameRoutableComposable.route
@@ -24,10 +28,12 @@ class UserRegistrationViewModel(
     private var navController: NavController? = null
     private lateinit var userNickname: String
     private lateinit var userRole: Role
-    private val userInformationMessageUiState = mutableStateOf(UserInformationMessageUiState(
-        message = "",
-        color = Color.Blue,
-    ))
+    private val userInformationMessageUiState = mutableStateOf(
+        UserInformationMessageUiState(
+            message = "",
+            color = Color.Blue,
+        )
+    )
 
     override fun onRoleChosen(role: Role) {
         userRole = role
@@ -43,6 +49,10 @@ class UserRegistrationViewModel(
                         registerUserUseCase.registerUser(userNickname)
                     } else {
                         registerAdminUseCase.registerAdmin(userNickname)
+                        launch {
+                            showTheUserThatTheyAreRegistered()
+                        }
+                        registrationAlerter.alert()
                     }
                 }
                 userInformationMessageUiState.value = UserInformationMessageUiState(
@@ -50,12 +60,7 @@ class UserRegistrationViewModel(
                     color = Color.Blue,
                 )
                 result.join()
-                if (userRole == Role.ADMIN) {
-                    userInformationMessageUiState.value = UserInformationMessageUiState(
-                        message = "Registered",
-                        color = Color.Green,
-                    )
-                } else {
+                if (userRole == Role.BASIC) {
                     navigateTo(introduceUserSecurityCodeComposableRoute)
                 }
             }
@@ -90,6 +95,13 @@ class UserRegistrationViewModel(
 
     fun setNavController(_navController: NavController) {
         navController = _navController
+    }
+
+    private fun showTheUserThatTheyAreRegistered() {
+        userInformationMessageUiState.value = UserInformationMessageUiState(
+            message = "Registered",
+            color = Color.Green,
+        )
     }
 
     private fun <T> informUser(exception: T) {

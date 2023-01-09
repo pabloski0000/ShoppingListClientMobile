@@ -13,8 +13,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import main.shoppilientmobile.android.createListFeature.composables.ShoppingList
 import main.shoppilientmobile.android.createListFeature.composables.ShoppingListScreen
 import main.shoppilientmobile.android.createListFeature.stateHolders.ShoppingListViewModel
-import main.shoppilientmobile.android.userRegistrationFeatureAndroid.composables.RegistrationFeatureNavHost
-import main.shoppilientmobile.android.userRegistrationFeatureAndroid.stateHolders.UserRegistrationViewModel
+import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.composables.RegistrationFeatureNavHost
+import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.stateHolders.UserRegistrationViewModel
 
 class MainActivity : ComponentActivity() {
     private lateinit var userRegistrationViewModel: UserRegistrationViewModel

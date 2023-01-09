@@ -1,4 +1,4 @@
-package main.shoppilientmobile.android.userRegistrationFeatureAndroid.composables.routableComposables
+package main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.composables.routableComposables
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
