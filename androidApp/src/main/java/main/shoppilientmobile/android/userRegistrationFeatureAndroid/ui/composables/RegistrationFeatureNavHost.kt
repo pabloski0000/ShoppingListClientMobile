@@ -1,6 +1,7 @@
 package main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.composables
 
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -11,10 +12,9 @@ import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.composab
 
 @Composable
 fun RegistrationFeatureNavHost(
+    navHostController: NavHostController,
     viewModel: UserRegistrationViewModel,
 ) {
-    val navHostController = rememberNavController()
-    viewModel.setNavController(navHostController)
     NavHost(
         navController = navHostController,
         startDestination = viewModel.getFirstNavigationRoute(),

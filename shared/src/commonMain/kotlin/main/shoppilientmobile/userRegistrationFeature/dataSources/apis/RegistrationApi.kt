@@ -5,6 +5,7 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import main.shoppilientmobile.application.UserBuilderImpl
 import main.shoppilientmobile.application.applicationExposure.UserBuilder
 import main.shoppilientmobile.core.localStorage.SecurityTokenKeeper
 import main.shoppilientmobile.core.remote.*
@@ -15,9 +16,10 @@ import main.shoppilientmobile.userRegistrationFeature.entities.Registration
 
 class RegistrationApi(
     private val httpClient: AsynchronousHttpClient,
-    private val userBuilder: UserBuilder,
     private val securityTokenKeeper: SecurityTokenKeeper,
 ): ShoppingListServerApi(), RegistrationRemoteDataSource {
+    private val userBuilder = UserBuilderImpl()
+
     override suspend fun registerAdmin(registration: Registration): User {
         signUpAdmin(registration)
         return createUser(registration)

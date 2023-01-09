@@ -1,10 +1,10 @@
-package main.shoppilientmobile.userRegistrationFeature.containers
+package main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.containers
 
 import android.content.Context
-import androidx.datastore.preferences.core.PreferenceDataStoreFactory
-import androidx.datastore.preferences.preferencesDataStoreFile
-import main.shoppilientmobile.application.UserBuilderImpl
-import main.shoppilientmobile.core.builders.AsynchronousHttpClientBuilder
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.notifications.RegistrationAlerterAndroid
+import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.notifications.RegistrationNotificationChannel
 import main.shoppilientmobile.core.localStorage.KeyValueLocalStorage
 import main.shoppilientmobile.core.localStorage.SecurityTokenKeeperImpl
 import main.shoppilientmobile.core.remote.AsynchronousHttpClientImpl
@@ -15,22 +15,103 @@ import main.shoppilientmobile.dataSources.StreamingHttpClientAndroid
 import main.shoppilientmobile.userRegistrationFeature.dataSources.apis.RegistrationApi
 import main.shoppilientmobile.userRegistrationFeature.dataSources.apis.UserApiWithoutKtor
 import main.shoppilientmobile.userRegistrationFeature.repositories.RegistrationRepositoryImpl
-import main.shoppilientmobile.userRegistrationFeature.repositories.UserRepository
 import main.shoppilientmobile.userRegistrationFeature.repositories.UserRepositoryImpl
 import main.shoppilientmobile.userRegistrationFeature.ui.RegistrationAlerter
 import main.shoppilientmobile.userRegistrationFeature.useCases.ListenToRegistrationsUseCase
-import main.shoppilientmobile.userRegistrationFeature.useCases.RegisterAdminUseCase
 import main.shoppilientmobile.userRegistrationFeature.useCases.RegisterAdminUseCaseImpl
 import main.shoppilientmobile.userRegistrationFeature.useCases.RegisterUserUseCase
 
-class SharedAndroidContainer(
-    context: Context,
+class RegistrationContainer(
+    dataStore: DataStore<Preferences>
 ) {
-    private val useCasesFactory = UseCasesFactory.getInstance(context)
-    val registerAdminUseCase = useCasesFactory.registerAdminUseCase
-    val registerUserUseCase = useCasesFactory.registerUserUseCase
-    val listenToRegistrationsUseCase = useCasesFactory.listenToRegistrationsUseCase
-    val productRepository = RepositoriesFactory.getInstance(context).productRepository
+    private val httpClient = AsynchronousHttpClientImpl()
+
+    private val streamingHttpClient = StreamingHttpClientAndroid()
+
+    private val keyValueLocalStorage = KeyValueLocalStorage(
+        dataStore = dataStore
+    )
+
+    private val securityTokenKeeper = SecurityTokenKeeperImpl(
+        keyValueLocalStorage = keyValueLocalStorage,
+    )
+
+    private val registrationApi = RegistrationApi(
+        httpClient = httpClient,
+        securityTokenKeeper = securityTokenKeeper,
+    )
+
+    private val userApi = UserApiWithoutKtor(
+        httpClient = httpClient,
+        streamingHttpClient = streamingHttpClient,
+        securityTokenKeeper = securityTokenKeeper
+    )
+
+    private val userRepository = UserRepositoryImpl(
+        userRemoteDataSource = userApi,
+        keyValueLocalStorage = keyValueLocalStorage,
+    )
+
+    private val registrationRepository = RegistrationRepositoryImpl(
+        registrationRemoteDataSource = registrationApi,
+    )
+
+    val registerUserUseCase = RegisterUserUseCase(
+        registrationRepository = registrationRepository,
+    )
+
+    val registerAdminUseCase = RegisterAdminUseCaseImpl(
+        registrationRepository = registrationRepository,
+        userRepository = userRepository,
+    )
+
+    private class AlertersFactory private constructor(
+        listenToRegistrationsUseCase: ListenToRegistrationsUseCase,
+        context: Context,
+    ) {
+        private val notificationChannelsFactory = NotificationChannelsFactory.getInstance(context)
+        val registrationAlerterAndroid = RegistrationAlerterAndroid(
+            registrationNotificationChannel = notificationChannelsFactory.registrationNotificationChannel,
+            context = context,
+        )
+        val registrationAlerter = RegistrationAlerter(
+            listenToRegistrationsUseCase = listenToRegistrationsUseCase,
+            alertee = registrationAlerterAndroid,
+        )
+
+        companion object {
+            private var singleton: AlertersFactory? = null
+
+            fun getInstance(
+                listenToRegistrationsUseCase: ListenToRegistrationsUseCase,
+                context: Context,
+            ): AlertersFactory {
+                if (singleton == null) {
+                    singleton = AlertersFactory(listenToRegistrationsUseCase, context)
+                }
+                return singleton!!
+            }
+        }
+    }
+
+    private class NotificationChannelsFactory private constructor(
+        context: Context,
+    ) {
+        val registrationNotificationChannel = RegistrationNotificationChannel(
+            context = context,
+        )
+
+        companion object {
+            private var singleton: NotificationChannelsFactory? = null
+
+            fun getInstance(context: Context): NotificationChannelsFactory {
+                if (singleton == null) {
+                    singleton = NotificationChannelsFactory(context)
+                }
+                return singleton!!
+            }
+        }
+    }
 
     private class UseCasesFactory private constructor(
         context: Context,
@@ -68,9 +149,7 @@ class SharedAndroidContainer(
         val registrationRepository = RegistrationRepositoryImpl(
             registrationRemoteDataSource = apisFactory.registrationApi,
         )
-        val userRepository = UserRepositoryImpl(
-            userRemoteDataSource = apisFactory.userApi,
-        )
+
         val productRepository = ProductRepository(
             productRemoteDataSource = DataSourcesFactory.getInstance(context).productRemoteDataSource
         )
@@ -112,14 +191,9 @@ class SharedAndroidContainer(
         private val keepersFactory = KeepersFactory.getInstance(context)
         val registrationApi = RegistrationApi(
             httpClient = HttpClientsFactory.httpClient,
-            userBuilder = BuildersFactory.userBuilder,
             securityTokenKeeper = keepersFactory.securityTokenKeeper,
         )
-        val userApi = UserApiWithoutKtor(
-            httpClient = HttpClientsFactory.httpClient,
-            streamingHttpClient = HttpClientsFactory.streamingHttpClient,
-            securityTokenKeeper = keepersFactory.securityTokenKeeper
-        )
+
         val productApi = ProductApi(
             httpClient = HttpClientsFactory.httpClient,
         )
@@ -134,73 +208,5 @@ class SharedAndroidContainer(
                 return singleton!!
             }
         }
-    }
-
-    private class KeepersFactory private constructor(
-        context: Context,
-    ) {
-        companion object {
-            private var singleton: KeepersFactory? = null
-
-            fun getInstance(context: Context): KeepersFactory {
-                if (singleton == null) {
-                    singleton = KeepersFactory(context)
-                }
-                return singleton!!
-            }
-        }
-
-        val securityTokenKeeper = SecurityTokenKeeperImpl(
-            keyValueLocalStorage = KeyValueStoragesFactory.getInstance(context).keyValueLocalStorage
-        )
-    }
-
-    private class KeyValueStoragesFactory private constructor(
-        context: Context,
-    ) {
-        companion object {
-            private var singleton: KeyValueStoragesFactory? = null
-
-            fun getInstance(context: Context): KeyValueStoragesFactory {
-                if (singleton == null) {
-                    singleton = KeyValueStoragesFactory(context)
-                }
-                return singleton!!
-            }
-        }
-
-        val keyValueLocalStorage = KeyValueLocalStorage(
-            dataStore = DataStoreFactory.getInstance(context).dataSource
-        )
-    }
-
-    private object BuildersFactory {
-        val userBuilder = UserBuilderImpl()
-    }
-
-    private object HttpClientsFactory {
-        val httpClient = AsynchronousHttpClientImpl()
-        val streamingHttpClient = StreamingHttpClientAndroid()
-    }
-
-    private class DataStoreFactory private constructor(
-        context: Context,
-    ) {
-        companion object {
-            private var singleton: DataStoreFactory? = null
-
-            fun getInstance(context: Context): DataStoreFactory {
-                if (singleton == null) {
-                    singleton = DataStoreFactory(context)
-                }
-                return singleton!!
-            }
-        }
-
-        val dataSource = PreferenceDataStoreFactory.create(
-            produceFile = {
-                context.preferencesDataStoreFile("preferences")
-            }
-        )
     }
 }
