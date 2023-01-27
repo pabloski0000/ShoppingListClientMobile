@@ -1,19 +1,16 @@
 package main.shoppilientmobile.userRegistrationFeature.repositories
 
-import main.shoppilientmobile.core.localStorage.KeyValueLocalStorage
 import main.shoppilientmobile.domain.domainExposure.User
-import main.shoppilientmobile.userRegistrationFeature.dataSources.UserRemoteDataSource
-import main.shoppilientmobile.userRegistrationFeature.useCases.useCasesInputOutputs.AdminRegistration
+import main.shoppilientmobile.userRegistrationFeature.dataSources.UserLocalDataSource
 
 class UserRepositoryImpl(
-    private val userRemoteDataSource: UserRemoteDataSource,
-    private val keyValueLocalStorage: KeyValueLocalStorage,
-): UserRepository {
+    private val userLocalDataSource: UserLocalDataSource,
+) : UserRepository {
     override suspend fun saveLocalUser(user: User) {
-        TODO("Not yet implemented")
+        userLocalDataSource.save(user)
     }
 
     override suspend fun getLocalUser(): User {
-        TODO("Not yet implemented")
+        return userLocalDataSource.getUser()
     }
 }

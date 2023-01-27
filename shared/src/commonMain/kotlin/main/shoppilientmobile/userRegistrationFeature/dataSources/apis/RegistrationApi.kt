@@ -1,13 +1,10 @@
 package main.shoppilientmobile.userRegistrationFeature.dataSources.apis
 
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import main.shoppilientmobile.application.UserBuilderImpl
-import main.shoppilientmobile.application.applicationExposure.UserBuilder
-import main.shoppilientmobile.core.localStorage.SecurityTokenKeeper
+import main.shoppilientmobile.core.storage.SecurityTokenKeeper
 import main.shoppilientmobile.core.remote.*
 import main.shoppilientmobile.domain.domainExposure.User
 import main.shoppilientmobile.userRegistrationFeature.dataSources.RegistrationRemoteDataSource

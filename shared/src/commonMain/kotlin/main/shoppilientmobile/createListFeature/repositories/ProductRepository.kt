@@ -1,6 +1,6 @@
 package main.shoppilientmobile.createListFeature.repositories
 
-import main.shoppilientmobile.createListFeature.Product
+import main.shoppilientmobile.domain.Product
 import main.shoppilientmobile.createListFeature.dataSources.ProductRemoteDataSource
 
 class ProductRepository(

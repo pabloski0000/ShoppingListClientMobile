@@ -8,11 +8,8 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import main.shoppilientmobile.application.applicationExposure.Role
-
-interface RoleElectionViewModel {
-    fun onRoleChosen(userRole: Role)
-}
+import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.stateHolders.RoleElectionViewModel
+import main.shoppilientmobile.domain.domainExposure.UserRole
 
 object RoleElectionRoutableComposable: RoutableComposable {
     override val route: String = "role_election"
@@ -29,17 +26,17 @@ object RoleElectionRoutableComposable: RoutableComposable {
     }
 
     @Composable
-    private fun UserChoice(onRoleChosen: (Role) -> Unit) {
+    private fun UserChoice(onRoleChosen: (UserRole) -> Unit) {
         Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.SpaceAround,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             AdminButton {
-                onRoleChosen(Role.ADMIN)
+                onRoleChosen(UserRole.ADMIN)
             }
             UserButton {
-                onRoleChosen(Role.BASIC)
+                onRoleChosen(UserRole.BASIC)
             }
         }
     }

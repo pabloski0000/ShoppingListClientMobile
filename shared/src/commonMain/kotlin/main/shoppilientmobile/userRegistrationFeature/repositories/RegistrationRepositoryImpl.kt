@@ -13,7 +13,7 @@ class RegistrationRepositoryImpl(
     override suspend fun registerUser(registration: Registration) =
         registrationRemoteDataSource.registerUser(registration)
 
-    override suspend fun validateRegistration(registration: Registration) =
+    override suspend fun confirmRegistration(registration: Registration) =
         registrationRemoteDataSource.confirmUserRegistration(registration)
 
     override suspend fun listenToRegistrations(): Flow<Registration> {

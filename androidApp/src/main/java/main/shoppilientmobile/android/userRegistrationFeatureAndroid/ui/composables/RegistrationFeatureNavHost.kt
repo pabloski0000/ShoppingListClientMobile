@@ -4,34 +4,29 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.stateHolders.UserRegistrationViewModel
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.composables.routableComposables.FillNicknameRoutableComposable
-import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.composables.routableComposables.IntroduceUserRegistrationCodeRoutableComposable
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.composables.routableComposables.RoleElectionRoutableComposable
+import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.stateHolders.FillNicknameViewModel
+import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.stateHolders.RoleElectionViewModel
 
 @Composable
 fun RegistrationFeatureNavHost(
     navHostController: NavHostController,
-    viewModel: UserRegistrationViewModel,
+    roleElectionViewModel: RoleElectionViewModel,
+    fillNicknameViewModel: FillNicknameViewModel,
 ) {
     NavHost(
         navController = navHostController,
-        startDestination = viewModel.getFirstNavigationRoute(),
+        startDestination = RoleElectionRoutableComposable.route,
     ) {
         composable(route = RoleElectionRoutableComposable.route) {
             RoleElectionRoutableComposable.RoleElection(
-                viewModel = viewModel,
+                viewModel = roleElectionViewModel,
             )
         }
         composable(route = FillNicknameRoutableComposable.route) {
             FillNicknameRoutableComposable.FillNickname(
-                viewModel = viewModel,
-            )
-        }
-        composable(route = IntroduceUserRegistrationCodeRoutableComposable.route) {
-            IntroduceUserRegistrationCodeRoutableComposable.IntroduceUserRegistrationCode(
-                viewModel = viewModel,
+                viewModel = fillNicknameViewModel,
             )
         }
     }

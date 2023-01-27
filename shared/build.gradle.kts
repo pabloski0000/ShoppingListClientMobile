@@ -1,11 +1,15 @@
+
 val ktor_version = "2.2.1"
 val logback_version = "1.3.5"
+val room_version = "2.4.3"
+val version = "3.2.0"
 
 plugins {
     kotlin("multiplatform")
     id("com.android.library")
     kotlin("plugin.serialization") version "1.7.22"
     id("org.jlleitschuh.gradle.ktlint") version "11.0.0"
+    kotlin("kapt")
 }
 
 kotlin {
@@ -14,7 +18,7 @@ kotlin {
     listOf(
         iosX64(),
         iosArm64(),
-        iosSimulatorArm64()
+        iosSimulatorArm64(),
     ).forEach {
         it.binaries.framework {
             baseName = "shared"
@@ -24,10 +28,10 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
+                //Ktor
                 implementation("io.ktor:ktor-server-content-negotiation-jvm:$ktor_version")
                 implementation("io.ktor:ktor-server-core-jvm:$ktor_version")
                 implementation("io.ktor:ktor-serialization-jackson-jvm:$ktor_version")
-                implementation("ch.qos.logback:logback-classic:$logback_version")
                 implementation("io.ktor:ktor-server-netty-jvm:$ktor_version")
                 implementation("io.ktor:ktor-client-core:$ktor_version")
                 implementation("io.ktor:ktor-client-cio:$ktor_version")
@@ -36,6 +40,10 @@ kotlin {
                 implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
                 implementation("io.ktor:ktor-client-logging:$ktor_version")
                 implementation("io.ktor:ktor-network:$ktor_version")
+                //Logback
+                implementation("ch.qos.logback:logback-classic:$logback_version")
+                //Koin
+                api("io.insert-koin:koin-core:$version")
             }
         }
         val commonTest by getting {
@@ -46,7 +54,6 @@ kotlin {
         }
         val androidMain by getting {
             dependencies {
-                implementation("androidx.datastore:datastore-preferences:1.0.0")
             }
         }
         val androidTest by getting

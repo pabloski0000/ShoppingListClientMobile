@@ -6,7 +6,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.int
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-import main.shoppilientmobile.core.localStorage.SecurityTokenKeeper
+import main.shoppilientmobile.core.storage.SecurityTokenKeeper
 import main.shoppilientmobile.core.remote.*
 import main.shoppilientmobile.domain.domainExposure.User
 import main.shoppilientmobile.domain.domainExposure.UserRole

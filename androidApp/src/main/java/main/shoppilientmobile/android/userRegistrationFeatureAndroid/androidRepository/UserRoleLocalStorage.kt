@@ -1,0 +1,4 @@
+package main.shoppilientmobile.android.userRegistrationFeatureAndroid.androidRepository
+
+interface UserRoleLocalStorage {
+}

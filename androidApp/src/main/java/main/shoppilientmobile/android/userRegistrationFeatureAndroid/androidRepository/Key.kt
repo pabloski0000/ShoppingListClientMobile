@@ -1,0 +1,3 @@
+package main.shoppilientmobile.android.userRegistrationFeatureAndroid.androidRepository
+
+typealias Key = String

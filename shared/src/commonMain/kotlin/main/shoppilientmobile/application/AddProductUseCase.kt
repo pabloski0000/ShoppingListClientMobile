@@ -1,6 +1,6 @@
 package main.shoppilientmobile.application
 
-import main.shoppilientmobile.createListFeature.Product
+import main.shoppilientmobile.domain.Product
 import main.shoppilientmobile.domain.domainExposure.SharedShoppingList
 
 class AddProductUseCase(

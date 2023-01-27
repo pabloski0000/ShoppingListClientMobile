@@ -1,7 +1,7 @@
 package main.shoppilientmobile.application
 
 import main.shoppilientmobile.application.applicationExposure.ExternalSharedShoppingList
-import main.shoppilientmobile.createListFeature.Product
+import main.shoppilientmobile.domain.Product
 import main.shoppilientmobile.domain.domainExposure.User
 
 class ExternalSharedShoppingListSynchronizer(

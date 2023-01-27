@@ -7,32 +7,29 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import kotlinx.coroutines.launch
-import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.stateHolders.UserRegistrationViewModel
+import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.stateHolders.IntroduceCodeViewModel
 
-object IntroduceUserRegistrationCodeRoutableComposable: RoutableComposable {
+object IntroduceCodeRoutableComposable: RoutableComposable {
     override val route = "introduce_user_registration_code"
 
     @Composable
-    fun IntroduceUserRegistrationCode(
+    fun IntroduceCode(
         modifier: Modifier = Modifier,
-        viewModel: UserRegistrationViewModel,
+        viewModel: IntroduceCodeViewModel,
     ) {
         Column(
             modifier = modifier.fillMaxSize()
         ) {
             val coroutineScope = rememberCoroutineScope()
-            val userInformationMessage = viewModel.getUserInformationMessage().value
+            val userInformationMessage = viewModel.processInformationUiState.collectAsState().value
             CodeField(
                 onCodeIntroduced = { code ->
                     coroutineScope.launch {
-                        viewModel.onCodeIntroduced(code)
+                        viewModel.onSignatureIntroduced(signature = code)
                     }
                 }
             )

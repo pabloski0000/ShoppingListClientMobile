@@ -1,6 +1,6 @@
 package main.shoppilientmobile.registrationFeature.apis.mocks
 
-import main.shoppilientmobile.core.localStorage.SecurityTokenKeeper
+import main.shoppilientmobile.core.storage.SecurityTokenKeeper
 import main.shoppilientmobile.userRegistrationFeature.dataSources.apis.SecurityToken
 
 class SecurityTokenKeeperMock: SecurityTokenKeeper {

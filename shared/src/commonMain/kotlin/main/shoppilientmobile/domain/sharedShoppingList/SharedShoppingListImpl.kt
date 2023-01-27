@@ -1,6 +1,6 @@
 package main.shoppilientmobile.domain.sharedShoppingList
 
-import main.shoppilientmobile.createListFeature.Product
+import main.shoppilientmobile.domain.Product
 import main.shoppilientmobile.domain.domainExposure.SharedShoppingList
 import main.shoppilientmobile.domain.domainExposure.User
 import main.shoppilientmobile.domain.exceptions.ProductAlreadyExistsException

@@ -7,6 +7,6 @@ import main.shoppilientmobile.userRegistrationFeature.entities.Registration
 interface RegistrationRepository {
     suspend fun registerAdmin(registration: Registration): User
     suspend fun registerUser(registration: Registration)
-    suspend fun validateRegistration(registration: Registration): User
+    suspend fun confirmRegistration(registration: Registration): User
     suspend fun listenToRegistrations(): Flow<Registration>
 }

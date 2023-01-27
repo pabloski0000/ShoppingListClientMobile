@@ -1,0 +1,24 @@
+package main.shoppilientmobile.android.shoppingList.presentation
+
+import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import main.shoppilientmobile.android.shoppingList.domain.ShoppingList
+import main.shoppilientmobile.domain.Product
+
+class ProductFactoryViewModel(
+    private val shoppingList: ShoppingList,
+) : ViewModel() {
+    private val _product = MutableStateFlow("")
+    val product = _product.asStateFlow()
+
+    fun onProductChange(product: String) {
+        _product.update { product }
+    }
+
+    fun createProduct() {
+        shoppingList.addProduct(Product(_product.value))
+        _product.update { "" }
+    }
+}

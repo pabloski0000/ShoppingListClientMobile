@@ -11,16 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.stateHolders.UserInformationMessageUiState
-import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.stateHolders.UserRegistrationViewModel
-import kotlin.coroutines.coroutineContext
-
-interface FillNicknameViewModel {
-    fun getUserInformationMessage(): State<UserInformationMessageUiState>
-    suspend fun onNicknameIntroduced(nickname: String)
-}
+import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.stateHolders.FillNicknameViewModel
 
 object FillNicknameRoutableComposable: RoutableComposable {
     override val route: String = "fill_nickname"
@@ -44,7 +36,7 @@ object FillNicknameRoutableComposable: RoutableComposable {
                     horizontal = 50.dp
                 )
             ) {
-                val userInformationMessageUiState by viewModel.getUserInformationMessage()
+                val userInformationMessageUiState by viewModel.processInformationUiState.collectAsState()
                 ProcessInformationMessage(
                     message = userInformationMessageUiState.message,
                     letterColor = userInformationMessageUiState.color

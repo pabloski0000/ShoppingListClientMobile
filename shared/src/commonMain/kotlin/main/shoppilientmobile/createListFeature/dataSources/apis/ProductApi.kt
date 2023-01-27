@@ -7,7 +7,7 @@ import kotlinx.serialization.json.jsonPrimitive
 import main.shoppilientmobile.core.remote.AsynchronousHttpClient
 import main.shoppilientmobile.core.remote.HttpMethod
 import main.shoppilientmobile.core.remote.HttpRequest
-import main.shoppilientmobile.createListFeature.Product
+import main.shoppilientmobile.domain.Product
 
 class ProductApi(
     private val httpClient: AsynchronousHttpClient,

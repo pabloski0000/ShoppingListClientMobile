@@ -1,7 +1,6 @@
 package main.shoppilientmobile.createListFeature.dataSources
 
-import io.ktor.client.*
-import main.shoppilientmobile.createListFeature.Product
+import main.shoppilientmobile.domain.Product
 import main.shoppilientmobile.createListFeature.dataSources.apis.ProductApi
 
 class ProductRemoteDataSource(
