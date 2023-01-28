@@ -3,11 +3,12 @@ package main.shoppilientmobile.android.shoppingList.presentation
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.AndroidComposeTestRule
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.test.core.app.launchActivity
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import main.shoppilientmobile.android.MainActivity
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -16,9 +17,15 @@ import org.junit.runner.RunWith
 class ShoppingListTest {
     @get:Rule
     lateinit var composableRule: AndroidComposeTestRule<ActivityScenarioRule<MainActivity>, MainActivity>
+    private val coroutineOnThreadDifferentToMain = CoroutineScope(Dispatchers.Default)
 
     init {
         startApplicationAndGoToShoppingListScreen()
+    }
+
+    @Before
+    fun setUp() {
+        clearList()
     }
 
     private fun startApplicationAndGoToShoppingListScreen() {
@@ -47,19 +54,6 @@ class ShoppingListTest {
     }
 
     @Test
-    fun modifyProduct() {
-        val originalProduct = "orange"
-        val modifiedProduct = "Apple"
-        addProduct(originalProduct)
-        composableRule.onNode(getProduct(originalProduct)).performClick()
-        composableRule.onNode(getProductInputText()).performTextInput(modifiedProduct)
-        composableRule.onNode(getProductInputText()).performImeAction()
-        sleepThreadAsMuchTimeAsAUserWouldExpectOperationsToLastUntilFinished()
-        composableRule.onNode(getProduct(originalProduct)).assertDoesNotExist()
-        composableRule.onNode(getProduct(modifiedProduct)).assertExists()
-    }
-
-    @Test
     fun modifyProducts() {
         val products = createRandomProducts(amountOfProducts = 4)
         val oldAndNewProducts = mapOf(
@@ -70,6 +64,40 @@ class ShoppingListTest {
         addProducts(products)
         modifyProductsThatAreOnTheScreen(oldAndNewProducts)
         checkThatProductToModifyHasChanged(oldAndNewProducts)
+    }
+
+    @Test
+    fun checkThatApplicationPersistTheList() {
+        val products = listOf("Banana", "Apple", "Coffee")
+        addDataBeforeClosingApp(products)
+        restartApp()
+        checkThatDataStillExists(products)
+    }
+
+    private fun clearList() {
+        removeAllProducts()
+    }
+
+    private fun removeAllProducts() {
+        composableRule.onNodeWithTag("ListClearer").performClick()
+    }
+
+    private fun addDataBeforeClosingApp(products: List<String>) {
+        addProducts(products)
+    }
+
+    private fun restartApp() {
+        composableRule.activity.finish()
+        composableRule.activityRule.scenario.onActivity {
+            coroutineOnThreadDifferentToMain.launch {
+                launchActivity<MainActivity>()
+            }
+        }
+        //composableRule.activity.startActivity(Intent(composableRule.activity.applicationContext, MainActivity::class.java))
+    }
+
+    private fun checkThatDataStillExists(products: List<String>) {
+        checkIfProductsAreOnTheScreen(products)
     }
 
     private fun checkThatProductToModifyHasChanged(oldAndNewProducts: Map<String, String>) {
@@ -172,6 +200,12 @@ class ShoppingListTest {
         composableRule.onNode(
             productFactory
         ).performImeAction()
+    }
+
+    private fun checkIfProductsAreOnTheScreen(products: List<String>) {
+        products.map { product ->
+            checkIfProductIsOnTheScreen(product)
+        }
     }
 
     private fun checkIfProductIsOnTheScreen(product: String) {
