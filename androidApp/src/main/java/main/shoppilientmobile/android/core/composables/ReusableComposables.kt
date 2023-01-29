@@ -12,7 +12,7 @@ import androidx.compose.ui.text.input.ImeAction
 @Composable
 fun TextFieldWithDoneImeAction(
     modifier: Modifier = Modifier,
-    label: String = "",
+    label: @Composable () -> Unit,
     value: String = "",
     onValueChange: (value: String) -> Unit = {},
     onDone: (value: String) -> Unit = {},
@@ -21,9 +21,7 @@ fun TextFieldWithDoneImeAction(
         modifier = modifier.fillMaxWidth(),
         value = value,
         onValueChange = onValueChange,
-        label = {
-            Text(text = label)
-        },
+        label = label,
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
         keyboardActions = KeyboardActions(onDone = {
             onDone(value)

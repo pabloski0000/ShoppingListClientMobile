@@ -10,11 +10,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -24,6 +20,8 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import kotlinx.coroutines.android.awaitFrame
+import kotlinx.coroutines.delay
 
 const val PRODUCT_FACTORY_ROUTE = "product_factory"
 
@@ -32,6 +30,12 @@ fun ProductFactoryScreen(
     navController: NavController,
     viewModel: ProductFactoryViewModel,
 ) {
+    val keyboardShower = remember {
+        FocusRequester()
+    }
+    val showKeyboard = remember {
+        mutableStateOf(true)
+    }
     val product = viewModel.product.collectAsState()
     ProductFactoryScreenContent(
         product = product.value,
@@ -40,7 +44,16 @@ fun ProductFactoryScreen(
             viewModel.createProduct()
             navController.popBackStack()
         },
+        keyboardShower = keyboardShower
     )
+    LaunchedEffect(key1 = Unit) {
+        if (showKeyboard.value) {
+            awaitFrame()
+            delay(1)
+            keyboardShower.requestFocus()
+            showKeyboard.value = false
+        }
+    }
 }
 
 @Composable
@@ -49,6 +62,7 @@ fun ProductFactoryScreenContent(
     product: String,
     onProductChange: (product: String) -> Unit,
     onProductIntroduced: (product: String) -> Unit,
+    keyboardShower: FocusRequester,
 ) {
     Scaffold(
         topBar = {
@@ -61,6 +75,7 @@ fun ProductFactoryScreenContent(
                 product = product,
                 onProductChange = onProductChange,
                 onDone = onProductIntroduced,
+                focusRequester = keyboardShower,
             )
         }
     }
@@ -72,6 +87,7 @@ fun ProductFactory(
     product: String,
     onProductChange: (product: String) -> Unit,
     onDone: (product: String) -> Unit,
+    focusRequester: FocusRequester,
 ) {
     ProductFactoryBackground(
         modifier = modifier,
@@ -83,6 +99,7 @@ fun ProductFactory(
             product = product,
             onProductChange = onProductChange,
             onDone = onDone,
+            focusRequester = focusRequester,
         )
     }
 }
@@ -93,10 +110,12 @@ private fun ProductFactoryTextField(
     product: String,
     onProductChange: (product: String) -> Unit,
     onDone: (product: String) -> Unit,
+    focusRequester: FocusRequester,
 ) {
     OutlinedTextField(
         modifier = modifier
             .background(Color(57, 56, 60))
+            .focusRequester(focusRequester)
             .testTag("ProductInputText"),
         label = {
             Text(text = "Product Name")

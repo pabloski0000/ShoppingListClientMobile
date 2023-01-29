@@ -22,17 +22,13 @@ class AndroidShoppingList(
         coroutineScopeInMainThread.launch(Dispatchers.IO) {
             shoppingListDao.insertProduct(product)
             withContext(Dispatchers.Main) {
-                products.update {
-                    println("UPDATED!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-                    listOf(*products.value.toTypedArray(), product)
-                }
                 notifyOfProductAdded(product)
             }
         }
     }
 
     override fun getProducts(): List<Product> {
-        return products.value
+        return emptyList()
     }
 
     override fun modifyProduct(oldProduct: Product, newProduct: Product) {
@@ -58,16 +54,28 @@ class AndroidShoppingList(
         }
     }
 
+    override fun deleteProduct(product: Product) {
+        coroutineScopeInMainThread.launch(Dispatchers.IO) {
+            shoppingListDao.deleteProducts(listOf(product))
+            withContext(Dispatchers.Main) {
+                notifyOfProductDeleted(product)
+            }
+        }
+    }
+
     override fun observe(): Flow<List<Product>> {
         return products
     }
 
     override fun observeShoppingList(observer: ShoppingListObserver) {
-        notifyObserverOfStartingStateOfList(observer, getProducts())
+        coroutineScopeInMainThread.launch(Dispatchers.IO) {
+            val currentStateOfList = shoppingListDao.getProducts()
+            notifyObserverOfCurrentListState(observer, currentStateOfList)
+        }
         observers = listOf(*observers.toTypedArray(), observer)
     }
 
-    private fun notifyObserverOfStartingStateOfList(
+    private fun notifyObserverOfCurrentListState(
         observer: ShoppingListObserver,
         currentList: List<Product>
     ) {

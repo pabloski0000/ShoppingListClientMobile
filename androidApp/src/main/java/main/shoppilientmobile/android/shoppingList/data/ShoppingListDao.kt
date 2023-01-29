@@ -39,10 +39,10 @@ interface ShoppingListDao {
 
     fun deleteProducts(products: List<Product>) {
         products.map { product ->
-            deleteProductRoom(ProductEntity(description = product.description))
+            deleteProductRoom(product.description)
         }
     }
 
-    @Delete
-    fun deleteProductRoom(product: ProductEntity)
+    @Query("DELETE FROM ProductEntity WHERE description = :productDescription")
+    fun deleteProductRoom(productDescription: String)
 }

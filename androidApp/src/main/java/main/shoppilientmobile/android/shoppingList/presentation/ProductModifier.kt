@@ -1,13 +1,22 @@
 package main.shoppilientmobile.android.shoppingList.presentation
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Icon
+import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import main.shoppilientmobile.android.core.composables.TextFieldWithDoneImeAction
@@ -19,29 +28,56 @@ fun ProductModifier(
     product: ProductItemState,
     onProductChange: (product: ProductItemState) -> Unit,
     onProductModified: (product: ProductItemState) -> Unit,
+    focusRequester: FocusRequester = remember { FocusRequester() },
 ) {
-    Box(
+    Column(
         modifier = modifier.background(Color(47, 49, 51)),
-        contentAlignment = Alignment.TopCenter,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Top,
     ) {
-        Spacer(modifier = Modifier.padding(20.dp))
-        TextFieldWithDoneImeAction(
-            modifier = Modifier.testTag("ProductInputText"),
-            value = product.productDescription,
-            onValueChange = { productDescription ->
-                onProductChange(
-                    product.copy(
-                        productDescription = productDescription
+        Spacer(modifier = Modifier
+            .fillMaxWidth()
+            .height(30.dp)
+        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Spacer(modifier = Modifier.width(10.dp))
+            Icon(
+                imageVector = Icons.Filled.ArrowBack,
+                contentDescription = "Go Back",
+                tint = Color(107, 109, 121),
+            )
+            Spacer(modifier = Modifier.width(15.dp))
+            TextFieldWithDoneImeAction(
+                modifier = Modifier
+                    .focusRequester(focusRequester)
+                    .shadow(elevation = 0.dp, shape = RoundedCornerShape(10.dp))
+                    .padding(end = 10.dp)
+                    .testTag("ProductInputText"),
+                label = {
+                    Text(text = "Modify this product")
+                },
+                value = product.productDescription,
+                onValueChange = { productDescription ->
+                    onProductChange(
+                        product.copy(
+                            productDescription = productDescription
+                        )
                     )
-                )
-            },
-            onDone = { productDescription ->
-                onProductModified(
-                    product.copy(
-                        productDescription = productDescription
+                },
+                onDone = { productDescription ->
+                    onProductModified(
+                        product.copy(
+                            productDescription = productDescription
+                        )
                     )
-                )
-            },
+                },
+            )
+        }
+        Spacer(modifier = Modifier
+            .fillMaxWidth()
+            .height(50.dp)
         )
     }
 }

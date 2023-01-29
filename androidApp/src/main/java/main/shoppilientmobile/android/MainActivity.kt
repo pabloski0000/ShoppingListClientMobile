@@ -8,13 +8,14 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import main.shoppilientmobile.android.core.AndroidContainer
 import main.shoppilientmobile.android.shoppingList.presentation.*
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.containers.RegistrationContainer
@@ -25,6 +26,8 @@ class MainActivity : ComponentActivity() {
     private lateinit var roleElectionViewModel: RoleElectionViewModel
     private lateinit var fillNicknameViewModel: FillNicknameViewModel
     private lateinit var shoppingListViewModelFactory: ShoppingListViewModelFactory
+    private lateinit var shoppingListDeletionViewModelFactory: ShoppingListDeletionViewModelFactory
+    private lateinit var shoppingListNormalViewModelFactory: ShoppingListNormalViewModelFactory
     private lateinit var productFactoryViewModelFactory: ProductFactoryViewModelFactory
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,6 +68,10 @@ class MainActivity : ComponentActivity() {
             registerUserUseCase = registrationContainer.registerUserUseCase,
         )
         shoppingListViewModelFactory = ShoppingListViewModelFactory(androidContainer.shoppingList)
+        shoppingListDeletionViewModelFactory =
+            ShoppingListDeletionViewModelFactory(androidContainer.shoppingList)
+        shoppingListNormalViewModelFactory =
+            ShoppingListNormalViewModelFactory(androidContainer.shoppingList)
         productFactoryViewModelFactory = ProductFactoryViewModelFactory(androidContainer.shoppingList)
     }
 
@@ -83,15 +90,48 @@ class MainActivity : ComponentActivity() {
                     "FirstViewModelInGraph",
                     shoppingListViewModelFactory,
                 )
-                ShoppingListScreen(
+                ShoppingListScreenChangingBetweenModes(
                     navController = navController,
+                    viewModel = viewModel
+                )
+            }
+            composable(route = NORMAL_SHOPPING_LIST_ROUTE) {
+                val viewModel = viewModel<ShoppingListNormalViewModel>(
+                    viewModelOwner,
+                    "SecondViewModelInGraph",
+                    shoppingListNormalViewModelFactory,
+                )
+                ShoppingListNormalScreen(
                     viewModel = viewModel,
+                    navController = navController,
+                )
+            }
+            val selectedItemKey = "selectedItem"
+            composable(
+                route = "$SHOPPING_LIST_DELETION_ROUTE/{$selectedItemKey}",
+                arguments = listOf(
+                    navArgument(selectedItemKey) {
+                        type = NavType.IntType
+                    }
+                ),
+            ) { backEntry ->
+                val viewModel = viewModel<ShoppingListDeletionViewModel>(
+                    viewModelOwner,
+                    "ThirdViewModelInGraph",
+                    shoppingListDeletionViewModelFactory,
+                )
+                val selectedItemIndex = backEntry.arguments
+                    ?.getInt(selectedItemKey)!!
+                ShoppingListDeletionScreen(
+                    viewModel = viewModel,
+                    navController = navController,
+                    selectedItemsIndexes = listOf(selectedItemIndex),
                 )
             }
             composable(route = PRODUCT_FACTORY_ROUTE) {
                 val viewModel = viewModel<ProductFactoryViewModel>(
                     viewModelOwner,
-                    "SecondViewModelInGraph",
+                    "FourthViewModelInGraph",
                     productFactoryViewModelFactory,
                 )
                 ProductFactoryScreen(navController, viewModel)

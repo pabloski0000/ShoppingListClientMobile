@@ -29,7 +29,6 @@ class AndroidContainer(
     )
 
     val room = Room.databaseBuilder(context, RoomDb::class.java, "room_db")
-        .fallbackToDestructiveMigration()
         .build()
 
     private val shoppingListDao = room.shoppingListDao()

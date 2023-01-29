@@ -1,7 +1,6 @@
 package main.shoppilientmobile.android.shoppingList.presentation
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.*
 import main.shoppilientmobile.android.shoppingList.domain.ShoppingList
 import main.shoppilientmobile.android.shoppingList.domain.ShoppingListObserver
@@ -46,6 +45,10 @@ class ShoppingListViewModel(
             oldProduct = _productItemsUiState.value[index].toProduct(),
             newProduct = newProduct.toProduct(),
         )
+    }
+
+    fun deleteAllProducts() {
+        shoppingList.deleteProducts(_productItemsUiState.value.map { it.toProduct() })
     }
 
     fun deleteProducts() {
