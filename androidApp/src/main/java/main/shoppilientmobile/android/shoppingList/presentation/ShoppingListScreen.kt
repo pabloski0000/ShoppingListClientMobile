@@ -1,5 +1,6 @@
 package main.shoppilientmobile.android.shoppingList.presentation
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -9,19 +10,16 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.testTag
-import androidx.core.os.bundleOf
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.delay
 
 
 const val SHOPPING_LIST_ROUTE = "shopping_list"
-private const val screenOnNormalModeRoute = "normal_screen_mode"
-private const val screenOnDeletionModeRoute = "deletion_screen_mode"
-private const val screenOnModifyingProductModeRoute = "modifying_product_mode"
+const val SCREEN_ON_NORMAL_MODE_ROUTE = "normal_screen_mode"
+private const val SCREEN_ON_DELETION_MODE_ROUTE = "deletion_screen_mode"
+private const val SCREEN_ON_MODIFYING_PRODUCT_MODE_ROUTE = "modifying_product_mode"
 
 @Composable
 fun ShoppingListScreen(
@@ -160,7 +158,8 @@ fun ShoppingListScreenChangingBetweenModes(
                         ScreenMode.NORMAL,
                         ScreenModeState.NormalModeState(),
                     )
-                }
+                },
+                navController = navController,
             )
         }
     }
@@ -257,6 +256,7 @@ private fun ShoppingListScreenOnModifyingMode(
     viewModel: ShoppingListViewModel,
     modifyingProductModeState: ScreenModeState.ModifyingProductModeState,
     onChangeToShoppingListScreenOnNormalMode: () -> Unit,
+    navController: NavController,
 ) {
     val productItemsState = remember {
         viewModel.productItemsUiState.value
@@ -271,6 +271,10 @@ private fun ShoppingListScreenOnModifyingMode(
     }
     val showKeyboard = remember {
         mutableStateOf(true)
+    }
+
+    BackHandler() {
+        navController.navigate(SHOPPING_LIST_ROUTE)
     }
 
     ShoppingListScreenContent(
@@ -303,7 +307,7 @@ private fun ShoppingListScreenOnModifyingMode(
     LaunchedEffect(key1 = Unit) {
         if (showKeyboard.value) {
             awaitFrame()
-            delay(1)
+            delay(100)
             focusRequester.requestFocus()
         }
     }

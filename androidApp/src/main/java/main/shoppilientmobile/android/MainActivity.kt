@@ -95,7 +95,7 @@ class MainActivity : ComponentActivity() {
                     viewModel = viewModel
                 )
             }
-            composable(route = NORMAL_SHOPPING_LIST_ROUTE) {
+            composable(route = SCREEN_ON_NORMAL_MODE_ROUTE) {
                 val viewModel = viewModel<ShoppingListNormalViewModel>(
                     viewModelOwner,
                     "SecondViewModelInGraph",
