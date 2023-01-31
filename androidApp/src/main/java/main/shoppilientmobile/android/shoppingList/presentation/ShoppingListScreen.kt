@@ -6,7 +6,6 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.testTag
@@ -22,90 +21,6 @@ private const val SCREEN_ON_DELETION_MODE_ROUTE = "deletion_screen_mode"
 private const val SCREEN_ON_MODIFYING_PRODUCT_MODE_ROUTE = "modifying_product_mode"
 
 @Composable
-fun ShoppingListScreen(
-    navController: NavController,
-    viewModel: ShoppingListViewModel,
-) {
-    val productItemsUiState = viewModel.productItemsUiState.collectAsState()
-    val screenMode = rememberSaveable {
-        mutableStateOf(ScreenMode.NORMAL)
-    }
-    val productToModifyIndex = remember {
-        mutableStateOf(-1)
-    }
-    val focusRequester = remember {
-        FocusRequester()
-    }
-    ShoppingListScreenContent(
-        topBar = {
-             if (screenMode.value == ScreenMode.DELETION) {
-                 DeletionApplicationTopBar(
-                     onClickOnDeletionIcon = {
-                         if (screenMode.value == ScreenMode.DELETION) {
-                             viewModel.deleteProducts()
-                             screenMode.value = ScreenMode.NORMAL
-                         }
-                     }
-                 )
-             } else {
-                 ShoppingListScreenTopBar(
-                     onRemoveIcon = {
-                         viewModel.deleteAllProducts()
-                     }
-                 )
-             }
-        },
-        productModifier = {
-            if (screenMode.value == ScreenMode.MODIFYING_PRODUCT) {
-                val productItemToModify = remember {
-                    mutableStateOf(productItemsUiState.value[productToModifyIndex.value])
-                }
-                ProductModifier(
-                    product = productItemToModify.value,
-                    onProductChange = {
-                        productItemToModify.value = it
-                    },
-                    onProductModified = {
-                        screenMode.value = ScreenMode.NORMAL
-                        viewModel.modifyProduct(
-                            index = productToModifyIndex.value,
-                            newProduct = productItemToModify.value,
-                        )
-                    },
-                )
-            }
-        },
-        productItemStates = productItemsUiState.value,
-        onClickOnAddProductButton = { screenContentState ->
-            if (screenMode.value == ScreenMode.NORMAL) {
-                navController.navigate(PRODUCT_FACTORY_ROUTE)
-            }
-        },
-        onClickOnProductItem = { clickedProductIndex ->
-            if (screenMode.value == ScreenMode.DELETION) {
-                if (productItemsUiState.value[clickedProductIndex].markedToBeDeleted) {
-                    viewModel.unnominateProductItem(clickedProductIndex)
-                    if (! areThereNominatedProductItems(productItemsUiState.value)) {
-                        screenMode.value = ScreenMode.NORMAL
-                    }
-                } else {
-                    viewModel.nominateProductItem(clickedProductIndex)
-                }
-            } else if (screenMode.value == ScreenMode.NORMAL) {
-                screenMode.value = ScreenMode.MODIFYING_PRODUCT
-                productToModifyIndex.value = clickedProductIndex
-            }
-        },
-        onLongClickOnProductItem = { index ->
-            if (screenMode.value == ScreenMode.NORMAL) {
-                screenMode.value = ScreenMode.DELETION
-                viewModel.nominateProductItem(index)
-            }
-        },
-    )
-}
-
-@Composable
 fun ShoppingListScreenChangingBetweenModes(
     navController: NavHostController,
     viewModel: ShoppingListViewModel,
@@ -118,6 +33,7 @@ fun ShoppingListScreenChangingBetweenModes(
 
     when (screenState.value.screenMode) {
         ScreenMode.NORMAL -> {
+            setUpNormalMode(viewModel)
             ShoppingListScreenOnNormalMode(
                 viewModel = viewModel,
                 navController = navController,
@@ -159,25 +75,13 @@ fun ShoppingListScreenChangingBetweenModes(
                         ScreenModeState.NormalModeState(),
                     )
                 },
-                navController = navController,
             )
         }
     }
 }
 
-@Composable
-fun ShoppingListScreenToNavigateToShoppingListDeletionScreen(
-    navController: NavController,
-    viewModel: ShoppingListViewModel,
-) {
-    ShoppingListScreenOnNormalMode(
-        viewModel = viewModel,
-        navController = navController,
-        onChangeToShoppingListScreenOnModifyingMode = {},
-        onChangeToShoppingListScreenOnDeletionMode = { screenOnDeletionModeState ->
-            navController.navigate("$SHOPPING_LIST_DELETION_ROUTE/4")
-        }
-    )
+private fun setUpNormalMode(viewModel: ShoppingListViewModel) {
+    viewModel.deselectAllProductItems()
 }
 
 @Composable
@@ -191,11 +95,7 @@ private fun ShoppingListScreenOnNormalMode(
     val productItemsState = viewModel.productItemsUiState.collectAsState()
     ShoppingListScreenContent(
         topBar = {
-            ShoppingListScreenTopBar(
-                onRemoveIcon = {
-                    viewModel.deleteAllProducts()
-                }
-            )
+            ShoppingListScreenTopBar()
         },
         productModifier = {},
         productItemStates = productItemsState.value,
@@ -208,7 +108,7 @@ private fun ShoppingListScreenOnNormalMode(
             )
         },
         onLongClickOnProductItem = { productItemIndex ->
-            viewModel.nominateProductItem(productItemIndex)
+            viewModel.selectProductItem(productItemIndex)
             onChangeToShoppingListScreenOnDeletionMode(
                 ScreenModeState.DeletionModeState(
                     nominatedProductItemIndexes = listOf(productItemIndex)
@@ -229,22 +129,28 @@ private fun ShoppingListScreenOnDeletionMode(
         onChangeToShoppingListScreenOnNormalMode()
     }
 
+    BackHandler() {
+        onChangeToShoppingListScreenOnNormalMode()
+    }
     ShoppingListScreenContent(
         topBar = {
             DeletionApplicationTopBar(
                 onClickOnDeletionIcon = {
                     viewModel.deleteProducts()
-                }
+                },
+                onSelectAllItems = {
+                    viewModel.selectAllProductsItems()
+                },
             )
         },
         productModifier = {},
         productItemStates = productItemsState.value,
         onClickOnAddProductButton = {},
         onClickOnProductItem = { clickedProductIndex ->
-            if (productItemsState.value[clickedProductIndex].markedToBeDeleted) {
-                viewModel.unnominateProductItem(clickedProductIndex)
+            if (productItemsState.value[clickedProductIndex].selected) {
+                viewModel.deselectProductItem(clickedProductIndex)
             } else {
-                viewModel.nominateProductItem(clickedProductIndex)
+                viewModel.selectProductItem(clickedProductIndex)
             }
         },
         onLongClickOnProductItem = {},
@@ -256,7 +162,6 @@ private fun ShoppingListScreenOnModifyingMode(
     viewModel: ShoppingListViewModel,
     modifyingProductModeState: ScreenModeState.ModifyingProductModeState,
     onChangeToShoppingListScreenOnNormalMode: () -> Unit,
-    navController: NavController,
 ) {
     val productItemsState = remember {
         viewModel.productItemsUiState.value
@@ -274,14 +179,11 @@ private fun ShoppingListScreenOnModifyingMode(
     }
 
     BackHandler() {
-        navController.navigate(SHOPPING_LIST_ROUTE)
+        onChangeToShoppingListScreenOnNormalMode()
     }
-
     ShoppingListScreenContent(
         topBar = {
-            ShoppingListScreenTopBar(
-                onRemoveIcon = {}
-            )
+            ShoppingListScreenTopBar()
         },
         productModifier = {
             ProductModifier(
@@ -297,6 +199,7 @@ private fun ShoppingListScreenOnModifyingMode(
                     onChangeToShoppingListScreenOnNormalMode()
                 },
                 focusRequester = focusRequester,
+                onClickOnGoBackIcon = onChangeToShoppingListScreenOnNormalMode,
             )
         },
         productItemStates = productItemsState,
@@ -367,12 +270,12 @@ fun AddProductButton(
 private fun areThereNominatedProductItems(
     productItemStates: List<ProductItemState>,
 ): Boolean {
-    return productItemStates.any { it.markedToBeDeleted }
+    return productItemStates.any { it.selected }
 }
 
 private fun setUpShoppingListOnDeletionMode(nominatedProductItemIndexes: List<Int>, viewModel: ShoppingListViewModel) {
     nominatedProductItemIndexes.map { nominatedProduct ->
-        viewModel.nominateProductItem(nominatedProduct)
+        viewModel.selectProductItem(nominatedProduct)
     }
 }
 

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="select_all">selectAll</string>
+    <string name="clear_all_prompt">clearAllPrompt</string>
+    <string name="product">Product</string>
+    <string name="deletion_icon">DeletionIcon</string>
+</resources>

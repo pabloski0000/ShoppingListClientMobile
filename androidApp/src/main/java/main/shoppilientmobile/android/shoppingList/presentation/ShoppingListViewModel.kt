@@ -18,24 +18,46 @@ class ShoppingListViewModel(
         shoppingList.observeShoppingList(this)
     }
 
-    fun nominateProductItem(index: Int) {
+    fun selectProductItem(index: Int) {
         _productItemsUiState.update {
             it.mapIndexed { indexInList, productItemState ->
                 if (indexInList == index) {
-                    return@mapIndexed productItemState.copy(markedToBeDeleted = true)
+                    return@mapIndexed productItemState.copy(selected = true)
                 }
                 return@mapIndexed productItemState
             }
         }
     }
 
-    fun unnominateProductItem(index: Int) {
+    fun deselectProductItem(index: Int) {
         _productItemsUiState.update {
             it.mapIndexed { indexInList, productItemState ->
                 if (indexInList == index) {
-                    return@mapIndexed productItemState.copy(markedToBeDeleted = false)
+                    return@mapIndexed productItemState.copy(selected = false)
                 }
                 return@mapIndexed productItemState
+            }
+        }
+    }
+
+    fun selectAllProductsItems() {
+        _productItemsUiState.update {
+            it.map { productItem ->
+                if (! productItem.selected) {
+                    return@map productItem.copy(selected = true)
+                }
+                return@map productItem
+            }
+        }
+    }
+
+    fun deselectAllProductItems() {
+        _productItemsUiState.update {
+            it.map { productItem ->
+                if (productItem.selected) {
+                    return@map productItem.copy(selected = false)
+                }
+                return@map productItem
             }
         }
     }
@@ -52,7 +74,7 @@ class ShoppingListViewModel(
     }
 
     fun deleteProducts() {
-        val productsToDelete = _productItemsUiState.value.filter { it.markedToBeDeleted }
+        val productsToDelete = _productItemsUiState.value.filter { it.selected }
         shoppingList.deleteProducts(
             productsToDelete.map { it.toProduct() }
         )

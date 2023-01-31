@@ -8,6 +8,7 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.coroutines.*
 import main.shoppilientmobile.android.MainActivity
+import main.shoppilientmobile.android.R
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -45,10 +46,10 @@ class ShoppingListTest {
 
     @Test
     fun removeProducts() {
-        val amountOfProductsToCreate = 6
+        val amountOfProductsToCreate = 7
         val products = createRandomProducts(amountOfProductsToCreate)
         addProducts(products)
-        val productsToRemove = products.subList(0, 5)
+        val productsToRemove = products.subList(0, 4)
         removeProductsOnTheScreen(productsToRemove)
         checkThatProductsDoNotExistOnTheScreen(productsToRemove)
     }
@@ -59,6 +60,7 @@ class ShoppingListTest {
         val oldAndNewProducts = mapOf(
             products[0] to createRandomProduct(),
             products[1] to createRandomProduct(),
+            products[2] to createRandomProduct(),
             products[3] to createRandomProduct(),
         )
         addProducts(products)
@@ -79,7 +81,31 @@ class ShoppingListTest {
     }
 
     private fun removeAllProducts() {
-        composableRule.onNodeWithTag("ListClearer").performClick()
+        val activity = composableRule.activity
+        val productIdentifier = activity.getString(R.string.product)
+        if (isThereAnyProduct()) {
+            composableRule.onAllNodesWithTag(
+                productIdentifier
+            ).onFirst().performTouchInput { longClick() }
+            composableRule.onNodeWithTag(
+                activity.getString(R.string.select_all)
+            ).performClick()
+            composableRule.onNode(getDeletionIcon()).performClick()
+        }
+    }
+
+    private fun isThereAnyProduct(): Boolean {
+        val productIdentifier = composableRule.activity.getString(R.string.product)
+        return try {
+            composableRule.onAllNodesWithTag(
+                productIdentifier
+            ).assertAny(
+                hasTestTag(productIdentifier)
+            )
+            true
+        } catch (e: AssertionError) {
+            false
+        }
     }
 
     private fun addDataBeforeClosingApp(products: List<String>) {

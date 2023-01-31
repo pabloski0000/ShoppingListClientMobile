@@ -30,10 +30,7 @@ fun ShoppingListNormalScreen(
     val productItemsState = viewModel.productItemsUiState.collectAsState()
     ShoppingListScreenContent(
         topBar = {
-            ShoppingListScreenTopBar(
-                onRemoveIcon = {
-                }
-            )
+            ShoppingListScreenTopBar()
         },
         productModifier = {},
         productItemStates = productItemsState.value,

@@ -29,7 +29,7 @@ class ShoppingListScreenState {
     fun onClickOnDeletionIcon() {
         val newListOfProducts = shoppingListState.value
             .productItemStates.filter {
-                ! it.markedToBeDeleted
+                ! it.selected
             }
         _shoppingListState.update {
             it.copy(
@@ -42,7 +42,7 @@ class ShoppingListScreenState {
         val newListOfProducts = shoppingListState.value
             .productItemStates.mapIndexed { index, productItemState ->
                 if (index == indexOnList)
-                    return@mapIndexed productItemState.copy(markedToBeDeleted = true)
+                    return@mapIndexed productItemState.copy(selected = true)
                 return@mapIndexed productItemState
             }
         _shoppingListState.value = shoppingListState.value.copy(
@@ -76,7 +76,7 @@ class ShoppingListScreenState {
             val oldProductList = _shoppingListState.value.productItemStates
             val newProductList = oldProductList.mapIndexed { index, productItem ->
                 if (index == modifyingExistingProduct.productIndexBeingModified)
-                    return@mapIndexed ProductItemState(product, markedToBeDeleted = false)
+                    return@mapIndexed ProductItemState(product, selected = false)
                 return@mapIndexed productItem
             }
             _shoppingListState.update {

@@ -7,18 +7,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -57,7 +51,7 @@ fun ProductItem(
     onLongClick: (ProductItemState) -> Unit,
     onClick: (ProductItemState) -> Unit,
 ) {
-    val modifierDependingIfSelectedOrNot = when (productItemState.markedToBeDeleted) {
+    val modifierDependingIfSelectedOrNot = when (productItemState.selected) {
         true -> modifier.background(Color.Cyan)
         false -> modifier
     }

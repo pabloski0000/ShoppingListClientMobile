@@ -1,6 +1,7 @@
 package main.shoppilientmobile.android.shoppingList.presentation
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -28,6 +29,7 @@ fun ProductModifier(
     product: ProductItemState,
     onProductChange: (product: ProductItemState) -> Unit,
     onProductModified: (product: ProductItemState) -> Unit,
+    onClickOnGoBackIcon: () -> Unit,
     focusRequester: FocusRequester = remember { FocusRequester() },
 ) {
     Column(
@@ -44,6 +46,7 @@ fun ProductModifier(
         ) {
             Spacer(modifier = Modifier.width(10.dp))
             Icon(
+                modifier = Modifier.clickable { onClickOnGoBackIcon() },
                 imageVector = Icons.Filled.ArrowBack,
                 contentDescription = "Go Back",
                 tint = Color(107, 109, 121),

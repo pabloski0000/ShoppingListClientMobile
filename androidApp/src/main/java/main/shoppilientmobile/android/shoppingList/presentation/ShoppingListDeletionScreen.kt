@@ -63,7 +63,8 @@ private fun ShoppingListDeletionScreenContent(
     Scaffold(
         topBar = {
              DeletionApplicationTopBar(
-                 onClickOnDeletionIcon = onClickOnDeletionIcon
+                 onClickOnDeletionIcon = onClickOnDeletionIcon,
+                 onSelectAllItems = {},
              )
         },
     ) { padding ->
