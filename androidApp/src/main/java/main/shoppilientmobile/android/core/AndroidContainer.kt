@@ -8,6 +8,9 @@ import androidx.datastore.preferences.preferencesDataStoreFile
 import androidx.room.Room
 import main.shoppilientmobile.android.shoppingList.data.AndroidShoppingList
 import main.shoppilientmobile.android.shoppingList.domain.ShoppingList
+import main.shoppilientmobile.android.shoppingList.presentation.ProductFactoryViewModelFactory
+import main.shoppilientmobile.android.shoppingList.presentation.ShoppingListNormalViewModelFactory
+import main.shoppilientmobile.android.shoppingList.presentation.ShoppingListViewModelFactory
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.androidRepository.KeyValueLocalStorage
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.androidRepository.room.RoomDb
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.containers.RegistrationContainer
@@ -33,7 +36,7 @@ class AndroidContainer(
 
     private val shoppingListDao = room.shoppingListDao()
 
-    val shoppingList: ShoppingList = AndroidShoppingList(shoppingListDao)
+    private val shoppingList: ShoppingList = AndroidShoppingList(shoppingListDao)
 
     val httpClient = AsynchronousHttpClientImpl()
 
@@ -58,4 +61,7 @@ class AndroidContainer(
     )
 
     var registrationContainer: RegistrationContainer? = null
+
+    val shoppingListViewModelFactory = ShoppingListViewModelFactory(shoppingList)
+    val productFactoryViewModelFactory = ProductFactoryViewModelFactory(shoppingList)
 }

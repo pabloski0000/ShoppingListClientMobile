@@ -2,26 +2,36 @@ package main.shoppilientmobile.android.shoppingList.presentation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.Interaction
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
+import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.android.awaitFrame
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import main.shoppilientmobile.android.core.composables.TextFieldWithDoneImeAction
-import main.shoppilientmobile.domain.Product
 
 @Composable
 fun ProductModifier(
@@ -30,7 +40,6 @@ fun ProductModifier(
     onProductChange: (product: ProductItemState) -> Unit,
     onProductModified: (product: ProductItemState) -> Unit,
     onClickOnGoBackIcon: () -> Unit,
-    focusRequester: FocusRequester = remember { FocusRequester() },
 ) {
     Column(
         modifier = modifier.background(Color(47, 49, 51)),
@@ -44,6 +53,10 @@ fun ProductModifier(
         Row(
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            val focusRequester = remember { FocusRequester() }
+            val textValue = remember {
+                mutableStateOf(TextFieldValue(""))
+            }
             Spacer(modifier = Modifier.width(10.dp))
             Icon(
                 modifier = Modifier.clickable { onClickOnGoBackIcon() },
@@ -52,7 +65,7 @@ fun ProductModifier(
                 tint = Color(107, 109, 121),
             )
             Spacer(modifier = Modifier.width(15.dp))
-            TextFieldWithDoneImeAction(
+            TextField(
                 modifier = Modifier
                     .focusRequester(focusRequester)
                     .shadow(elevation = 0.dp, shape = RoundedCornerShape(10.dp))
@@ -61,22 +74,27 @@ fun ProductModifier(
                 label = {
                     Text(text = "Modify this product")
                 },
-                value = product.productDescription,
-                onValueChange = { productDescription ->
+                value = textValue.value,
+                onValueChange = { changedTextValue ->
+                    textValue.value = changedTextValue
                     onProductChange(
                         product.copy(
-                            productDescription = productDescription
+                            content = changedTextValue.text
                         )
                     )
                 },
-                onDone = { productDescription ->
-                    onProductModified(
-                        product.copy(
-                            productDescription = productDescription
-                        )
-                    )
-                },
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        onProductModified(product)
+                    }
+                ),
             )
+            LaunchedEffect(key1 = Unit) {
+                awaitFrame()
+                delay(100)
+                focusRequester.requestFocus()
+            }
         }
         Spacer(modifier = Modifier
             .fillMaxWidth()

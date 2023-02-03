@@ -6,6 +6,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.testTag
@@ -198,7 +199,6 @@ private fun ShoppingListScreenOnModifyingMode(
                     )
                     onChangeToShoppingListScreenOnNormalMode()
                 },
-                focusRequester = focusRequester,
                 onClickOnGoBackIcon = onChangeToShoppingListScreenOnNormalMode,
             )
         },
@@ -207,13 +207,14 @@ private fun ShoppingListScreenOnModifyingMode(
         onClickOnProductItem = {},
         onLongClickOnProductItem = {},
     )
-    LaunchedEffect(key1 = Unit) {
+    /*LaunchedEffect(key1 = Unit) {
         if (showKeyboard.value) {
             awaitFrame()
             delay(100)
             focusRequester.requestFocus()
+            //showKeyboard.value = false
         }
-    }
+    }*/
 }
 
 @Composable

@@ -25,6 +25,6 @@ fun TextFieldWithDoneImeAction(
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
         keyboardActions = KeyboardActions(onDone = {
             onDone(value)
-        })
+        }),
     )
 }

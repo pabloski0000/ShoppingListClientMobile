@@ -1,4 +1,4 @@
-package main.shoppilientmobile.android.shoppingList.presentation
+package main.shoppilientmobile.android.shoppingList.presentation.pastTests.acceptanceTests
 
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.AndroidComposeTestRule
@@ -9,13 +9,15 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.coroutines.*
 import main.shoppilientmobile.android.MainActivity
 import main.shoppilientmobile.android.R
+import main.shoppilientmobile.android.shoppingList.presentation.testUtils.ProductItemCreator.createRandomProduct
+import main.shoppilientmobile.android.shoppingList.presentation.testUtils.ProductItemCreator.createRandomProducts
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class ShoppingListTest {
+class ShoppingListEndToEndTest {
     @get:Rule
     lateinit var composableRule: AndroidComposeTestRule<ActivityScenarioRule<MainActivity>, MainActivity>
     private val coroutineOnThreadDifferentToMain = CoroutineScope(Dispatchers.Default)
@@ -39,7 +41,7 @@ class ShoppingListTest {
         val products = createRandomProducts(amountOfProductsToCreate)
         for (i in 0 until amountOfProductsToCreate) {
             val product = products[i]
-            addProduct(product)
+            addProductToGUI(product)
             checkIfProductIsOnTheScreen(product)
         }
     }
@@ -48,7 +50,7 @@ class ShoppingListTest {
     fun removeProducts() {
         val amountOfProductsToCreate = 7
         val products = createRandomProducts(amountOfProductsToCreate)
-        addProducts(products)
+        addProductsToGUI(products)
         val productsToRemove = products.subList(0, 4)
         removeProductsOnTheScreen(productsToRemove)
         checkThatProductsDoNotExistOnTheScreen(productsToRemove)
@@ -63,7 +65,7 @@ class ShoppingListTest {
             products[2] to createRandomProduct(),
             products[3] to createRandomProduct(),
         )
-        addProducts(products)
+        addProductsToGUI(products)
         modifyProductsThatAreOnTheScreen(oldAndNewProducts)
         checkThatProductToModifyHasChanged(oldAndNewProducts)
     }
@@ -76,6 +78,9 @@ class ShoppingListTest {
         checkThatDataStillExists(products)
     }
 
+    private fun modifyProduct(product: String): String {
+        return "$product kjlasd"
+    }
     private fun clearList() {
         removeAllProducts()
     }
@@ -109,7 +114,7 @@ class ShoppingListTest {
     }
 
     private fun addDataBeforeClosingApp(products: List<String>) {
-        addProducts(products)
+        addProductsToGUI(products)
     }
 
     private fun restartApp() {
@@ -159,27 +164,6 @@ class ShoppingListTest {
         composableRule.onNode(getProductInputText()).performImeAction()
     }
 
-    private fun createRandomProducts(amountOfProducts: Int): List<String> {
-        val products = mutableListOf<String>()
-        for (i in 1..amountOfProducts) {
-            products.add(
-                createRandomProduct()
-            )
-        }
-        return products
-    }
-
-    private fun createRandomProduct(): String {
-        val productLength = 5..11
-        val allowedCharacters = ('a'..'z') + ('A'..'Z')
-        val product = buildString() {
-            for (i in 0 until productLength.random()) {
-                append(allowedCharacters.random().toString())
-            }
-        }
-        return product
-    }
-
     private fun removeProductsOnTheScreen(products: List<String>) {
         val firstProduct = products[0]
         longClickOnProduct(firstProduct)
@@ -209,13 +193,17 @@ class ShoppingListTest {
         composableRule.onNode(getDeletionIcon()).performClick()
     }
 
-    private fun addProducts(products: List<String>) {
+    private fun addProductsToGUI(
+        products: List<String>,
+    ) {
         products.map {
-            addProduct(it)
+            addProductToGUI(it)
         }
     }
 
-    private fun addProduct(product: String) {
+    private fun addProductToGUI(
+        product: String,
+    ) {
         composableRule.onNode(
             hasTestTag("AddProduct")
         ).performClick()

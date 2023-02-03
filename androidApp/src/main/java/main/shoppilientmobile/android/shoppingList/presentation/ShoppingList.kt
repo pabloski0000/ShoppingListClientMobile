@@ -70,7 +70,7 @@ fun ProductItem(
             }
             .fillMaxWidth()
             .padding(vertical = 8.dp),
-        text = productItemState.productDescription,
+        text = productItemState.content,
         textAlign = TextAlign.Center,
         fontSize = 24.sp,
     )
