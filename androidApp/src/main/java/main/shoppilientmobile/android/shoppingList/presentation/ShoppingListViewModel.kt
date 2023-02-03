@@ -11,8 +11,26 @@ class ShoppingListViewModel(
 ) : ViewModel(), ShoppingListObserver {
     private val _productItemsUiState = MutableStateFlow(emptyList<ProductItemState>())
     val productItemsUiState = _productItemsUiState.asStateFlow()
+    private val _screenStateUiState: MutableStateFlow<ScreenModeState> = MutableStateFlow(
+        ScreenModeState.NormalModeState()
+    )
+    val screenStateUiState = _screenStateUiState.asStateFlow()
     private val _errorMessageUiState = MutableStateFlow(ErrorMessageUiState(""))
     val errorMessageUiState = _errorMessageUiState.asStateFlow()
+    private data class ScreenState(
+        val screenMode: ScreenMode2,
+        val screenModeState: ScreenModeState
+    )
+    sealed class ScreenModeState {
+        class NormalModeState() : ScreenModeState()
+        data class DeletionModeState(val selectedProductItemsIndexes: List<Int>) : ScreenModeState()
+        data class ModifyingProductModeState(val productToModifyIndex: Int) : ScreenModeState()
+    }
+    enum class ScreenMode2 {
+        NORMAL,
+        DELETION,
+        MODIFYING_PRODUCT,
+    }
 
     init {
         shoppingList.observeShoppingList(this)
@@ -78,6 +96,22 @@ class ShoppingListViewModel(
         shoppingList.deleteProducts(
             productsToDelete.map { it.toProduct() }
         )
+    }
+
+    fun goToNormalScreenMode() {
+        _screenStateUiState.update { ScreenModeState.NormalModeState() }
+    }
+
+    fun goToDeletionScreenMode(productToSelectIndex: Int) {
+        _screenStateUiState.update {
+            ScreenModeState.DeletionModeState(
+                selectedProductItemsIndexes = listOf(productToSelectIndex)
+            )
+        }
+    }
+
+    fun goToModifyingProductScreenMode(productToModifyIndex: Int) {
+        _screenStateUiState.update { ScreenModeState.ModifyingProductModeState(productToModifyIndex) }
     }
 
     override fun stateAtTheMomentOfSubscribing(currentList: List<Product>) {

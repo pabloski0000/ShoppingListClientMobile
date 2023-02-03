@@ -6,14 +6,12 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.testTag
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import kotlinx.coroutines.android.awaitFrame
-import kotlinx.coroutines.delay
+import main.shoppilientmobile.android.shoppingList.presentation.ShoppingListViewModel.ScreenModeState
 
 
 const val SHOPPING_LIST_ROUTE = "shopping_list"
@@ -26,55 +24,39 @@ fun ShoppingListScreenChangingBetweenModes(
     navController: NavHostController,
     viewModel: ShoppingListViewModel,
 ) {
-    val screenState = remember {
-        mutableStateOf(
-            ScreenState(ScreenMode.NORMAL, ScreenModeState.NormalModeState())
-        )
-    }
+    val screenState = viewModel.screenStateUiState.collectAsState()
 
-    when (screenState.value.screenMode) {
-        ScreenMode.NORMAL -> {
+    when (screenState.value) {
+        is ScreenModeState.NormalModeState -> {
             setUpNormalMode(viewModel)
             ShoppingListScreenOnNormalMode(
                 viewModel = viewModel,
                 navController = navController,
                 onChangeToShoppingListScreenOnModifyingMode = { screenOnNormalModeState ->
-                    screenState.value = ScreenState(
-                        ScreenMode.MODIFYING_PRODUCT,
-                        screenOnNormalModeState,
-                    )
+                    viewModel.goToModifyingProductScreenMode(screenOnNormalModeState.productToModifyIndex)
                 },
                 onChangeToShoppingListScreenOnDeletionMode = { screenOnDeletionModeState ->
-                    screenState.value = ScreenState(
-                        ScreenMode.DELETION,
-                        screenOnDeletionModeState,
-                    )
+                    viewModel.goToDeletionScreenMode(screenOnDeletionModeState.selectedProductItemsIndexes.first())
                 }
             )
         }
-        ScreenMode.DELETION -> {
+        is ScreenModeState.DeletionModeState -> {
             ShoppingListScreenOnDeletionMode(
                 viewModel = viewModel,
-                deletionModeState = screenState.value.screenModeState
-                        as ScreenModeState.DeletionModeState,
+                deletionModeState = (screenState.value
+                        as ScreenModeState.DeletionModeState),
                 onChangeToShoppingListScreenOnNormalMode = {
-                    screenState.value = ScreenState(
-                        ScreenMode.NORMAL,
-                        ScreenModeState.NormalModeState(),
-                    )
+                    viewModel.goToNormalScreenMode()
                 },
             )
         }
-        ScreenMode.MODIFYING_PRODUCT -> {
+        is ScreenModeState.ModifyingProductModeState -> {
             ShoppingListScreenOnModifyingMode(
                 viewModel = viewModel,
-                modifyingProductModeState = screenState.value.screenModeState
-                        as ScreenModeState.ModifyingProductModeState,
+                modifyingProductModeState = (screenState.value
+                        as ScreenModeState.ModifyingProductModeState),
                 onChangeToShoppingListScreenOnNormalMode = {
-                    screenState.value = ScreenState(
-                        ScreenMode.NORMAL,
-                        ScreenModeState.NormalModeState(),
-                    )
+                    viewModel.goToNormalScreenMode()
                 },
             )
         }
@@ -91,7 +73,8 @@ private fun ShoppingListScreenOnNormalMode(
     navController: NavController,
     onChangeToShoppingListScreenOnModifyingMode:
         (modifyingProductModeState: ScreenModeState.ModifyingProductModeState) -> Unit,
-    onChangeToShoppingListScreenOnDeletionMode: (deletionModeState: ScreenModeState.DeletionModeState) -> Unit,
+    onChangeToShoppingListScreenOnDeletionMode:
+        (deletionModeState: ScreenModeState.DeletionModeState) -> Unit,
 ) {
     val productItemsState = viewModel.productItemsUiState.collectAsState()
     ShoppingListScreenContent(
@@ -112,7 +95,7 @@ private fun ShoppingListScreenOnNormalMode(
             viewModel.selectProductItem(productItemIndex)
             onChangeToShoppingListScreenOnDeletionMode(
                 ScreenModeState.DeletionModeState(
-                    nominatedProductItemIndexes = listOf(productItemIndex)
+                    selectedProductItemsIndexes = listOf(productItemIndex)
                 )
             )
         },
@@ -283,19 +266,4 @@ private fun setUpShoppingListOnDeletionMode(nominatedProductItemIndexes: List<In
 private data class ShoppingListScreenContentState(
     val productItemStates: List<ProductItemState>,
 )
-
-private data class ScreenState(
-    val screenMode: ScreenMode,
-    val screenModeState: ScreenModeState
-    )
-private sealed class ScreenModeState {
-    class NormalModeState() : ScreenModeState()
-    data class DeletionModeState(val nominatedProductItemIndexes: List<Int>) : ScreenModeState()
-    data class ModifyingProductModeState(val productToModifyIndex: Int) : ScreenModeState()
-}
-private enum class ScreenMode {
-    NORMAL,
-    DELETION,
-    MODIFYING_PRODUCT,
-}
 
