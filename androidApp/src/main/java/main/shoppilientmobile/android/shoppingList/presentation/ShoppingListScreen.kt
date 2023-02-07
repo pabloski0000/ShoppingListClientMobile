@@ -20,7 +20,7 @@ private const val SCREEN_ON_DELETION_MODE_ROUTE = "deletion_screen_mode"
 private const val SCREEN_ON_MODIFYING_PRODUCT_MODE_ROUTE = "modifying_product_mode"
 
 @Composable
-fun ShoppingListScreenChangingBetweenModes(
+fun ShoppingListScreen(
     navController: NavHostController,
     viewModel: ShoppingListViewModel,
 ) {

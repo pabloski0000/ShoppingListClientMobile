@@ -11,11 +11,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import main.shoppilientmobile.android.core.AndroidContainer
 import main.shoppilientmobile.android.shoppingList.presentation.*
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.containers.RegistrationContainer
@@ -28,8 +26,6 @@ class MainActivity : ComponentActivity() {
     private lateinit var fillNicknameViewModel: FillNicknameViewModel
     private lateinit var shoppingListViewModelFactory: ShoppingListViewModelFactory
     private lateinit var productFactoryViewModelFactory: ProductFactoryViewModelFactory
-    lateinit var shoppingListViewModel: ShoppingListViewModel
-    private lateinit var productFactoryViewModel: ProductFactoryViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -87,7 +83,7 @@ class MainActivity : ComponentActivity() {
                     "FirstViewModelInGraph",
                     shoppingListViewModelFactory,
                 )
-                ShoppingListScreenChangingBetweenModes(
+                ShoppingListScreen(
                     navController = navController,
                     viewModel = viewModel
                 )
