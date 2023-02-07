@@ -21,4 +21,8 @@ class ProductFactoryViewModel(
         shoppingList.addProduct(Product(_product.value))
         _product.update { "" }
     }
+
+    fun createProduct(product: String) {
+        shoppingList.addProduct(Product(product))
+    }
 }

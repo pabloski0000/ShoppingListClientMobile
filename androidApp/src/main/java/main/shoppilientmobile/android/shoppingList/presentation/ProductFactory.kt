@@ -11,6 +11,7 @@ import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -40,8 +41,8 @@ fun ProductFactoryScreen(
     ProductFactoryScreenContent(
         product = product.value,
         onProductChange = { viewModel.onProductChange(it) },
-        onProductIntroduced = {
-            viewModel.createProduct()
+        onProductIntroduced = { productToCreate ->
+            viewModel.createProduct(productToCreate)
             navController.popBackStack()
         },
         keyboardShower = keyboardShower
@@ -112,6 +113,9 @@ private fun ProductFactoryTextField(
     onDone: (product: String) -> Unit,
     focusRequester: FocusRequester,
 ) {
+    val productToCreate = rememberSaveable {
+        mutableStateOf("")
+    }
     OutlinedTextField(
         modifier = modifier
             .background(Color(57, 56, 60))
@@ -120,12 +124,14 @@ private fun ProductFactoryTextField(
         label = {
             Text(text = "Product Name")
         },
-        value = product,
-        onValueChange = onProductChange,
+        value = productToCreate.value,
+        onValueChange = {
+            productToCreate.value = it
+        },
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
         keyboardActions = KeyboardActions(
             onDone = {
-                onDone(product)
+                onDone(productToCreate.value)
             },
         ),
     )
