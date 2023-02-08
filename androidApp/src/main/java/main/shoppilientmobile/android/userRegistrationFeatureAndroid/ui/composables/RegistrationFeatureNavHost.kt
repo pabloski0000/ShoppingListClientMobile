@@ -22,11 +22,13 @@ fun RegistrationFeatureNavHost(
         composable(route = RoleElectionRoutableComposable.route) {
             RoleElectionRoutableComposable.RoleElection(
                 viewModel = roleElectionViewModel,
+                navHostController,
             )
         }
         composable(route = FillNicknameRoutableComposable.route) {
             FillNicknameRoutableComposable.FillNickname(
                 viewModel = fillNicknameViewModel,
+                navHostController,
             )
         }
     }

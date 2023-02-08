@@ -8,6 +8,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavController
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.stateHolders.RoleElectionViewModel
 import main.shoppilientmobile.domain.domainExposure.UserRole
 
@@ -17,10 +18,12 @@ object RoleElectionRoutableComposable: RoutableComposable {
     @Composable
     fun RoleElection(
         viewModel: RoleElectionViewModel,
+        navController: NavController,
     ) {
         UserChoice(
             onRoleChosen = { role ->
-                viewModel.onRoleChosen(role)
+                viewModel.saveRole(role)
+                navController.navigate(FillNicknameRoutableComposable.route)
             }
         )
     }

@@ -9,7 +9,7 @@ import main.shoppilientmobile.userRegistrationFeature.repositories.UserRoleRepos
 class RoleElectionViewModel(
     private val userRoleRepository: UserRoleRepository,
 ): ViewModel() {
-    fun onRoleChosen(userRole: UserRole) {
+    fun saveRole(userRole: UserRole) {
         viewModelScope.launch {
             userRoleRepository.add(userRole)
             println("Stored")

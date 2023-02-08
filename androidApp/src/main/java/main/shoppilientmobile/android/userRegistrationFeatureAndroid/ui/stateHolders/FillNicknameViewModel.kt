@@ -4,9 +4,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.composables.ProcessInformationUiState
 import main.shoppilientmobile.domain.domainExposure.UserRole
@@ -29,7 +27,7 @@ class FillNicknameViewModel(
     )
     val processInformationUiState = _processInformationUiState.asStateFlow()
 
-    fun onNicknameIntroduced(nickname: String) {
+    fun registerUser(nickname: String) {
         try {
             viewModelScope.launch {
                 val userRole = userRoleRepository.getUserRoleRepository()

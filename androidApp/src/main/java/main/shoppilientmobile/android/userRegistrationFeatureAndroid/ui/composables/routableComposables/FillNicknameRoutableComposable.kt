@@ -11,7 +11,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import kotlinx.coroutines.launch
+import main.shoppilientmobile.android.shoppingList.presentation.SHOPPING_LIST_ROUTE
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.stateHolders.FillNicknameViewModel
 
 object FillNicknameRoutableComposable: RoutableComposable {
@@ -20,6 +22,7 @@ object FillNicknameRoutableComposable: RoutableComposable {
     @Composable
     fun FillNickname(
         viewModel: FillNicknameViewModel,
+        navController: NavController,
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -28,7 +31,8 @@ object FillNicknameRoutableComposable: RoutableComposable {
             Spacer(modifier = Modifier.size(300.dp))
 
             NicknameField(onDone = { nickname ->
-                viewModel.onNicknameIntroduced(nickname)
+                viewModel.registerUser(nickname)
+                navController.navigate(SHOPPING_LIST_ROUTE)
             })
 
             Row(

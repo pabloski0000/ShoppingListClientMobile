@@ -17,6 +17,9 @@ import androidx.navigation.compose.rememberNavController
 import main.shoppilientmobile.android.core.AndroidContainer
 import main.shoppilientmobile.android.shoppingList.presentation.*
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.containers.RegistrationContainer
+import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.composables.RegistrationFeatureNavHost
+import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.composables.routableComposables.FillNicknameRoutableComposable
+import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.composables.routableComposables.RoleElectionRoutableComposable
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.stateHolders.FillNicknameViewModel
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.stateHolders.RoleElectionViewModel
 
@@ -75,7 +78,7 @@ class MainActivity : ComponentActivity() {
         val navController = rememberNavController()
         NavHost(
             navController = navController,
-            startDestination = SHOPPING_LIST_ROUTE,
+            startDestination = RoleElectionRoutableComposable.route,
         ) {
             composable(route = SHOPPING_LIST_ROUTE) {
                 val viewModel = viewModel<ShoppingListViewModel>(
@@ -95,6 +98,18 @@ class MainActivity : ComponentActivity() {
                     productFactoryViewModelFactory,
                 )
                 ProductFactoryScreen(navController, viewModel)
+            }
+            composable(route = RoleElectionRoutableComposable.route) {
+                RoleElectionRoutableComposable.RoleElection(
+                    viewModel = roleElectionViewModel,
+                    navController,
+                )
+            }
+            composable(route = FillNicknameRoutableComposable.route) {
+                FillNicknameRoutableComposable.FillNickname(
+                    viewModel = fillNicknameViewModel,
+                    navController,
+                )
             }
         }
     }
