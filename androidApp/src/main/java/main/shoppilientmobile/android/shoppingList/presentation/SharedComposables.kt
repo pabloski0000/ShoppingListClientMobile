@@ -8,6 +8,8 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Deselect
+import androidx.compose.material.icons.filled.SelectAll
 import androidx.compose.material.icons.outlined.Done
 import androidx.compose.material.icons.rounded.Done
 import androidx.compose.runtime.Composable
@@ -46,6 +48,8 @@ fun DeletionApplicationTopBar(
     modifier: Modifier = Modifier,
     onClickOnDeletionIcon: () -> Unit,
     onSelectAllItems: () -> Unit,
+    onDeselectAllItems: () -> Unit,
+    allItemsAreSelected: Boolean,
 ) {
     TopAppBar(
         modifier = modifier,
@@ -59,11 +63,20 @@ fun DeletionApplicationTopBar(
             ) {
                 DeletionIcon()
             }
-            IconButton(
-                modifier = Modifier.testTag("selectAll"),
-                onClick = onSelectAllItems,
-            ) {
-                Icon(imageVector = Icons.Outlined.Done, contentDescription = "Select all items")
+            if (allItemsAreSelected) {
+                IconButton(
+                    modifier = Modifier,
+                    onClick = onDeselectAllItems,
+                ) {
+                    Icon(imageVector = Icons.Default.Deselect, contentDescription = "Select all items")
+                }
+            } else {
+                IconButton(
+                    modifier = Modifier.testTag("selectAll"),
+                    onClick = onSelectAllItems,
+                ) {
+                    Icon(imageVector = Icons.Default.SelectAll, contentDescription = "Select all items")
+                }
             }
         }
     )
@@ -83,7 +96,7 @@ private fun DeletionIcon(
 ) {
     Icon(
         modifier = modifier,
-        imageVector = Icons.Default.Clear,
+        imageVector = Icons.Default.Delete,
         contentDescription = "Delete icon"
     )
 }

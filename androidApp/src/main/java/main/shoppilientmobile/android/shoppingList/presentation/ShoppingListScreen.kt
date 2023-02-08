@@ -108,8 +108,8 @@ private fun ShoppingListScreenOnDeletionMode(
     deletionModeState: ScreenModeState.DeletionModeState,
     onChangeToShoppingListScreenOnNormalMode: () -> Unit,
 ) {
-    val productItemsState = viewModel.productItemsUiState.collectAsState()
-    if (! areThereNominatedProductItems(productItemsState.value)) {
+    val productItemsStates = viewModel.productItemsUiState.collectAsState()
+    if (! thereIsAtLeastOneProductItemSelected(productItemsStates.value)) {
         onChangeToShoppingListScreenOnNormalMode()
     }
 
@@ -125,13 +125,17 @@ private fun ShoppingListScreenOnDeletionMode(
                 onSelectAllItems = {
                     viewModel.selectAllProductsItems()
                 },
+                onDeselectAllItems = {
+                    viewModel.deselectAllProductItems()
+                },
+                allItemsAreSelected = allProductItemsAreSelected(productItemsStates.value),
             )
         },
         productModifier = {},
-        productItemStates = productItemsState.value,
+        productItemStates = productItemsStates.value,
         onClickOnAddProductButton = {},
         onClickOnProductItem = { clickedProductIndex ->
-            if (productItemsState.value[clickedProductIndex].selected) {
+            if (productItemsStates.value[clickedProductIndex].selected) {
                 viewModel.deselectProductItem(clickedProductIndex)
             } else {
                 viewModel.selectProductItem(clickedProductIndex)
@@ -251,7 +255,11 @@ fun AddProductButton(
     }
 }
 
-private fun areThereNominatedProductItems(
+private fun allProductItemsAreSelected(productItemStates: List<ProductItemState>): Boolean {
+    return productItemStates.all { it.selected }
+}
+
+private fun thereIsAtLeastOneProductItemSelected(
     productItemStates: List<ProductItemState>,
 ): Boolean {
     return productItemStates.any { it.selected }

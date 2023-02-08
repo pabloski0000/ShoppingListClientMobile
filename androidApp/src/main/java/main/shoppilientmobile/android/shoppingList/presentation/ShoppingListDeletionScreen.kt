@@ -65,6 +65,8 @@ private fun ShoppingListDeletionScreenContent(
              DeletionApplicationTopBar(
                  onClickOnDeletionIcon = onClickOnDeletionIcon,
                  onSelectAllItems = {},
+                 onDeselectAllItems = {},
+                 allItemsAreSelected = true,
              )
         },
     ) { padding ->
