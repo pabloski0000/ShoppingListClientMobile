@@ -1,15 +1,12 @@
 package main.shoppilientmobile.android.core
 
 import android.content.Context
-import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
-import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStoreFile
 import androidx.room.Room
 import main.shoppilientmobile.android.shoppingList.data.AndroidShoppingList
 import main.shoppilientmobile.android.shoppingList.domain.ShoppingList
 import main.shoppilientmobile.android.shoppingList.presentation.ProductFactoryViewModelFactory
-import main.shoppilientmobile.android.shoppingList.presentation.ShoppingListNormalViewModelFactory
 import main.shoppilientmobile.android.shoppingList.presentation.ShoppingListViewModelFactory
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.androidRepository.KeyValueLocalStorage
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.androidRepository.room.RoomDb
@@ -18,7 +15,6 @@ import main.shoppilientmobile.core.remote.AsynchronousHttpClientImpl
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.androidRepository.SecurityTokenKeeperImpl
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.androidRepository.UserLocalDataSourceAndroid
 import main.shoppilientmobile.dataSources.StreamingHttpClientAndroid
-import main.shoppilientmobile.userRegistrationFeature.dataSources.UserLocalDataSource
 import main.shoppilientmobile.userRegistrationFeature.dataSources.apis.UserApiWithoutKtor
 import main.shoppilientmobile.userRegistrationFeature.repositories.UserRepositoryImpl
 
