@@ -43,7 +43,7 @@ class FillNicknameViewModel(
                     showTheUserThatTheyAreRegistered()
                 } else {
                     registerUserUseCase.registerUser(nickname)
-                    navController.navigate(IntroduceCodeRoutableComposable.route)
+                    navController.navigate("${IntroduceCodeRoutableComposable.route}/$nickname")
                     showTheUserThatTheyAreRegistered()
                 }
             }

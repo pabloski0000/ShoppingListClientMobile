@@ -137,11 +137,16 @@ class MainActivity : ComponentActivity() {
                     userRole,
                 )
             }
-            composable(route = IntroduceCodeRoutableComposable.route) {
+            val introduceCodePathScreenPath = "userNickname"
+            composable(route = "${IntroduceCodeRoutableComposable.route}/{$introduceCodePathScreenPath}") { entry ->
                 val viewModel = viewModel<IntroduceCodeViewModel>(
                     factory = IntroduceCodeViewModelFactory(registrationRepository)
                 )
-                IntroduceCodeRoutableComposable.IntroduceCode(viewModel = viewModel)
+                val userNickname = entry.arguments!!.getString(introduceCodePathScreenPath)!!
+                IntroduceCodeRoutableComposable.IntroduceCode(
+                    viewModel = viewModel,
+                    userNickname = userNickname,
+                )
             }
         }
     }

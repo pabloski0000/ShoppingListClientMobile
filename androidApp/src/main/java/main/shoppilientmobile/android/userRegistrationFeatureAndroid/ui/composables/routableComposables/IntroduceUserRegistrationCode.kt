@@ -20,6 +20,7 @@ object IntroduceCodeRoutableComposable: RoutableComposable {
     fun IntroduceCode(
         modifier: Modifier = Modifier,
         viewModel: IntroduceCodeViewModel,
+        userNickname: String,
     ) {
         Column(
             modifier = modifier.fillMaxSize()
@@ -28,9 +29,7 @@ object IntroduceCodeRoutableComposable: RoutableComposable {
             val userInformationMessage = viewModel.processInformationUiState.collectAsState().value
             CodeField(
                 onCodeIntroduced = { code ->
-                    coroutineScope.launch {
-                        viewModel.onSignatureIntroduced(signature = code)
-                    }
+                    viewModel.confirmRegistration(userNickname, code)
                 }
             )
             FillNicknameRoutableComposable.ProcessInformationMessage(

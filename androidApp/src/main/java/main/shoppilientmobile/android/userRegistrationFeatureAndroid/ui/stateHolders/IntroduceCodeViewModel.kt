@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.composables.ProcessInformationUiState
 import main.shoppilientmobile.domain.domainExposure.UserRole
+import main.shoppilientmobile.userRegistrationFeature.entities.Registration
 import main.shoppilientmobile.userRegistrationFeature.repositories.RegistrationRepository
 
 class IntroduceCodeViewModel(
@@ -21,7 +22,15 @@ class IntroduceCodeViewModel(
     )
     val processInformationUiState = _processInformationUiState.asStateFlow()
 
-    fun onSignatureIntroduced(signature: String) {
-        TODO()
+    fun confirmRegistration(nickname: String, signature: String) {
+        viewModelScope.launch {
+            registrationRepository.confirmRegistration(
+                Registration(
+                    nickname,
+                    UserRole.BASIC,
+                    signature,
+                )
+            )
+        }
     }
 }
