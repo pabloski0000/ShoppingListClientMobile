@@ -3,10 +3,13 @@ package main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.stateHo
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import main.shoppilientmobile.android.shoppingList.presentation.SHOPPING_LIST_ROUTE
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.composables.ProcessInformationUiState
+import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.composables.routableComposables.IntroduceCodeRoutableComposable
 import main.shoppilientmobile.domain.domainExposure.UserRole
 import main.shoppilientmobile.domain.exceptions.InvalidUserNicknameException
 import main.shoppilientmobile.userRegistrationFeature.dataSources.exceptions.RemoteDataSourceException
@@ -19,6 +22,7 @@ class FillNicknameViewModel(
     private val registerAdminUseCase: RegisterAdminUseCase,
     private val registerUserUseCase: RegisterUserUseCase,
     private val userRoleRepository: UserRoleRepository,
+    private val navController: NavController,
 ): ViewModel() {
     private val _processInformationUiState = MutableStateFlow(
         ProcessInformationUiState(
@@ -29,14 +33,17 @@ class FillNicknameViewModel(
     val processInformationUiState = _processInformationUiState.asStateFlow()
 
 
-    fun registerUser(registration: Registration) {
+    fun registerUser(nickname: String) {
         try {
             viewModelScope.launch {
-                if (registration.role == UserRole.ADMIN) {
-                    registerAdminUseCase.registerAdmin(registration.nickname)
+                val userRole = userRoleRepository.getUserRoleRepository()
+                if (userRole == UserRole.ADMIN) {
+                    registerAdminUseCase.registerAdmin(nickname)
+                    navController.navigate(SHOPPING_LIST_ROUTE)
                     showTheUserThatTheyAreRegistered()
                 } else {
-                    registerUserUseCase.registerUser(registration.nickname)
+                    registerUserUseCase.registerUser(nickname)
+                    navController.navigate(IntroduceCodeRoutableComposable.route)
                     showTheUserThatTheyAreRegistered()
                 }
             }

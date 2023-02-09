@@ -22,7 +22,7 @@ class RegistrationContainer(
         securityTokenKeeper = securityTokenKeeper,
     )
 
-    private val registrationRepository = RegistrationRepositoryImpl(
+    val registrationRepository = RegistrationRepositoryImpl(
         registrationRemoteDataSource = registrationApi,
     )
 

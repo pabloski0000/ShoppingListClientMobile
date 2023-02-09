@@ -34,10 +34,7 @@ object FillNicknameRoutableComposable: RoutableComposable {
             Spacer(modifier = Modifier.size(300.dp))
 
             NicknameField(onDone = { nickname ->
-                viewModel.registerUser(
-                    Registration(nickname, userRole)
-                )
-                navController.navigate(SHOPPING_LIST_ROUTE)
+                viewModel.registerUser(nickname)
             })
 
             Row(
