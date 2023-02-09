@@ -15,6 +15,8 @@ import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import main.shoppilientmobile.android.shoppingList.presentation.SHOPPING_LIST_ROUTE
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.stateHolders.FillNicknameViewModel
+import main.shoppilientmobile.domain.domainExposure.UserRole
+import main.shoppilientmobile.userRegistrationFeature.entities.Registration
 
 object FillNicknameRoutableComposable: RoutableComposable {
     override val route: String = "fill_nickname"
@@ -23,6 +25,7 @@ object FillNicknameRoutableComposable: RoutableComposable {
     fun FillNickname(
         viewModel: FillNicknameViewModel,
         navController: NavController,
+        userRole: UserRole,
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -31,7 +34,9 @@ object FillNicknameRoutableComposable: RoutableComposable {
             Spacer(modifier = Modifier.size(300.dp))
 
             NicknameField(onDone = { nickname ->
-                viewModel.registerUser(nickname)
+                viewModel.registerUser(
+                    Registration(nickname, userRole)
+                )
                 navController.navigate(SHOPPING_LIST_ROUTE)
             })
 

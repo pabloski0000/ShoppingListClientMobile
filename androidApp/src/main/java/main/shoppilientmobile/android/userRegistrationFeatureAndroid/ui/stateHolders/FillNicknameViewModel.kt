@@ -10,6 +10,7 @@ import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.composab
 import main.shoppilientmobile.domain.domainExposure.UserRole
 import main.shoppilientmobile.domain.exceptions.InvalidUserNicknameException
 import main.shoppilientmobile.userRegistrationFeature.dataSources.exceptions.RemoteDataSourceException
+import main.shoppilientmobile.userRegistrationFeature.entities.Registration
 import main.shoppilientmobile.userRegistrationFeature.repositories.UserRoleRepository
 import main.shoppilientmobile.userRegistrationFeature.useCases.RegisterAdminUseCase
 import main.shoppilientmobile.userRegistrationFeature.useCases.RegisterUserUseCase
@@ -27,15 +28,15 @@ class FillNicknameViewModel(
     )
     val processInformationUiState = _processInformationUiState.asStateFlow()
 
-    fun registerUser(nickname: String) {
+
+    fun registerUser(registration: Registration) {
         try {
             viewModelScope.launch {
-                val userRole = userRoleRepository.getUserRoleRepository()
-                if (userRole == UserRole.ADMIN) {
-                    registerAdminUseCase.registerAdmin(nickname)
+                if (registration.role == UserRole.ADMIN) {
+                    registerAdminUseCase.registerAdmin(registration.nickname)
                     showTheUserThatTheyAreRegistered()
                 } else {
-                    registerUserUseCase.registerUser(nickname)
+                    registerUserUseCase.registerUser(registration.nickname)
                     showTheUserThatTheyAreRegistered()
                 }
             }

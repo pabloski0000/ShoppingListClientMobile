@@ -8,6 +8,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -22,6 +23,7 @@ import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.composab
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.composables.routableComposables.RoleElectionRoutableComposable
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.stateHolders.FillNicknameViewModel
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.stateHolders.RoleElectionViewModel
+import main.shoppilientmobile.domain.domainExposure.UserRole
 
 class MainActivity : ComponentActivity() {
     private lateinit var androidContainer: AndroidContainer
@@ -105,12 +107,26 @@ class MainActivity : ComponentActivity() {
                     navController,
                 )
             }
-            composable(route = FillNicknameRoutableComposable.route) {
+            val fillNicknameScreenPath = "{userRole}"
+            composable(route = "${FillNicknameRoutableComposable.route}/$fillNicknameScreenPath") { entry ->
+                val userRole = adaptToUserRole(
+                    entry.arguments!!.getString(fillNicknameScreenPath
+                        .filter { it != '{' && it != '}' })!!
+                )
                 FillNicknameRoutableComposable.FillNickname(
                     viewModel = fillNicknameViewModel,
                     navController,
+                    userRole,
                 )
             }
+        }
+    }
+
+    private fun adaptToUserRole(userRole: String): UserRole {
+        return when {
+            userRole.uppercase() == "ADMIN" -> UserRole.ADMIN
+            userRole.uppercase() == "BASIC" -> UserRole.BASIC
+            else -> throw IllegalArgumentException("Unexpected user role argument")
         }
     }
 }

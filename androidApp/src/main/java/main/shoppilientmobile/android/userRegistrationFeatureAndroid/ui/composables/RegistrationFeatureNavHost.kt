@@ -8,6 +8,7 @@ import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.composab
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.composables.routableComposables.RoleElectionRoutableComposable
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.stateHolders.FillNicknameViewModel
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.stateHolders.RoleElectionViewModel
+import main.shoppilientmobile.domain.domainExposure.UserRole
 
 @Composable
 fun RegistrationFeatureNavHost(
@@ -29,6 +30,7 @@ fun RegistrationFeatureNavHost(
             FillNicknameRoutableComposable.FillNickname(
                 viewModel = fillNicknameViewModel,
                 navHostController,
+                UserRole.ADMIN
             )
         }
     }

@@ -23,7 +23,9 @@ object RoleElectionRoutableComposable: RoutableComposable {
         UserChoice(
             onRoleChosen = { role ->
                 viewModel.saveRole(role)
-                navController.navigate(FillNicknameRoutableComposable.route)
+                navController.navigate(
+                    "${FillNicknameRoutableComposable.route}/${adaptUserRole(role)}"
+                )
             }
         )
     }
@@ -57,6 +59,13 @@ private fun AdminButton(onClick: () -> Unit) {
 private fun UserButton(onClick: () -> Unit) {
     Button(onClick = onClick) {
         Text(text = "User")
+    }
+}
+
+private fun adaptUserRole(userRole: UserRole): String {
+    return when (userRole) {
+        UserRole.ADMIN -> "ADMIN"
+        UserRole.BASIC -> "BASIC"
     }
 }
 

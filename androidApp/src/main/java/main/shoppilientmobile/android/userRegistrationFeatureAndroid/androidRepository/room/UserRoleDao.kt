@@ -9,6 +9,7 @@ import main.shoppilientmobile.userRegistrationFeature.repositories.UserRoleLocal
 @Dao
 interface UserRoleDao : UserRoleLocalDataSource {
     override suspend fun add(userRole: UserRole) {
+        deleteAll()
         save(UserRoleEntity(role = userRole))
     }
 
@@ -22,4 +23,7 @@ interface UserRoleDao : UserRoleLocalDataSource {
 
     @Query("SELECT * FROM UserRoleEntity")
     suspend fun getAll(): UserRoleEntity
+
+    @Query("DELETE FROM UserRoleEntity")
+    suspend fun deleteAll()
 }
