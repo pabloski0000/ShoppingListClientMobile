@@ -24,8 +24,6 @@ object FillNicknameRoutableComposable: RoutableComposable {
     @Composable
     fun FillNickname(
         viewModel: FillNicknameViewModel,
-        navController: NavController,
-        userRole: UserRole,
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),

@@ -8,7 +8,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -18,7 +17,6 @@ import androidx.navigation.compose.rememberNavController
 import main.shoppilientmobile.android.core.AndroidContainer
 import main.shoppilientmobile.android.shoppingList.presentation.*
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.containers.RegistrationContainer
-import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.composables.RegistrationFeatureNavHost
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.composables.routableComposables.FillNicknameRoutableComposable
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.composables.routableComposables.IntroduceCodeRoutableComposable
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.composables.routableComposables.RoleElectionRoutableComposable
@@ -27,7 +25,6 @@ import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.stateHol
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.stateHolders.RoleElectionViewModel
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.stateHoldersFactories.FillNicknameViewModelFactory
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.stateHoldersFactories.IntroduceCodeViewModelFactory
-import main.shoppilientmobile.domain.domainExposure.UserRole
 import main.shoppilientmobile.userRegistrationFeature.repositories.RegistrationRepository
 import main.shoppilientmobile.userRegistrationFeature.repositories.UserRoleRepository
 import main.shoppilientmobile.userRegistrationFeature.useCases.RegisterAdminUseCase
@@ -117,12 +114,7 @@ class MainActivity : ComponentActivity() {
                     navController,
                 )
             }
-            val fillNicknameScreenPath = "{userRole}"
-            composable(route = "${FillNicknameRoutableComposable.route}/$fillNicknameScreenPath") { entry ->
-                val userRole = adaptToUserRole(
-                    entry.arguments!!.getString(fillNicknameScreenPath
-                        .filter { it != '{' && it != '}' })!!
-                )
+            composable(route = FillNicknameRoutableComposable.route) {
                 val viewModel = viewModel<FillNicknameViewModel>(
                     factory = FillNicknameViewModelFactory(
                         registerAdminUseCase,
@@ -131,16 +123,12 @@ class MainActivity : ComponentActivity() {
                         navController,
                     )
                 )
-                FillNicknameRoutableComposable.FillNickname(
-                    viewModel = viewModel,
-                    navController,
-                    userRole,
-                )
+                FillNicknameRoutableComposable.FillNickname(viewModel)
             }
             val introduceCodePathScreenPath = "userNickname"
             composable(route = "${IntroduceCodeRoutableComposable.route}/{$introduceCodePathScreenPath}") { entry ->
                 val viewModel = viewModel<IntroduceCodeViewModel>(
-                    factory = IntroduceCodeViewModelFactory(registrationRepository)
+                    factory = IntroduceCodeViewModelFactory(registrationRepository, navController)
                 )
                 val userNickname = entry.arguments!!.getString(introduceCodePathScreenPath)!!
                 IntroduceCodeRoutableComposable.IntroduceCode(
@@ -148,14 +136,6 @@ class MainActivity : ComponentActivity() {
                     userNickname = userNickname,
                 )
             }
-        }
-    }
-
-    private fun adaptToUserRole(userRole: String): UserRole {
-        return when {
-            userRole.uppercase() == "ADMIN" -> UserRole.ADMIN
-            userRole.uppercase() == "BASIC" -> UserRole.BASIC
-            else -> throw IllegalArgumentException("Unexpected user role argument")
         }
     }
 }

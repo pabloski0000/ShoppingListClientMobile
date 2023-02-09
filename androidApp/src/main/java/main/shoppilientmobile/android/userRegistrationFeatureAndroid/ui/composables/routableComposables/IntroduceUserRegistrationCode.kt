@@ -25,7 +25,6 @@ object IntroduceCodeRoutableComposable: RoutableComposable {
         Column(
             modifier = modifier.fillMaxSize()
         ) {
-            val coroutineScope = rememberCoroutineScope()
             val userInformationMessage = viewModel.processInformationUiState.collectAsState().value
             CodeField(
                 onCodeIntroduced = { code ->

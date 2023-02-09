@@ -3,9 +3,11 @@ package main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.stateHo
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import main.shoppilientmobile.android.shoppingList.presentation.SHOPPING_LIST_ROUTE
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.composables.ProcessInformationUiState
 import main.shoppilientmobile.domain.domainExposure.UserRole
 import main.shoppilientmobile.userRegistrationFeature.entities.Registration
@@ -13,6 +15,7 @@ import main.shoppilientmobile.userRegistrationFeature.repositories.RegistrationR
 
 class IntroduceCodeViewModel(
     private val registrationRepository: RegistrationRepository,
+    private val navController: NavController,
 ) : ViewModel() {
     private val _processInformationUiState = MutableStateFlow(
         ProcessInformationUiState(
@@ -31,6 +34,7 @@ class IntroduceCodeViewModel(
                     signature,
                 )
             )
+            navController.navigate(SHOPPING_LIST_ROUTE)
         }
     }
 }
