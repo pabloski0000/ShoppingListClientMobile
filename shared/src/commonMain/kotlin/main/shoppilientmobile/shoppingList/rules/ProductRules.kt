@@ -1,4 +1,4 @@
-package main.shoppilientmobile.createListFeature.rules
+package main.shoppilientmobile.shoppingList.rules
 
 object ProductRules {
     const val minimumProductDescriptionLength = 0

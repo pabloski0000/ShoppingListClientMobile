@@ -4,11 +4,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import main.shoppilientmobile.android.shoppingList.domain.ShoppingList
-import main.shoppilientmobile.android.shoppingList.domain.ShoppingListObserver
+import main.shoppilientmobile.shoppingList.domain.ShoppingList
+import main.shoppilientmobile.shoppingList.domain.ShoppingListObserver
 import main.shoppilientmobile.domain.Product
 
 class AndroidShoppingList(
@@ -17,6 +16,14 @@ class AndroidShoppingList(
     private val coroutineScopeInMainThread = CoroutineScope(Dispatchers.Main)
     private val products = MutableStateFlow(emptyList<Product>())
     private var observers = emptyList<ShoppingListObserver>()
+    override fun recreate(products: List<Product>) {
+        coroutineScopeInMainThread.launch(Dispatchers.IO) {
+            shoppingListDao.repopulate(products)
+            withContext(Dispatchers.Main) {
+                notifyOfShoppingListRecreation(products)
+            }
+        }
+    }
 
     override fun addProduct(product: Product) {
         coroutineScopeInMainThread.launch(Dispatchers.IO) {
@@ -97,5 +104,9 @@ class AndroidShoppingList(
 
     private fun notifyOfProductDeleted(product: Product) {
         observers.map { it.productDeleted(product) }
+    }
+
+    private fun notifyOfShoppingListRecreation(products: List<Product>) {
+        observers.map { it.shoppingListRecreated(products) }
     }
 }

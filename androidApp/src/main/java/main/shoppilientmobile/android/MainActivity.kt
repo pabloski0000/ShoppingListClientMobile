@@ -62,11 +62,13 @@ class MainActivity : ComponentActivity() {
         val httpClient = androidContainer.httpClient
         val userRepository = androidContainer.userRepository
         val securityTokenKeeper = androidContainer.securityTokenKeeper
+        val shoppingListSynchroniserUseCase = androidContainer.shoppingListSynchroniserUseCase
         val registrationContainer = RegistrationContainer(
             httpClient = httpClient,
             securityTokenKeeper = securityTokenKeeper,
             userRepository = userRepository,
             userRoleLocalDataSource = androidContainer.room.userRoleDao(),
+            shoppingListSynchroniserUseCase,
         )
         androidContainer.registrationContainer = registrationContainer
         roleElectionViewModel = RoleElectionViewModel(

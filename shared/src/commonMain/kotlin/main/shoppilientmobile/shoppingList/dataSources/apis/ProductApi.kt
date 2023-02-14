@@ -1,4 +1,4 @@
-package main.shoppilientmobile.createListFeature.dataSources.apis
+package main.shoppilientmobile.shoppingList.dataSources.apis
 
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray

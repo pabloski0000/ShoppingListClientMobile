@@ -1,8 +1,8 @@
-package main.shoppilientmobile.createListFeature
+package main.shoppilientmobile.shoppingList
 
-import main.shoppilientmobile.createListFeature.rules.ExceededMaximumProductDescriptionLengthException
-import main.shoppilientmobile.createListFeature.rules.ProductRules
-import main.shoppilientmobile.createListFeature.rules.UnreachedMinimumProductDescriptionLengthException
+import main.shoppilientmobile.shoppingList.rules.ExceededMaximumProductDescriptionLengthException
+import main.shoppilientmobile.shoppingList.rules.ProductRules
+import main.shoppilientmobile.shoppingList.rules.UnreachedMinimumProductDescriptionLengthException
 import main.shoppilientmobile.domain.Product
 import kotlin.test.Test
 import kotlin.test.assertTrue

@@ -2,8 +2,8 @@ package main.shoppilientmobile.android.shoppingList.presentation
 
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.*
-import main.shoppilientmobile.android.shoppingList.domain.ShoppingList
-import main.shoppilientmobile.android.shoppingList.domain.ShoppingListObserver
+import main.shoppilientmobile.shoppingList.domain.ShoppingList
+import main.shoppilientmobile.shoppingList.domain.ShoppingListObserver
 import main.shoppilientmobile.domain.Product
 
 class ShoppingListViewModel(
@@ -139,6 +139,12 @@ class ShoppingListViewModel(
                 }
                 return@map product
             }
+        }
+    }
+
+    override fun shoppingListRecreated(currentList: List<Product>) {
+        _productItemsUiState.update {
+            currentList.map { product -> ProductItemState.fromProduct(product) }
         }
     }
 

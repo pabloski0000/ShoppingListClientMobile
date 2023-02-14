@@ -5,7 +5,7 @@ import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.preferencesDataStoreFile
 import androidx.room.Room
 import main.shoppilientmobile.android.shoppingList.data.AndroidShoppingList
-import main.shoppilientmobile.android.shoppingList.domain.ShoppingList
+import main.shoppilientmobile.shoppingList.domain.ShoppingList
 import main.shoppilientmobile.android.shoppingList.presentation.ProductFactoryViewModelFactory
 import main.shoppilientmobile.android.shoppingList.presentation.ShoppingListViewModelFactory
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.androidRepository.KeyValueLocalStorage
@@ -15,6 +15,8 @@ import main.shoppilientmobile.core.remote.AsynchronousHttpClientImpl
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.androidRepository.SecurityTokenKeeperImpl
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.androidRepository.UserLocalDataSourceAndroid
 import main.shoppilientmobile.dataSources.StreamingHttpClientAndroid
+import main.shoppilientmobile.shoppingList.application.ShoppingListSynchroniserUseCase
+import main.shoppilientmobile.shoppingList.dataSources.apis.ServerShoppingListApi
 import main.shoppilientmobile.userRegistrationFeature.dataSources.apis.UserApiWithoutKtor
 import main.shoppilientmobile.userRegistrationFeature.repositories.UserRepositoryImpl
 
@@ -52,8 +54,18 @@ class AndroidContainer(
         securityTokenKeeper = securityTokenKeeper
     )
 
+    private val serverShoppingListApi = ServerShoppingListApi(
+        streamingHttpClient,
+        securityTokenKeeper,
+    )
+
     val userRepository = UserRepositoryImpl(
         UserLocalDataSourceAndroid(),
+    )
+
+    val shoppingListSynchroniserUseCase = ShoppingListSynchroniserUseCase(
+        serverShoppingListApi,
+        shoppingList,
     )
 
     var registrationContainer: RegistrationContainer? = null

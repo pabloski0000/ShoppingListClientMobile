@@ -1,4 +1,4 @@
-package main.shoppilientmobile.createListFeature
+package main.shoppilientmobile.shoppingList
 
 class ProductAdditionToExternalShoppingListTest {
 

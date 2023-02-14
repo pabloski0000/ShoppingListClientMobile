@@ -1,4 +1,4 @@
-package main.shoppilientmobile.android.shoppingList.domain
+package main.shoppilientmobile.shoppingList.domain
 
 import main.shoppilientmobile.domain.Product
 

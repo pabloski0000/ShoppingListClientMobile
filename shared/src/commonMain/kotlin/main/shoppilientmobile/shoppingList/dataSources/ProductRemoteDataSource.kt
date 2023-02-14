@@ -1,7 +1,7 @@
-package main.shoppilientmobile.createListFeature.dataSources
+package main.shoppilientmobile.shoppingList.dataSources
 
 import main.shoppilientmobile.domain.Product
-import main.shoppilientmobile.createListFeature.dataSources.apis.ProductApi
+import main.shoppilientmobile.shoppingList.dataSources.apis.ProductApi
 
 class ProductRemoteDataSource(
     private val productApi: ProductApi,

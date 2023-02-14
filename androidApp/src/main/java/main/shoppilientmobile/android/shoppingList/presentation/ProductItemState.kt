@@ -6,6 +6,11 @@ data class ProductItemState(
     val content: String,
     val selected: Boolean,
 ) {
+    companion object {
+        fun fromProduct(product: Product): ProductItemState {
+            return ProductItemState(product.description, false)
+        }
+    }
     fun toProduct(): Product {
         return Product(content)
     }

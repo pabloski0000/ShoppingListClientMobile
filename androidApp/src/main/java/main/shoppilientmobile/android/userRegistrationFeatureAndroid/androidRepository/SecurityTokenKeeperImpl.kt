@@ -8,17 +8,18 @@ import main.shoppilientmobile.userRegistrationFeature.dataSources.apis.SecurityT
 class SecurityTokenKeeperImpl (
     private val keyValueLocalStorage: KeyValueLocalStorage,
 ): SecurityTokenKeeper {
-    private val securityTokenKey = "35asd4f3a2sd1f3dsa4f3sasad5312sd4a35fasd"
+    private var securityTokenKey: String = ""
 
     override suspend fun getSecurityToken(): SecurityToken {
         try {
-            return keyValueLocalStorage.getValue(securityTokenKey)
+            val securityToken = keyValueLocalStorage.getValue(securityTokenKey)
+            return securityToken
         } catch (e: NotFoundKeyException) {
             throw ThereIsNoSecurityTokenException("Here there is no security token")
         }
     }
 
     override suspend fun setSecurityToken(securityToken: SecurityToken) {
-        keyValueLocalStorage.store(securityToken)
+        securityTokenKey = keyValueLocalStorage.store(securityToken)
     }
 }

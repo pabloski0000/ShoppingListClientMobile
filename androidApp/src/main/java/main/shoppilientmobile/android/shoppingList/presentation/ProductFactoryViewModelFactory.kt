@@ -2,7 +2,7 @@ package main.shoppilientmobile.android.shoppingList.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import main.shoppilientmobile.android.shoppingList.domain.ShoppingList
+import main.shoppilientmobile.shoppingList.domain.ShoppingList
 
 class ProductFactoryViewModelFactory(
     private val shoppingList: ShoppingList,

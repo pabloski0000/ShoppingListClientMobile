@@ -45,4 +45,12 @@ interface ShoppingListDao {
 
     @Query("DELETE FROM ProductEntity WHERE description = :productDescription")
     fun deleteProductRoom(productDescription: String)
+
+    fun repopulate(products: List<Product>) {
+        deleteAllProductsRoom()
+        products.map { insertProduct(it) }
+    }
+
+    @Query("DELETE FROM ProductEntity")
+    fun deleteAllProductsRoom()
 }
