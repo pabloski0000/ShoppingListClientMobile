@@ -14,4 +14,12 @@ class ShoppingListSynchroniserUseCase(
     override fun stateAtTheMomentOfSubscribing(products: List<Product>) {
         shoppingList.recreate(products)
     }
+
+    override fun productAdded(product: Product) {
+        shoppingList.addProduct(product)
+    }
+
+    override fun productModified(oldProduct: Product, newProduct: Product) {
+        shoppingList.modifyProduct(oldProduct, newProduct)
+    }
 }

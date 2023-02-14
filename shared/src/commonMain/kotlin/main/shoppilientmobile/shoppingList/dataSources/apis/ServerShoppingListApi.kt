@@ -48,6 +48,33 @@ class ServerShoppingListApi(
                             notifyObserverOfCurrentListState(observer, currentServerShoppingListState)
                         }
                     }
+                    "addedItem" -> {
+                        withContext(Dispatchers.Main) {
+                            val productJson = jsonResponse.getValue("item").jsonObject
+                            val productId = productJson.getValue("id").jsonPrimitive.content
+                            val productDescription = productJson.getValue("text")
+                                .jsonPrimitive
+                                .content
+                            currentServerShoppingListState[productId] = productDescription
+                            notifyObserverOfProductAdded(observer, Product(productDescription))
+                        }
+                    }
+                    "modifiedItem" -> {
+                        withContext(Dispatchers.Main) {
+                            val productJson = jsonResponse.getValue("item").jsonObject
+                            val productId = productJson.getValue("id").jsonPrimitive.content
+                            val newProductDescription = productJson.getValue("text")
+                                .jsonPrimitive
+                                .content
+                            val oldProductDescription = currentServerShoppingListState[productId]!!
+                            currentServerShoppingListState[productId] = newProductDescription
+                            notifyObserverOfProductModified(
+                                observer,
+                                Product(oldProductDescription),
+                                Product(newProductDescription),
+                            )
+                        }
+                    }
                 }
             }.collect()
         }
@@ -59,5 +86,17 @@ class ServerShoppingListApi(
                 Product(productDescription)
             }
         )
+    }
+
+    private fun notifyObserverOfProductAdded(observer: ServerShoppingListObserver, product: Product) {
+        observer.productAdded(product)
+    }
+
+    private fun notifyObserverOfProductModified(
+        observer: ServerShoppingListObserver,
+        oldProduct: Product,
+        newProduct: Product
+    ) {
+        observer.productModified(oldProduct, newProduct)
     }
 }
