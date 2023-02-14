@@ -75,6 +75,18 @@ class ServerShoppingListApi(
                             )
                         }
                     }
+                    "deletedItem" -> {
+                        withContext(Dispatchers.Main) {
+                            val productJson = jsonResponse.getValue("item").jsonObject
+                            val productId = productJson.getValue("id").jsonPrimitive.content
+                            val productDescription = currentServerShoppingListState[productId]!!
+                            currentServerShoppingListState.remove(productId)
+                            notifyObserverOfProductDeleted(
+                                observer,
+                                Product(productDescription),
+                            )
+                        }
+                    }
                 }
             }.collect()
         }
@@ -98,5 +110,9 @@ class ServerShoppingListApi(
         newProduct: Product
     ) {
         observer.productModified(oldProduct, newProduct)
+    }
+
+    private fun notifyObserverOfProductDeleted(observer: ServerShoppingListObserver, product: Product) {
+        observer.productDeleted(product)
     }
 }

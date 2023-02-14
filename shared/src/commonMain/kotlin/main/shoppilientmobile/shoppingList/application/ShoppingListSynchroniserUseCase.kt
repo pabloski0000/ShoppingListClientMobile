@@ -22,4 +22,8 @@ class ShoppingListSynchroniserUseCase(
     override fun productModified(oldProduct: Product, newProduct: Product) {
         shoppingList.modifyProduct(oldProduct, newProduct)
     }
+
+    override fun productDeleted(product: Product) {
+        shoppingList.deleteProduct(product)
+    }
 }
