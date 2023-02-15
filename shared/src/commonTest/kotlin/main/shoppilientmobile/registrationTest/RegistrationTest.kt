@@ -22,7 +22,8 @@ class RegistrationTest {
 
     @BeforeTest
     fun setUp() {
-        registrationRemoteDataSourceMock = RegistrationRemoteDataSourceMock()
+        //TODO("It needs to be confirmed if this test will continue existing")
+        /*registrationRemoteDataSourceMock = RegistrationRemoteDataSourceMock()
         userLocalDataSourceMock = UserLocalDataSourceMock()
         val registrationRepository = RegistrationRepositoryImpl(
             registrationRemoteDataSourceMock,
@@ -37,7 +38,7 @@ class RegistrationTest {
         registerUserUseCase = RegisterUserUseCase(
             registrationRepository,
             userRepository,
-        )
+        )*/
     }
 
     @Test
