@@ -1,4 +1,4 @@
-package main.shoppilientmobile.shoppingList.dataSources.apis
+package main.shoppilientmobile.shoppingList.infrastructure.dataSources.apis
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

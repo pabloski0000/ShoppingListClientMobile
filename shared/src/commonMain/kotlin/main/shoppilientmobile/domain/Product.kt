@@ -1,8 +1,8 @@
 package main.shoppilientmobile.domain
 
-import main.shoppilientmobile.shoppingList.rules.ExceededMaximumProductDescriptionLengthException
-import main.shoppilientmobile.shoppingList.rules.ProductRules
-import main.shoppilientmobile.shoppingList.rules.UnreachedMinimumProductDescriptionLengthException
+import main.shoppilientmobile.shoppingList.domain.rules.ExceededMaximumProductDescriptionLengthException
+import main.shoppilientmobile.shoppingList.domain.rules.ProductRules
+import main.shoppilientmobile.shoppingList.domain.rules.UnreachedMinimumProductDescriptionLengthException
 
 data class Product(val description: String) {
     init {

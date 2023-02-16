@@ -1,33 +1,37 @@
 package main.shoppilientmobile.android.shoppingList.presentation
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.FloatingActionButton
+import androidx.compose.material.Icon
+import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.testTag
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import main.shoppilientmobile.android.shoppingList.presentation.ShoppingListViewModel.ScreenModeState
 
-
-const val SHOPPING_LIST_ROUTE = "shopping_list"
-const val SCREEN_ON_NORMAL_MODE_ROUTE = "normal_screen_mode"
+const val SHOPPING_LIST_ROUTE2 = "shopping_list"
+const val SCREEN_ON_NORMAL_MODE_ROUTE2 = "normal_screen_mode"
 private const val SCREEN_ON_DELETION_MODE_ROUTE = "deletion_screen_mode"
 private const val SCREEN_ON_MODIFYING_PRODUCT_MODE_ROUTE = "modifying_product_mode"
 
 @Composable
-fun ShoppingListScreen(
+fun ShoppingListScreen2(
     navController: NavHostController,
-    viewModel: ShoppingListViewModel,
+    viewModel: ShoppingListViewModel2,
 ) {
     val screenState = viewModel.screenStateUiState.collectAsState()
 
     when (screenState.value) {
-        is ScreenModeState.NormalModeState -> {
+        is ShoppingListViewModel2.ScreenModeState.NormalModeState -> {
             setUpNormalMode(viewModel)
             ShoppingListScreenOnNormalMode(
                 viewModel = viewModel,
@@ -40,21 +44,21 @@ fun ShoppingListScreen(
                 }
             )
         }
-        is ScreenModeState.DeletionModeState -> {
+        is ShoppingListViewModel2.ScreenModeState.DeletionModeState -> {
             ShoppingListScreenOnDeletionMode(
                 viewModel = viewModel,
                 deletionModeState = (screenState.value
-                        as ScreenModeState.DeletionModeState),
+                        as ShoppingListViewModel.ScreenModeState.DeletionModeState),
                 onChangeToShoppingListScreenOnNormalMode = {
                     viewModel.goToNormalScreenMode()
                 },
             )
         }
-        is ScreenModeState.ModifyingProductModeState -> {
+        is ShoppingListViewModel2.ScreenModeState.ModifyingProductModeState -> {
             ShoppingListScreenOnModifyingMode(
                 viewModel = viewModel,
                 modifyingProductModeState = (screenState.value
-                        as ScreenModeState.ModifyingProductModeState),
+                        as ShoppingListViewModel.ScreenModeState.ModifyingProductModeState),
                 onChangeToShoppingListScreenOnNormalMode = {
                     viewModel.goToNormalScreenMode()
                 },
@@ -63,18 +67,18 @@ fun ShoppingListScreen(
     }
 }
 
-private fun setUpNormalMode(viewModel: ShoppingListViewModel) {
+private fun setUpNormalMode(viewModel: ShoppingListViewModel2) {
     viewModel.deselectAllProductItems()
 }
 
 @Composable
 private fun ShoppingListScreenOnNormalMode(
-    viewModel: ShoppingListViewModel,
+    viewModel: ShoppingListViewModel2,
     navController: NavController,
     onChangeToShoppingListScreenOnModifyingMode:
-        (modifyingProductModeState: ScreenModeState.ModifyingProductModeState) -> Unit,
+        (modifyingProductModeState: ShoppingListViewModel.ScreenModeState.ModifyingProductModeState) -> Unit,
     onChangeToShoppingListScreenOnDeletionMode:
-        (deletionModeState: ScreenModeState.DeletionModeState) -> Unit,
+        (deletionModeState: ShoppingListViewModel.ScreenModeState.DeletionModeState) -> Unit,
 ) {
     val productItemsState = viewModel.productItemsUiState.collectAsState()
     ShoppingListScreenContent(
@@ -88,13 +92,13 @@ private fun ShoppingListScreenOnNormalMode(
         },
         onClickOnProductItem = { productItemIndex ->
             onChangeToShoppingListScreenOnModifyingMode(
-                ScreenModeState.ModifyingProductModeState(productItemIndex)
+                ShoppingListViewModel.ScreenModeState.ModifyingProductModeState(productItemIndex)
             )
         },
         onLongClickOnProductItem = { productItemIndex ->
             viewModel.selectProductItem(productItemIndex)
             onChangeToShoppingListScreenOnDeletionMode(
-                ScreenModeState.DeletionModeState(
+                ShoppingListViewModel.ScreenModeState.DeletionModeState(
                     selectedProductItemsIndexes = listOf(productItemIndex)
                 )
             )
@@ -104,8 +108,8 @@ private fun ShoppingListScreenOnNormalMode(
 
 @Composable
 private fun ShoppingListScreenOnDeletionMode(
-    viewModel: ShoppingListViewModel,
-    deletionModeState: ScreenModeState.DeletionModeState,
+    viewModel: ShoppingListViewModel2,
+    deletionModeState: ShoppingListViewModel.ScreenModeState.DeletionModeState,
     onChangeToShoppingListScreenOnNormalMode: () -> Unit,
 ) {
     val productItemsStates = viewModel.productItemsUiState.collectAsState()
@@ -147,8 +151,8 @@ private fun ShoppingListScreenOnDeletionMode(
 
 @Composable
 private fun ShoppingListScreenOnModifyingMode(
-    viewModel: ShoppingListViewModel,
-    modifyingProductModeState: ScreenModeState.ModifyingProductModeState,
+    viewModel: ShoppingListViewModel2,
+    modifyingProductModeState: ShoppingListViewModel.ScreenModeState.ModifyingProductModeState,
     onChangeToShoppingListScreenOnNormalMode: () -> Unit,
 ) {
     val productItemsState = remember {
@@ -210,7 +214,7 @@ private fun ShoppingListScreenContent(
     topBar: @Composable () -> Unit,
     productModifier: @Composable () -> Unit,
     productItemStates: List<ProductItemState>,
-    onClickOnAddProductButton: (ShoppingListScreenContentState2) -> Unit,
+    onClickOnAddProductButton: (ShoppingListScreenContentState) -> Unit,
     onClickOnProductItem: (index: Int) -> Unit,
     onLongClickOnProductItem: (index: Int) -> Unit,
 ) {
@@ -220,7 +224,7 @@ private fun ShoppingListScreenContent(
         floatingActionButton = {
             AddProductButton(
                 onClick = {
-                    onClickOnAddProductButton(ShoppingListScreenContentState2(
+                    onClickOnAddProductButton(ShoppingListScreenContentState(
                         productItemStates,
                     ))
                 }
@@ -243,7 +247,7 @@ private fun ShoppingListScreenContent(
 }
 
 @Composable
-fun AddProductButton(
+fun AddProductButton2(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
 ) {
@@ -251,7 +255,7 @@ fun AddProductButton(
         modifier = modifier.testTag("AddProduct"),
         onClick = onClick,
     ) {
-        Icon(Icons.Filled.Add, "Localized description")
+        Icon(androidx.compose.material.icons.Icons.Filled.Add, "Localized description")
     }
 }
 
@@ -271,7 +275,6 @@ private fun setUpShoppingListOnDeletionMode(nominatedProductItemIndexes: List<In
     }
 }
 
-private data class ShoppingListScreenContentState2(
+private data class ShoppingListScreenContentState(
     val productItemStates: List<ProductItemState>,
 )
-

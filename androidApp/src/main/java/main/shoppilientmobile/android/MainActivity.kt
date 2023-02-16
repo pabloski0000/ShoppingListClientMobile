@@ -91,24 +91,24 @@ class MainActivity : ComponentActivity() {
             navController = navController,
             startDestination = RoleElectionRoutableComposable.route,
         ) {
-            composable(route = SHOPPING_LIST_ROUTE) {
-                val viewModel = viewModel<ShoppingListViewModel>(
+            composable(route = SHOPPING_LIST_ROUTE2) {
+                val viewModel = viewModel<ShoppingListViewModel2>(
                     viewModelOwner,
                     "FirstViewModelInGraph",
                     shoppingListViewModelFactory,
                 )
-                ShoppingListScreen(
+                ShoppingListScreen2(
                     navController = navController,
                     viewModel = viewModel
                 )
             }
-            composable(route = PRODUCT_FACTORY_ROUTE) {
-                val viewModel = viewModel<ProductFactoryViewModel>(
+            composable(route = PRODUCT_FACTORY_ROUTE2) {
+                val viewModel = viewModel<ProductFactoryViewModel2>(
                     viewModelOwner,
                     "SecondViewModelInGraph",
                     productFactoryViewModelFactory,
                 )
-                ProductFactoryScreen(navController, viewModel)
+                ProductFactoryScreen2(navController, viewModel)
             }
             composable(route = RoleElectionRoutableComposable.route) {
                 RoleElectionRoutableComposable.RoleElection(

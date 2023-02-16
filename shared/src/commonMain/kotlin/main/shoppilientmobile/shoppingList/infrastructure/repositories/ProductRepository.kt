@@ -1,7 +1,7 @@
-package main.shoppilientmobile.shoppingList.repositories
+package main.shoppilientmobile.shoppingList.infrastructure.repositories
 
 import main.shoppilientmobile.domain.Product
-import main.shoppilientmobile.shoppingList.dataSources.ProductRemoteDataSource
+import main.shoppilientmobile.shoppingList.infrastructure.dataSources.ProductRemoteDataSource
 
 class ProductRepository(
     private val productRemoteDataSource: ProductRemoteDataSource,

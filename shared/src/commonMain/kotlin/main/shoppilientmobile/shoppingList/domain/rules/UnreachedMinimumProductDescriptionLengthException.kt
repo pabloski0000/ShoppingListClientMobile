@@ -1,4 +1,4 @@
-package main.shoppilientmobile.shoppingList.rules
+package main.shoppilientmobile.shoppingList.domain.rules
 
 class UnreachedMinimumProductDescriptionLengthException(message: String): RuntimeException(message) {
 }
