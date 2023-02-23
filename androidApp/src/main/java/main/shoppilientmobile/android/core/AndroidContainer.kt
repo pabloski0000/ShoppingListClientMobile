@@ -16,8 +16,7 @@ import main.shoppilientmobile.core.remote.AsynchronousHttpClientImpl
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.androidRepository.SecurityTokenKeeperImpl
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.androidRepository.UserLocalDataSourceAndroid
 import main.shoppilientmobile.dataSources.StreamingHttpClientAndroid
-import main.shoppilientmobile.shoppingList.application.ShoppingListSynchroniserUseCase
-import main.shoppilientmobile.shoppingList.application.ShoppingListUiListener
+import main.shoppilientmobile.shoppingList.application.*
 import main.shoppilientmobile.shoppingList.infrastructure.dataSources.apis.ServerShoppingListApi
 import main.shoppilientmobile.shoppingList.infrastructure.dataSources.apis.ServerShoppingListApi2
 import main.shoppilientmobile.shoppingList.infrastructure.repositories.ServerShoppingList
@@ -68,22 +67,33 @@ class AndroidContainer(
         securityTokenKeeper,
     )
 
-    private val androidShoppingListUI = AndroidShoppingListUI()
+    val remoteShoppingList: RemoteShoppingList = ServerShoppingList(serverShoppingListApi2)
+
+    private val addProductUseCase = AddProductUseCase(
+        remoteShoppingList,
+    )
+
+    private val modifyProductUseCase = ModifyProductUseCase(
+        remoteShoppingList,
+    )
+
+    private val synchroniseWithRemoteShoppingListUseCase = SynchroniseWithRemoteShoppingListUseCase(
+        remoteShoppingList
+    )
+
+    val androidShoppingListUI = AndroidShoppingListUI(
+        addProductUseCase,
+        modifyProductUseCase,
+        synchroniseWithRemoteShoppingListUseCase,
+    )
 
     val userRepository = UserRepositoryImpl(
         UserLocalDataSourceAndroid(),
     )
 
-    private val serverShoppingList = ServerShoppingList(serverShoppingListApi2)
-
     val shoppingListSynchroniserUseCase = ShoppingListSynchroniserUseCase(
         serverShoppingListApi,
         shoppingList,
-    )
-
-    private val shoppingListUiListener = ShoppingListUiListener(
-        androidShoppingListUI,
-        serverShoppingList,
     )
 
     var registrationContainer: RegistrationContainer? = null

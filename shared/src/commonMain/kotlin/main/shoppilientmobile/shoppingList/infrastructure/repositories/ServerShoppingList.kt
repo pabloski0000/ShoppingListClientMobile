@@ -9,48 +9,54 @@ import main.shoppilientmobile.shoppingList.infrastructure.dataSources.apis.Serve
 class ServerShoppingList(
     private val serverShoppingListApi: ServerShoppingListApi2,
 ) : RemoteShoppingList, ServerShoppingListObserver {
-    private var observers = emptyList<ShoppingListObserver>()
-    private var remoteShoppingListState = emptyList<ProductOnServerShoppingList>()
+    private var observers = setOf<ShoppingListObserver>()
+    private var state = emptyList<ProductOnServerShoppingList>()
     private var observingRemoteShoppingList = false
 
     override fun addProduct(product: Product) {
-        TODO("Not yet implemented")
+        serverShoppingListApi.addProduct(ProductOnServerShoppingList.fromProduct(product))
     }
 
     override fun modifyProduct(oldProduct: Product, newProduct: Product) {
-        TODO("Not yet implemented")
+        val productToModify = state.find { it.toProduct() == oldProduct }!!
+        val modifiedProduct = productToModify.copy(description = newProduct.description)
+        serverShoppingListApi.modifyProduct(modifiedProduct)
     }
 
     override fun deleteProduct(product: Product) {
         TODO("Not yet implemented")
     }
 
+    override fun deleteAllProducts() {
+        serverShoppingListApi.deleteAllProducts()
+    }
+
     override fun observe(observer: ShoppingListObserver) {
-        observers = listOf(*observers.toTypedArray(), observer)
+        observers = setOf(*observers.toTypedArray(), observer)
         if (! observingRemoteShoppingList) {
             serverShoppingListApi.observeServerShoppingList(this)
             observingRemoteShoppingList = true
         }
         observer.currentState(
-            remoteShoppingListState.map { productOnServer -> productOnServer.toProduct() }
+            state.map { productOnServer -> productOnServer.toProduct() }
         )
     }
 
-    override fun currentState(product: ProductOnServerShoppingList) {
-        remoteShoppingListState = listOf(
-            *remoteShoppingListState.toTypedArray(),
+    override fun stateAtTheMomentOfSubscribing(product: ProductOnServerShoppingList) {
+        state = listOf(
+            *state.toTypedArray(),
             product,
         )
         observers.map { observer ->
             observer.currentState(
-                remoteShoppingListState.map { productOnServer -> productOnServer.toProduct() }
+                state.map { productOnServer -> productOnServer.toProduct() }
             )
         }
     }
 
     override fun productAdded(product: ProductOnServerShoppingList) {
-        remoteShoppingListState = listOf(
-            *remoteShoppingListState.toTypedArray(),
+        state = listOf(
+            *state.toTypedArray(),
             product,
         )
         observers.map { observer ->
@@ -59,10 +65,10 @@ class ServerShoppingList(
     }
 
     override fun productModified(modifiedProduct: ProductOnServerShoppingList) {
-        val oldProduct = remoteShoppingListState.find { productOnServer ->
+        val oldProduct = state.find { productOnServer ->
             productOnServer == modifiedProduct
         }!!
-        remoteShoppingListState = remoteShoppingListState.map { productOnServer ->
+        state = state.map { productOnServer ->
             if (productOnServer == modifiedProduct) {
                 return@map modifiedProduct
             }
@@ -74,10 +80,10 @@ class ServerShoppingList(
     }
 
     override fun productDeleted(productId: String) {
-        val deletedProduct = remoteShoppingListState.find { productOnServer ->
+        val deletedProduct = state.find { productOnServer ->
             productOnServer.id == productId
         }!!
-        remoteShoppingListState = remoteShoppingListState.map { productOnServer ->
+        state = state.map { productOnServer ->
             if (productOnServer == deletedProduct) {
                 return@map deletedProduct
             }

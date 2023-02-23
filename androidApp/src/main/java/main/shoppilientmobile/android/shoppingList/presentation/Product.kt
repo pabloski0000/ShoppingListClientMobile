@@ -9,7 +9,20 @@ data class Product(val description: String) {
         }
     }
 
+
+
     fun toProduct(): main.shoppilientmobile.domain.Product {
         return ProductBuilder().assignDescription(description).build()
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Product) return false
+
+        return toProduct() == other.toProduct()
+    }
+
+    override fun hashCode(): Int {
+        return toProduct().hashCode()
     }
 }

@@ -16,7 +16,22 @@ data class Product(val description: String) {
         }
     }
 
+
+
     override fun toString(): String {
         return description
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Product) return false
+
+        if (description.lowercase() != other.description.lowercase()) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return description.lowercase().hashCode()
     }
 }

@@ -14,9 +14,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.runBlocking
 import main.shoppilientmobile.android.core.AndroidContainer
 import main.shoppilientmobile.android.shoppingList.presentation.*
-import main.shoppilientmobile.android.userRegistrationFeatureAndroid.containers.RegistrationContainer
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.composables.routableComposables.FillNicknameRoutableComposable
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.composables.routableComposables.IntroduceCodeRoutableComposable
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.composables.routableComposables.RoleElectionRoutableComposable
@@ -25,119 +25,48 @@ import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.stateHol
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.stateHolders.RoleElectionViewModel
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.stateHoldersFactories.FillNicknameViewModelFactory
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.stateHoldersFactories.IntroduceCodeViewModelFactory
+import main.shoppilientmobile.domain.domainExposure.UserRole
 import main.shoppilientmobile.userRegistrationFeature.repositories.RegistrationRepository
 import main.shoppilientmobile.userRegistrationFeature.repositories.UserRoleRepository
 import main.shoppilientmobile.userRegistrationFeature.useCases.RegisterAdminUseCase
 import main.shoppilientmobile.userRegistrationFeature.useCases.RegisterUserUseCase
 
 class MainActivity : ComponentActivity() {
-    private lateinit var androidContainer: AndroidContainer
-    private lateinit var roleElectionViewModel: RoleElectionViewModel
-    private lateinit var shoppingListViewModelFactory: ShoppingListViewModelFactory
-    private lateinit var productFactoryViewModelFactory: ProductFactoryViewModelFactory
-    private lateinit var registerAdminUseCase: RegisterAdminUseCase
-    private lateinit var registerUserUseCase: RegisterUserUseCase
-    private lateinit var userRoleRepository: UserRoleRepository
-    private lateinit var registrationRepository: RegistrationRepository
+    private val activityCreatedCounterBundleKey = "activityCreatedCounter"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        startUp()
+        val app: App
+        if (activityIsBeingCreatedForTheFirstTime(savedInstanceState)) {
+            app = App(applicationContext)
+            (application as AndroidApplication).app = app
+            app.run()
+        } else {
+            app = (application as AndroidApplication).app!!
+        }
         setContent {
             MyApplicationTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background,
                 ) {
-                    MainActivityScreen()
+                    app.getFirstScreen()()
                 }
             }
         }
     }
 
-    private fun startUp() {
-        val androidApplication = (application as AndroidApplication)
-        androidApplication.androidContainer = AndroidContainer(this)
-        androidContainer = androidApplication.androidContainer!!
-        val httpClient = androidContainer.httpClient
-        val userRepository = androidContainer.userRepository
-        val securityTokenKeeper = androidContainer.securityTokenKeeper
-        val shoppingListSynchroniserUseCase = androidContainer.shoppingListSynchroniserUseCase
-        val registrationContainer = RegistrationContainer(
-            httpClient = httpClient,
-            securityTokenKeeper = securityTokenKeeper,
-            userRepository = userRepository,
-            userRoleLocalDataSource = androidContainer.room.userRoleDao(),
-            shoppingListSynchroniserUseCase,
-        )
-        androidContainer.registrationContainer = registrationContainer
-        roleElectionViewModel = RoleElectionViewModel(
-            userRoleRepository = registrationContainer.userRoleRepository,
-        )
-        registerAdminUseCase = registrationContainer.registerAdminUseCase
-        registerUserUseCase = registrationContainer.registerUserUseCase
-        userRoleRepository = registrationContainer.userRoleRepository
-        registrationRepository = registrationContainer.registrationRepository
-        shoppingListViewModelFactory = androidContainer.shoppingListViewModelFactory
-        productFactoryViewModelFactory = androidContainer.productFactoryViewModelFactory
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        val activityCreatedCounter = outState.getInt(activityCreatedCounterBundleKey)
+        outState.putInt(activityCreatedCounterBundleKey, activityCreatedCounter + 1)
     }
 
-    @Preview(showSystemUi = true)
-    @Composable
-    fun MainActivityScreen() {
-        val viewModelOwner = LocalViewModelStoreOwner.current!!
-        val navController = rememberNavController()
-        NavHost(
-            navController = navController,
-            startDestination = RoleElectionRoutableComposable.route,
-        ) {
-            composable(route = SHOPPING_LIST_ROUTE2) {
-                val viewModel = viewModel<ShoppingListViewModel2>(
-                    viewModelOwner,
-                    "FirstViewModelInGraph",
-                    shoppingListViewModelFactory,
-                )
-                ShoppingListScreen2(
-                    navController = navController,
-                    viewModel = viewModel
-                )
-            }
-            composable(route = PRODUCT_FACTORY_ROUTE2) {
-                val viewModel = viewModel<ProductFactoryViewModel2>(
-                    viewModelOwner,
-                    "SecondViewModelInGraph",
-                    productFactoryViewModelFactory,
-                )
-                ProductFactoryScreen2(navController, viewModel)
-            }
-            composable(route = RoleElectionRoutableComposable.route) {
-                RoleElectionRoutableComposable.RoleElection(
-                    viewModel = roleElectionViewModel,
-                    navController,
-                )
-            }
-            composable(route = FillNicknameRoutableComposable.route) {
-                val viewModel = viewModel<FillNicknameViewModel>(
-                    factory = FillNicknameViewModelFactory(
-                        registerAdminUseCase,
-                        registerUserUseCase,
-                        userRoleRepository,
-                        navController,
-                    )
-                )
-                FillNicknameRoutableComposable.FillNickname(viewModel)
-            }
-            val introduceCodePathScreenPath = "userNickname"
-            composable(route = "${IntroduceCodeRoutableComposable.route}/{$introduceCodePathScreenPath}") { entry ->
-                val viewModel = viewModel<IntroduceCodeViewModel>(
-                    factory = IntroduceCodeViewModelFactory(registrationRepository, navController)
-                )
-                val userNickname = entry.arguments!!.getString(introduceCodePathScreenPath)!!
-                IntroduceCodeRoutableComposable.IntroduceCode(
-                    viewModel = viewModel,
-                    userNickname = userNickname,
-                )
-            }
+    private fun activityIsBeingCreatedForTheFirstTime(savedInstanceState: Bundle?): Boolean {
+        return if (savedInstanceState == null) {
+            true
+        } else {
+            savedInstanceState.getInt(activityCreatedCounterBundleKey) > 0
         }
     }
 }

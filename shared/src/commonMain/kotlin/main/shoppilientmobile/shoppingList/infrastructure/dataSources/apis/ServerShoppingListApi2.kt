@@ -1,14 +1,12 @@
 package main.shoppilientmobile.shoppingList.infrastructure.dataSources.apis
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import main.shoppilientmobile.core.remote.AsynchronousHttpClientImpl
 import main.shoppilientmobile.core.remote.HttpMethod
 import main.shoppilientmobile.core.remote.HttpRequest
 import main.shoppilientmobile.core.remote.StreamingHttpClient
@@ -21,6 +19,7 @@ class ServerShoppingListApi2(
     private val securityTokenKeeper: SecurityTokenKeeper,
 ) {
     private val coroutineScopeOnMainThread = CoroutineScope(Dispatchers.Main)
+    private val asynchronousHttpClient = AsynchronousHttpClientImpl()
 
     fun observeServerShoppingList(observer: ServerShoppingListObserver) {
         coroutineScopeOnMainThread.launch(Dispatchers.Default) {
@@ -98,11 +97,65 @@ class ServerShoppingListApi2(
         }
     }
 
+    fun addProduct(product: ProductOnServerShoppingList) {
+        val httpRequest = HttpRequest(
+            httpMethod = HttpMethod.POST,
+            url = "https://lista-de-la-compra-pabloski.herokuapp.com/api/products",
+            headers = mapOf(
+                "Content-Type" to "application/json",
+                "Accept" to "application/json",
+                "Authorization" to "Bearer ${securityTokenKeeper.getSecurityToken2()}",
+            ),
+            body = """
+                |{
+                |   "name": "${product.description}"
+                |}
+            """.trimMargin(),
+        )
+        asynchronousHttpClient.makeRequest2(httpRequest)
+    }
+
+    fun modifyProduct(newProduct: ProductOnServerShoppingList) {
+        val httpRequest = HttpRequest(
+            httpMethod = HttpMethod.PUT,
+            url = "https://lista-de-la-compra-pabloski.herokuapp.com/api/products/${newProduct.id}",
+            headers = mapOf(
+                "Content-Type" to "application/json",
+                "Accept" to "application/json",
+                "Authorization" to "Bearer ${securityTokenKeeper.getSecurityToken2()}",
+            ),
+            body = """
+                |{
+                |   "name": "${newProduct.description}"
+                |}
+            """.trimMargin(),
+        )
+        asynchronousHttpClient.makeRequest2(httpRequest)
+    }
+
+    fun deleteAllProducts() {
+        val httpRequest = HttpRequest(
+            httpMethod = HttpMethod.DELETE,
+            url = "https://lista-de-la-compra-pabloski.herokuapp.com/api/products",
+            headers = mapOf(
+                "Content-Type" to "application/json",
+                "Accept" to "application/json",
+                "Authorization" to "Bearer ${securityTokenKeeper.getSecurityToken2()}",
+            ),
+            body = """
+                {
+                    "ids": []
+                }
+            """.trimIndent(),
+        )
+        asynchronousHttpClient.makeRequest2(httpRequest)
+    }
+
     private fun notifyObserverOfCurrentListState(
         observer: ServerShoppingListObserver,
         product: ProductOnServerShoppingList,
     ) {
-        observer.currentState(product)
+        observer.stateAtTheMomentOfSubscribing(product)
     }
 
     private fun notifyObserverOfProductAdded(

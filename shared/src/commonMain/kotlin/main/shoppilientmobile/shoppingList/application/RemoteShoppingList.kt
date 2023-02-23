@@ -6,5 +6,6 @@ interface RemoteShoppingList {
     fun addProduct(product: Product)
     fun modifyProduct(oldProduct: Product, newProduct: Product)
     fun deleteProduct(product: Product)
+    fun deleteAllProducts()
     fun observe(observer: ShoppingListObserver)
 }

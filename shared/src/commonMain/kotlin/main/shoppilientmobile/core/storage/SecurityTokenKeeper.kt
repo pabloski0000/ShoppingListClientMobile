@@ -4,5 +4,6 @@ import main.shoppilientmobile.userRegistrationFeature.dataSources.apis.SecurityT
 
 interface SecurityTokenKeeper {
     suspend fun getSecurityToken(): SecurityToken
+    fun getSecurityToken2(): SecurityToken
     suspend fun setSecurityToken(securityToken: SecurityToken)
 }

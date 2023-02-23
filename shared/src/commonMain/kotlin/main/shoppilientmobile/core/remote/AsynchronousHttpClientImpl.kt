@@ -10,12 +10,14 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.util.*
+import kotlinx.coroutines.*
 import kotlinx.serialization.json.*
 
 class AsynchronousHttpClientImpl(
     httpClientEngine: HttpClientEngine? = null
 ): AsynchronousHttpClient {
     private val httpClient: HttpClient
+    private val coroutineScopeOnMainThread = CoroutineScope(Dispatchers.Main)
     init {
         val httpConfiguration: HttpClientConfig<*>.() -> Unit = {
             install(HttpTimeout) {
@@ -54,6 +56,29 @@ class AsynchronousHttpClientImpl(
             headers = response.headers.toMap(),
             body = response.bodyAsText(),
         )
+    }
+
+    fun makeRequest2(httpRequest: HttpRequest): main.shoppilientmobile.core.remote.HttpResponse {
+        return runBlocking(Dispatchers.Default) {
+            val response: io.ktor.client.statement.HttpResponse
+            coroutineScope {
+                response = httpClient.request {
+                    url(httpRequest.url)
+                    method = adaptHttpMethod(httpRequest.httpMethod)
+                    headers {
+                        httpRequest.headers.map { header ->
+                            append(header.key, header.value)
+                        }
+                    }
+                    setBody(httpRequest.body)
+                }
+                main.shoppilientmobile.core.remote.HttpResponse(
+                    statusCode = response.status.value,
+                    headers = response.headers.toMap(),
+                    body = response.bodyAsText(),
+                )
+            }
+        }
     }
 
     private fun adaptHttpMethod(httpMethod: HttpMethod): io.ktor.http.HttpMethod {

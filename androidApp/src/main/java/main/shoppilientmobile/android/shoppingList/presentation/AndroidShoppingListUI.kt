@@ -1,32 +1,40 @@
 package main.shoppilientmobile.android.shoppingList.presentation
 
-import main.shoppilientmobile.domain.domainExposure.ProductBuilder
-import main.shoppilientmobile.shoppingList.application.ShoppingListUI
-import main.shoppilientmobile.shoppingList.application.ShoppingListUiListener
+import main.shoppilientmobile.shoppingList.application.AddProductUseCase
+import main.shoppilientmobile.shoppingList.application.ModifyProductUseCase
+import main.shoppilientmobile.shoppingList.application.SynchroniseWithRemoteShoppingListUseCase
 
-class AndroidShoppingListUI : ShoppingListUI, main.shoppilientmobile.shoppingList.application.ShoppingListObserver {
-    private var shoppingListUiListener: ShoppingListUiListener? = null
-    private var observers = emptyList<ShoppingListObserver>()
+class AndroidShoppingListUI(
+    private val addProductUseCase: AddProductUseCase,
+    private val modifyProductUseCase: ModifyProductUseCase,
+    private val synchroniseWithRemoteShoppingListUseCase: SynchroniseWithRemoteShoppingListUseCase,
+) : main.shoppilientmobile.shoppingList.application.ShoppingListObserver {
+    private var observers = emptySet<ShoppingListObserver>()
     private var shoppingList = emptyList<Product>()
     private var observingShoppingList = false
 
-    override fun addShoppingListUIListener(uiListener: ShoppingListUiListener) {
-        shoppingListUiListener = uiListener
+
+    fun addProducts(products: List<Product>) {
+        products.map { addProductUseCase.addProduct(it.toProduct()) }
     }
 
     fun addProduct(product: Product) {
-        shoppingListUiListener?.addProduct(
+        addProductUseCase.addProduct(
             product.toProduct()
         )
     }
 
+    fun modifyProduct(oldProduct: Product, newProduct: Product) {
+        modifyProductUseCase.modifyProduct(oldProduct.toProduct(), newProduct.toProduct())
+    }
+
     fun observeShoppingList(observer: ShoppingListObserver) {
         if (! observingShoppingList) {
-            shoppingListUiListener?.observeShoppingList(this)
+            synchroniseWithRemoteShoppingListUseCase.synchronise(observer = this)
             observingShoppingList = true
         }
         observer.currentState(shoppingList)
-        observers = listOf(*observers.toTypedArray(), observer)
+        observers = setOf(*observers.toTypedArray(), observer)
     }
 
     override fun currentState(products: List<main.shoppilientmobile.domain.Product>) {
@@ -44,10 +52,24 @@ class AndroidShoppingListUI : ShoppingListUI, main.shoppilientmobile.shoppingLis
         oldProduct: main.shoppilientmobile.domain.Product,
         newProduct: main.shoppilientmobile.domain.Product,
     ) {
-        TODO("Not yet implemented")
+        val productToModify = Product.fromProduct(oldProduct)
+        val modifiedProduct = Product.fromProduct(newProduct)
+        shoppingList = shoppingList.map { product ->
+            if (product == productToModify) {
+                return@map modifiedProduct
+            }
+            product
+        }
+        observers.map { it.productModified(productToModify, modifiedProduct) }
     }
 
     override fun productDeleted(product: main.shoppilientmobile.domain.Product) {
-        TODO("Not yet implemented")
+        shoppingList = shoppingList.filter { deletedProduct ->
+            if (deletedProduct.toProduct() == product) {
+                observers.map { observer -> observer.productDeleted(deletedProduct) }
+                false
+            }
+            true
+        }
     }
 }

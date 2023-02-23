@@ -8,5 +8,5 @@ import main.shoppilientmobile.android.core.AndroidContainer
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.androidRepository.room.RoomDb
 
 class AndroidApplication: Application() {
-    var androidContainer: AndroidContainer? = null
+    var app: App? = null
 }
