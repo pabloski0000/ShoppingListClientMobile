@@ -24,7 +24,8 @@ class ServerShoppingList(
     }
 
     override fun deleteProduct(product: Product) {
-        TODO("Not yet implemented")
+        val productToDelete = state.find { it.toProduct() == product }!!
+        serverShoppingListApi.deleteProduct(productToDelete)
     }
 
     override fun deleteAllProducts() {
@@ -83,12 +84,7 @@ class ServerShoppingList(
         val deletedProduct = state.find { productOnServer ->
             productOnServer.id == productId
         }!!
-        state = state.map { productOnServer ->
-            if (productOnServer == deletedProduct) {
-                return@map deletedProduct
-            }
-            return@map productOnServer
-        }
+        state = state.filter { it != deletedProduct }
         observers.map { observer ->
             observer.productDeleted(deletedProduct.toProduct())
         }

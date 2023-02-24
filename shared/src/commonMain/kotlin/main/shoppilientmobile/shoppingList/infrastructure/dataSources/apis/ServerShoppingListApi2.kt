@@ -133,6 +133,19 @@ class ServerShoppingListApi2(
         asynchronousHttpClient.makeRequest2(httpRequest)
     }
 
+    fun deleteProduct(product: ProductOnServerShoppingList) {
+        val httpRequest = HttpRequest(
+            httpMethod = HttpMethod.DELETE,
+            url = "https://lista-de-la-compra-pabloski.herokuapp.com/api/products/${product.id}",
+            headers = mapOf(
+                "Accept" to "application/json",
+                "Authorization" to "Bearer ${securityTokenKeeper.getSecurityToken2()}",
+            ),
+            body = "",
+        )
+        asynchronousHttpClient.makeRequest2(httpRequest)
+    }
+
     fun deleteAllProducts() {
         val httpRequest = HttpRequest(
             httpMethod = HttpMethod.DELETE,

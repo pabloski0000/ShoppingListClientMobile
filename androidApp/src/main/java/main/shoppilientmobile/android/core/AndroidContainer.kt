@@ -77,6 +77,10 @@ class AndroidContainer(
         remoteShoppingList,
     )
 
+    private val deleteProductUseCase = DeleteProductUseCase(
+        remoteShoppingList,
+    )
+
     private val synchroniseWithRemoteShoppingListUseCase = SynchroniseWithRemoteShoppingListUseCase(
         remoteShoppingList
     )
@@ -84,6 +88,7 @@ class AndroidContainer(
     val androidShoppingListUI = AndroidShoppingListUI(
         addProductUseCase,
         modifyProductUseCase,
+        deleteProductUseCase,
         synchroniseWithRemoteShoppingListUseCase,
     )
 

@@ -1,12 +1,14 @@
 package main.shoppilientmobile.android.shoppingList.presentation
 
 import main.shoppilientmobile.shoppingList.application.AddProductUseCase
+import main.shoppilientmobile.shoppingList.application.DeleteProductUseCase
 import main.shoppilientmobile.shoppingList.application.ModifyProductUseCase
 import main.shoppilientmobile.shoppingList.application.SynchroniseWithRemoteShoppingListUseCase
 
 class AndroidShoppingListUI(
     private val addProductUseCase: AddProductUseCase,
     private val modifyProductUseCase: ModifyProductUseCase,
+    private val deleteProductUseCase: DeleteProductUseCase,
     private val synchroniseWithRemoteShoppingListUseCase: SynchroniseWithRemoteShoppingListUseCase,
 ) : main.shoppilientmobile.shoppingList.application.ShoppingListObserver {
     private var observers = emptySet<ShoppingListObserver>()
@@ -26,6 +28,10 @@ class AndroidShoppingListUI(
 
     fun modifyProduct(oldProduct: Product, newProduct: Product) {
         modifyProductUseCase.modifyProduct(oldProduct.toProduct(), newProduct.toProduct())
+    }
+
+    fun deleteProduct(product: Product) {
+        deleteProductUseCase.deleteProduct(product.toProduct())
     }
 
     fun observeShoppingList(observer: ShoppingListObserver) {
@@ -68,8 +74,10 @@ class AndroidShoppingListUI(
             if (deletedProduct.toProduct() == product) {
                 observers.map { observer -> observer.productDeleted(deletedProduct) }
                 false
+            } else {
+                true
             }
-            true
         }
+        println()
     }
 }

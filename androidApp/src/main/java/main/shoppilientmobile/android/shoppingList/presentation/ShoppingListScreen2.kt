@@ -124,7 +124,7 @@ private fun ShoppingListScreenOnDeletionMode(
         topBar = {
             DeletionApplicationTopBar(
                 onClickOnDeletionIcon = {
-                    viewModel.deleteProducts()
+                    viewModel.deleteSelectedProducts()
                 },
                 onSelectAllItems = {
                     viewModel.selectAllProductsItems()

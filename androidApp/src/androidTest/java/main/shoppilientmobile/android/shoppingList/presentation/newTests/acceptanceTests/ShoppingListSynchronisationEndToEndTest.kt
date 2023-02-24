@@ -20,11 +20,11 @@ import org.junit.runner.RunWith
 class ShoppingListSynchronisationEndToEndTest {
     private lateinit var shoppingListUI: AndroidShoppingListUI
     private lateinit var externalShoppingList: RemoteShoppingList
-    private lateinit var localShoppingListSpy: LocalShoppingListSpy
-    private lateinit var externalShoppingListSpy: ExternalShoppingListSpy
     private companion object {
         var settingUpTestForTheFirstTime = true
         lateinit var container: AndroidContainer
+        lateinit var localShoppingListSpy: LocalShoppingListSpy
+        lateinit var externalShoppingListSpy: ExternalShoppingListSpy
     }
 
     @Before
@@ -33,13 +33,13 @@ class ShoppingListSynchronisationEndToEndTest {
             val app = App(ApplicationProvider.getApplicationContext())
             container = app.run()
             app.registerUserOnServerBlokingly("pablos", UserRole.ADMIN)
+            localShoppingListSpy = LocalShoppingListSpy()
+            externalShoppingListSpy = ExternalShoppingListSpy()
             settingUpTestForTheFirstTime = false
         }
         externalShoppingList = container.remoteShoppingList
         externalShoppingList.deleteAllProducts()
         shoppingListUI = container.androidShoppingListUI
-        localShoppingListSpy = LocalShoppingListSpy()
-        externalShoppingListSpy = ExternalShoppingListSpy()
         shoppingListUI.observeShoppingList(localShoppingListSpy)
         externalShoppingList.observe(externalShoppingListSpy)
     }
@@ -61,9 +61,9 @@ class ShoppingListSynchronisationEndToEndTest {
     @Test
     fun modifyProducts() {
         val oldProducts = listOf(
-            Product("Banana"),
-            Product("Apple"),
-            Product("Lemon"),
+            Product("Coconut"),
+            Product("Skittles"),
+            Product("Sweet"),
         )
         val modifiedProductIndex = 1
         val modifiedProducts = oldProducts.mapIndexed { index, product ->
@@ -89,26 +89,33 @@ class ShoppingListSynchronisationEndToEndTest {
         )
     }
 
+    @Test
     fun removeProduct() {
-        /*val products = listOf(
-            ProductBuilder().assignDescription("Banana").build(),
-            ProductBuilder().assignDescription("Apple").build(),
-            ProductBuilder().assignDescription("Lemon").build(),
+        val shoppingListStateBeforeDeletion = listOf(
+            Product("Banana for remove"),
+            Product("Apple for remove"),
+            Product("Lemon for remove"),
         )
-        val remainingProducts = products.subList(0, 1) + products.subList(2, products.size)
-        fakeShoppingListUI.addProducts(products)
-        waitUntilRemoteShoppingListResponseHasBeenProcessed()
-        fakeRemoteShoppingList.assertProductsExistOrThrowException(products)
-        fakeShoppingListUI.assertProductsExistOrThrowException(products)
-        fakeShoppingListUI.removeProduct(products[1])
-        waitUntilRemoteShoppingListResponseHasBeenProcessed()
-        fakeRemoteShoppingList.assertProductsDoNotExistOrThrowException(listOf(products[1]))
-        fakeShoppingListUI.assertProductsDoNotExistOrThrowException(listOf(products[1]))
-        fakeRemoteShoppingList.assertProductsExistOrThrowException(remainingProducts)
-        fakeShoppingListUI.assertProductsExistOrThrowException(remainingProducts)*/
-    }
-
-    private fun waitUntilRemoteShoppingListResponseHasBeenProcessed() {
-        runBlocking { delay(500) }
+        val productToDeleteIndex = 1
+        val shoppingListStateAfterDeletion = listOf(
+            Product("Banana for remove"),
+            Product("Lemon for remove"),
+        )
+        shoppingListUI.addProducts(shoppingListStateBeforeDeletion)
+        externalShoppingListSpy.assertShoppingListStateIsExactlyThisOrThrowException(
+            shoppingListStateBeforeDeletion.map { it.toProduct() }
+        )
+        localShoppingListSpy.assertShoppingListStateIsExactlyThisOrThrowException(
+            shoppingListStateBeforeDeletion
+        )
+        shoppingListUI.deleteProduct(
+            shoppingListStateBeforeDeletion[productToDeleteIndex]
+        )
+        externalShoppingListSpy.assertShoppingListStateIsExactlyThisOrThrowException(
+            shoppingListStateAfterDeletion.map { it.toProduct() }
+        )
+        localShoppingListSpy.assertShoppingListStateIsExactlyThisOrThrowException(
+            shoppingListStateAfterDeletion
+        )
     }
 }

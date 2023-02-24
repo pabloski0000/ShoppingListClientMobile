@@ -43,7 +43,8 @@ class LocalShoppingListSpy : ShoppingListObserver {
                 }
             }
         } catch (e: TimeoutCancellationException) {
-            throw Exception("Inconsistent external shopping list state in test")
+            throw Exception("Inconsistent external shopping list state in test: State should be" +
+                    " $products but is $shoppingList")
         }
     }
 }

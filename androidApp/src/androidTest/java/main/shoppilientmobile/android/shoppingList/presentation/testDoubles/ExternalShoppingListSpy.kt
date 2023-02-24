@@ -31,7 +31,7 @@ class ExternalShoppingListSpy : ShoppingListObserver {
     @Throws(Exception::class)
     fun assertShoppingListStateIsExactlyThisOrThrowException(products: List<Product>) {
         try {
-            runBlocking {
+            runBlocking(Dispatchers.Main) {
                 withTimeout(10_000) {
                     while (true) {
                         if (state.size == products.size && state.toSet() == products.toSet()) {
@@ -42,7 +42,8 @@ class ExternalShoppingListSpy : ShoppingListObserver {
                 }
             }
         } catch (e: TimeoutCancellationException) {
-            throw Exception("Inconsistent external shopping list state in test")
+            throw Exception("Inconsistent external shopping list state in test: State should be" +
+                    " $products but is $state")
         }
     }
 }
