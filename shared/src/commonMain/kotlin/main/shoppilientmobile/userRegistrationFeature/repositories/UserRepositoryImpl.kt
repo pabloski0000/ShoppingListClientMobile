@@ -7,10 +7,10 @@ class UserRepositoryImpl(
     private val userLocalDataSource: UserLocalDataSource,
 ) : UserRepository {
     override suspend fun saveLocalUser(user: User) {
-        userLocalDataSource.save(user)
+        userLocalDataSource.saveLocalUser(user)
     }
 
     override suspend fun getLocalUser(): User {
-        return userLocalDataSource.getUser()
+        return userLocalDataSource.getLocalUser()
     }
 }

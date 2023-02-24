@@ -1,4 +1,4 @@
-package main.shoppilientmobile.android.userRegistrationFeatureAndroid.androidRepository.room
+package main.shoppilientmobile.android.core.room
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

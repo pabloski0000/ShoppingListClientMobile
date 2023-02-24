@@ -39,6 +39,26 @@ class KeyValueLocalStorage(
         }
     }
 
+    @kotlin.jvm.Throws(StorageException::class)
+    suspend fun store(key: String, value: String) {
+        try {
+            coroutineScope {
+                launch {
+                    try {
+                        saving = true
+                        dataStore.edit { mutablePreferences ->
+                            mutablePreferences[stringPreferencesKey(key)] = value
+                        }
+                    } finally {
+                        saving = false
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            throw StorageException("Error at storing data as Key-Value")
+        }
+    }
+
     @kotlin.jvm.Throws(NotFoundKeyException::class)
     suspend fun getValue(key: String): String {
         try {

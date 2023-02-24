@@ -10,7 +10,7 @@ import main.shoppilientmobile.shoppingList.domain.ShoppingList
 import main.shoppilientmobile.android.shoppingList.presentation.ProductFactoryViewModelFactory
 import main.shoppilientmobile.android.shoppingList.presentation.ShoppingListViewModelFactory
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.androidRepository.KeyValueLocalStorage
-import main.shoppilientmobile.android.userRegistrationFeatureAndroid.androidRepository.room.RoomDb
+import main.shoppilientmobile.android.core.room.RoomDb
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.containers.RegistrationContainer
 import main.shoppilientmobile.core.remote.AsynchronousHttpClientImpl
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.androidRepository.SecurityTokenKeeperImpl
@@ -22,6 +22,7 @@ import main.shoppilientmobile.shoppingList.infrastructure.dataSources.apis.Serve
 import main.shoppilientmobile.shoppingList.infrastructure.repositories.ServerShoppingList
 import main.shoppilientmobile.userRegistrationFeature.dataSources.apis.UserApiWithoutKtor
 import main.shoppilientmobile.userRegistrationFeature.repositories.UserRepositoryImpl
+import main.shoppilientmobile.userRegistrationFeature.useCases.useCasesInputOutputs.GetUserUseCase
 
 class AndroidContainer(
     private val context: Context,
@@ -32,10 +33,12 @@ class AndroidContainer(
         }
     )
 
-    val room = Room.databaseBuilder(context, RoomDb::class.java, "room_db")
+    val room = Room.databaseBuilder(context, RoomDb::class.java, "room_db").fallbackToDestructiveMigration()
         .build()
 
     private val shoppingListDao = room.shoppingListDao()
+
+    private val userDao = room.getUserDao()
 
     private val shoppingList: ShoppingList = AndroidShoppingList(shoppingListDao)
 
@@ -67,6 +70,14 @@ class AndroidContainer(
         securityTokenKeeper,
     )
 
+    private val userLocalDataSourceAndroid = UserLocalDataSourceAndroid(
+        userDao,
+    )
+
+    val userRepository = UserRepositoryImpl(
+        userLocalDataSourceAndroid,
+    )
+
     val remoteShoppingList: RemoteShoppingList = ServerShoppingList(serverShoppingListApi2)
 
     private val addProductUseCase = AddProductUseCase(
@@ -81,6 +92,10 @@ class AndroidContainer(
         remoteShoppingList,
     )
 
+    val getUserUseCase = GetUserUseCase(
+        userRepository,
+    )
+
     private val synchroniseWithRemoteShoppingListUseCase = SynchroniseWithRemoteShoppingListUseCase(
         remoteShoppingList
     )
@@ -90,10 +105,6 @@ class AndroidContainer(
         modifyProductUseCase,
         deleteProductUseCase,
         synchroniseWithRemoteShoppingListUseCase,
-    )
-
-    val userRepository = UserRepositoryImpl(
-        UserLocalDataSourceAndroid(),
     )
 
     val shoppingListSynchroniserUseCase = ShoppingListSynchroniserUseCase(

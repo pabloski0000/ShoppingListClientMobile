@@ -10,6 +10,7 @@ import main.shoppilientmobile.userRegistrationFeature.repositories.UserRoleLocal
 import main.shoppilientmobile.userRegistrationFeature.repositories.UserRoleRepository
 import main.shoppilientmobile.userRegistrationFeature.useCases.RegisterAdminUseCaseImpl
 import main.shoppilientmobile.userRegistrationFeature.useCases.RegisterUserUseCase
+import main.shoppilientmobile.userRegistrationFeature.useCases.useCasesInputOutputs.GetUserUseCase
 
 class RegistrationContainer(
     httpClient: AsynchronousHttpClientImpl,

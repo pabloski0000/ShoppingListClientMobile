@@ -11,7 +11,7 @@ import main.shoppilientmobile.userRegistrationFeature.dataSources.apis.SecurityT
 class SecurityTokenKeeperImpl (
     private val keyValueLocalStorage: KeyValueLocalStorage,
 ): SecurityTokenKeeper {
-    private var securityTokenKey: String = ""
+    private val securityTokenKey: String = "security_token_key"
 
     override suspend fun getSecurityToken(): SecurityToken {
         try {
@@ -33,6 +33,6 @@ class SecurityTokenKeeperImpl (
     }
 
     override suspend fun setSecurityToken(securityToken: SecurityToken) {
-        securityTokenKey = keyValueLocalStorage.store(securityToken)
+        keyValueLocalStorage.store(securityTokenKey, securityToken)
     }
 }

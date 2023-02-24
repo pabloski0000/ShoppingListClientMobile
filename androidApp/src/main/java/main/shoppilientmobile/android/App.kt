@@ -10,6 +10,7 @@ import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.runBlocking
 import main.shoppilientmobile.android.core.AndroidContainer
 import main.shoppilientmobile.android.shoppingList.presentation.*
+import main.shoppilientmobile.android.userRegistrationFeatureAndroid.containers.RegistrationContainer
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.composables.routableComposables.FillNicknameRoutableComposable
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.composables.routableComposables.IntroduceCodeRoutableComposable
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.composables.routableComposables.RoleElectionRoutableComposable
@@ -18,6 +19,7 @@ import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.stateHol
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.stateHolders.RoleElectionViewModel
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.stateHoldersFactories.FillNicknameViewModelFactory
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.stateHoldersFactories.IntroduceCodeViewModelFactory
+import main.shoppilientmobile.domain.domainExposure.User
 import main.shoppilientmobile.domain.domainExposure.UserRole
 import main.shoppilientmobile.shoppingList.application.RemoteShoppingList
 import main.shoppilientmobile.userRegistrationFeature.repositories.RegistrationRepository
@@ -30,6 +32,7 @@ class App(
     private val context: Context,
 ) {
     private val appRunner = AppRunner(context)
+    private lateinit var androidContainer: AndroidContainer
     private lateinit var roleElectionViewModel: RoleElectionViewModel
     private lateinit var shoppingListViewModelFactory: ShoppingListViewModelFactory
     private lateinit var productFactoryViewModelFactory: ProductFactoryViewModelFactory
@@ -41,7 +44,7 @@ class App(
     private lateinit var remoteShoppingList: RemoteShoppingList
 
     fun run(): AndroidContainer {
-        val androidContainer = appRunner.runApp()
+        androidContainer = appRunner.runApp()
         val registrationContainer = androidContainer.registrationContainer!!
         roleElectionViewModel = RoleElectionViewModel(
             userRoleRepository = registrationContainer.userRoleRepository,
@@ -58,8 +61,13 @@ class App(
     }
 
     fun getFirstScreen(): @Composable () -> Unit {
+        val startDestination = if (userIsAlreadyRegistered(androidContainer)) {
+            SHOPPING_LIST_ROUTE2
+        } else {
+            RoleElectionRoutableComposable.route
+        }
         return {
-            MainScreen()
+            AppNavHost(startDestination)
         }
     }
 
@@ -76,13 +84,20 @@ class App(
         remoteShoppingList.observe(observer)
     }
 
+    private fun userIsAlreadyRegistered(androidContainer: AndroidContainer): Boolean {
+        val user = runBlocking {
+            androidContainer.getUserUseCase.getUser()
+        }
+        return user != null
+    }
+
     @Composable
-    private fun MainScreen() {
+    private fun AppNavHost(startDestination: String) {
         val viewModelOwner = LocalViewModelStoreOwner.current!!
         val navController = rememberNavController()
         NavHost(
             navController = navController,
-            startDestination = RoleElectionRoutableComposable.route,
+            startDestination = startDestination,
         ) {
             composable(route = SHOPPING_LIST_ROUTE2) {
                 val viewModel = viewModel<ShoppingListViewModel2>(

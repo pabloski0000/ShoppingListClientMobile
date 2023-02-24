@@ -1,4 +1,4 @@
-package main.shoppilientmobile.android.userRegistrationFeatureAndroid.androidRepository.room
+package main.shoppilientmobile.android.core.room
 
 import androidx.room.Dao
 import androidx.room.Insert
