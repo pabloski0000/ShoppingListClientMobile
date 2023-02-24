@@ -33,7 +33,7 @@ fun ShoppingListScreen2(
     when (screenState.value) {
         is ShoppingListViewModel2.ScreenModeState.NormalModeState -> {
             setUpNormalMode(viewModel)
-            ShoppingListScreenOnNormalMode(
+            ShoppingListScreenOnNormalMode2(
                 viewModel = viewModel,
                 navController = navController,
                 onChangeToShoppingListScreenOnModifyingMode = { screenOnNormalModeState ->
@@ -45,20 +45,20 @@ fun ShoppingListScreen2(
             )
         }
         is ShoppingListViewModel2.ScreenModeState.DeletionModeState -> {
-            ShoppingListScreenOnDeletionMode(
+            ShoppingListScreenOnDeletionMode2(
                 viewModel = viewModel,
                 deletionModeState = (screenState.value
-                        as ShoppingListViewModel.ScreenModeState.DeletionModeState),
+                        as ShoppingListViewModel2.ScreenModeState.DeletionModeState),
                 onChangeToShoppingListScreenOnNormalMode = {
                     viewModel.goToNormalScreenMode()
                 },
             )
         }
         is ShoppingListViewModel2.ScreenModeState.ModifyingProductModeState -> {
-            ShoppingListScreenOnModifyingMode(
+            ShoppingListScreenOnModifyingMode2(
                 viewModel = viewModel,
                 modifyingProductModeState = (screenState.value
-                        as ShoppingListViewModel.ScreenModeState.ModifyingProductModeState),
+                        as ShoppingListViewModel2.ScreenModeState.ModifyingProductModeState),
                 onChangeToShoppingListScreenOnNormalMode = {
                     viewModel.goToNormalScreenMode()
                 },
@@ -72,7 +72,7 @@ private fun setUpNormalMode(viewModel: ShoppingListViewModel2) {
 }
 
 @Composable
-private fun ShoppingListScreenOnNormalMode(
+private fun ShoppingListScreenOnNormalMode2(
     viewModel: ShoppingListViewModel2,
     navController: NavController,
     onChangeToShoppingListScreenOnModifyingMode:
@@ -107,9 +107,9 @@ private fun ShoppingListScreenOnNormalMode(
 }
 
 @Composable
-private fun ShoppingListScreenOnDeletionMode(
+private fun ShoppingListScreenOnDeletionMode2(
     viewModel: ShoppingListViewModel2,
-    deletionModeState: ShoppingListViewModel.ScreenModeState.DeletionModeState,
+    deletionModeState: ShoppingListViewModel2.ScreenModeState.DeletionModeState,
     onChangeToShoppingListScreenOnNormalMode: () -> Unit,
 ) {
     val productItemsStates = viewModel.productItemsUiState.collectAsState()
@@ -150,9 +150,9 @@ private fun ShoppingListScreenOnDeletionMode(
 }
 
 @Composable
-private fun ShoppingListScreenOnModifyingMode(
+private fun ShoppingListScreenOnModifyingMode2(
     viewModel: ShoppingListViewModel2,
-    modifyingProductModeState: ShoppingListViewModel.ScreenModeState.ModifyingProductModeState,
+    modifyingProductModeState: ShoppingListViewModel2.ScreenModeState.ModifyingProductModeState,
     onChangeToShoppingListScreenOnNormalMode: () -> Unit,
 ) {
     val productItemsState = remember {
