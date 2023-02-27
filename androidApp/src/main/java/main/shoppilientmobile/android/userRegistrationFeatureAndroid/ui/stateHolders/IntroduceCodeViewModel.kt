@@ -9,12 +9,15 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import main.shoppilientmobile.android.shoppingList.presentation.SHOPPING_LIST_ROUTE
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.composables.ProcessInformationUiState
+import main.shoppilientmobile.application.UserBuilderImpl
 import main.shoppilientmobile.domain.domainExposure.UserRole
 import main.shoppilientmobile.userRegistrationFeature.entities.Registration
 import main.shoppilientmobile.userRegistrationFeature.repositories.RegistrationRepository
+import main.shoppilientmobile.userRegistrationFeature.repositories.UserRepository
 
 class IntroduceCodeViewModel(
     private val registrationRepository: RegistrationRepository,
+    private val userRepository: UserRepository,
     private val navController: NavController,
 ) : ViewModel() {
     private val _processInformationUiState = MutableStateFlow(
@@ -33,6 +36,11 @@ class IntroduceCodeViewModel(
                     UserRole.BASIC,
                     signature,
                 )
+            )
+            userRepository.saveLocalUser(
+                UserBuilderImpl().giveItANickname(nickname)
+                    .setRole(UserRole.ADMIN)
+                    .build()
             )
             navController.navigate(SHOPPING_LIST_ROUTE)
         }

@@ -138,7 +138,7 @@ class App(
             val introduceCodePathScreenPath = "userNickname"
             composable(route = "${IntroduceCodeRoutableComposable.route}/{$introduceCodePathScreenPath}") { entry ->
                 val viewModel = viewModel<IntroduceCodeViewModel>(
-                    factory = IntroduceCodeViewModelFactory(registrationRepository, navController)
+                    factory = IntroduceCodeViewModelFactory(registrationRepository, androidContainer.userRepository, navController)
                 )
                 val userNickname = entry.arguments!!.getString(introduceCodePathScreenPath)!!
                 IntroduceCodeRoutableComposable.IntroduceCode(
