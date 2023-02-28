@@ -4,10 +4,10 @@ import main.shoppilientmobile.domain.Product
 import main.shoppilientmobile.shoppingList.application.RemoteShoppingList
 import main.shoppilientmobile.shoppingList.application.ShoppingListObserver
 import main.shoppilientmobile.shoppingList.infrastructure.ServerShoppingListObserver
-import main.shoppilientmobile.shoppingList.infrastructure.dataSources.apis.ServerShoppingListApi2
+import main.shoppilientmobile.shoppingList.infrastructure.dataSources.apis.ServerShoppingListApi
 
 class ServerShoppingList(
-    private val serverShoppingListApi: ServerShoppingListApi2,
+    private val serverShoppingListApi: ServerShoppingListApi,
 ) : RemoteShoppingList, ServerShoppingListObserver {
     private var observers = setOf<ShoppingListObserver>()
     private var state = emptyList<ProductOnServerShoppingList>()

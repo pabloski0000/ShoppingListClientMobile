@@ -9,13 +9,10 @@ import main.shoppilientmobile.userRegistrationFeature.repositories.UserRepositor
 class RegisterAdminUseCaseImpl(
     private val registrationRepository: RegistrationRepository,
     private val userRepository: UserRepository,
-    private val shoppingListSynchroniserUseCase: ShoppingListSynchroniserUseCase,
 ): RegisterAdminUseCase {
-
     override suspend fun registerAdmin(nickname: String) {
         val user = registrationRepository.registerAdmin(Registration(nickname, UserRole.ADMIN))
         userRepository.saveLocalUser(user)
-        shoppingListSynchroniserUseCase.synchroniseWithServerShoppingList()
     }
 
 }

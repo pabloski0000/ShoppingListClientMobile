@@ -2,7 +2,6 @@ package main.shoppilientmobile.android.shoppingList.presentation.newTests.accept
 
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import main.shoppilientmobile.android.App
 import main.shoppilientmobile.android.core.AndroidContainer
@@ -12,6 +11,8 @@ import main.shoppilientmobile.android.shoppingList.presentation.testDoubles.Exte
 import main.shoppilientmobile.android.shoppingList.presentation.testDoubles.LocalShoppingListSpy
 import main.shoppilientmobile.domain.domainExposure.UserRole
 import main.shoppilientmobile.shoppingList.application.RemoteShoppingList
+import main.shoppilientmobile.userRegistrationFeature.useCases.RegisterAdminUseCase
+import main.shoppilientmobile.userRegistrationFeature.useCases.useCasesInputOutputs.GetLocalUserUseCase
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -20,6 +21,8 @@ import org.junit.runner.RunWith
 class ShoppingListSynchronisationEndToEndTest {
     private lateinit var shoppingListUI: AndroidShoppingListUI
     private lateinit var externalShoppingList: RemoteShoppingList
+    private lateinit var getLocalUserUseCase: GetLocalUserUseCase
+    private lateinit var registerAdminUseCase: RegisterAdminUseCase
     private companion object {
         var settingUpTestForTheFirstTime = true
         lateinit var container: AndroidContainer
@@ -32,7 +35,13 @@ class ShoppingListSynchronisationEndToEndTest {
         if (settingUpTestForTheFirstTime) {
             val app = App(ApplicationProvider.getApplicationContext())
             container = app.run()
-            app.registerUserOnServerBlokingly("pablos", UserRole.ADMIN)
+            getLocalUserUseCase = container.getLocalUserUseCase
+            registerAdminUseCase = container.registrationContainer!!.registerAdminUseCase
+            runBlocking {
+                if (getLocalUserUseCase.getLocalUser() == null) {
+                    registerAdminUseCase.registerAdmin("pabloski0000")
+                }
+            }
             localShoppingListSpy = LocalShoppingListSpy()
             externalShoppingListSpy = ExternalShoppingListSpy()
             settingUpTestForTheFirstTime = false

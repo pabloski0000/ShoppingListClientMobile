@@ -13,7 +13,6 @@ import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.composab
 import main.shoppilientmobile.domain.domainExposure.UserRole
 import main.shoppilientmobile.domain.exceptions.InvalidUserNicknameException
 import main.shoppilientmobile.userRegistrationFeature.dataSources.exceptions.RemoteDataSourceException
-import main.shoppilientmobile.userRegistrationFeature.entities.Registration
 import main.shoppilientmobile.userRegistrationFeature.repositories.UserRoleRepository
 import main.shoppilientmobile.userRegistrationFeature.useCases.RegisterAdminUseCase
 import main.shoppilientmobile.userRegistrationFeature.useCases.RegisterUserUseCase

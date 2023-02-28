@@ -6,4 +6,5 @@ import main.shoppilientmobile.userRegistrationFeature.useCases.useCasesInputOutp
 interface UserRepository {
     suspend fun saveLocalUser(user: User)
     suspend fun getLocalUser(): User
+    suspend fun deleteLocalUser()
 }

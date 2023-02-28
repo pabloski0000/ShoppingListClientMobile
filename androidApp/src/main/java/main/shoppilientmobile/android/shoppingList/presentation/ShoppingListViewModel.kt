@@ -1,13 +1,12 @@
 package main.shoppilientmobile.android.shoppingList.presentation
 
 import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.flow.*
-import main.shoppilientmobile.shoppingList.domain.ShoppingList
-import main.shoppilientmobile.shoppingList.domain.ShoppingListObserver
-import main.shoppilientmobile.domain.Product
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 class ShoppingListViewModel(
-    private val shoppingList: ShoppingList,
+    private val shoppingListUI: AndroidShoppingListUI,
 ) : ViewModel(), ShoppingListObserver {
     private val _productItemsUiState = MutableStateFlow(emptyList<ProductItemState>())
     val productItemsUiState = _productItemsUiState.asStateFlow()
@@ -19,7 +18,7 @@ class ShoppingListViewModel(
     val errorMessageUiState = _errorMessageUiState.asStateFlow()
     private data class ScreenState(
         val screenMode: ScreenMode2,
-        val screenModeState: ScreenModeState
+        val screenModeState: ScreenModeState,
     )
     sealed class ScreenModeState {
         class NormalModeState() : ScreenModeState()
@@ -33,7 +32,7 @@ class ShoppingListViewModel(
     }
 
     init {
-        shoppingList.observeShoppingList(this)
+        shoppingListUI.observeShoppingList(this)
     }
 
     fun selectProductItem(index: Int) {
@@ -81,21 +80,22 @@ class ShoppingListViewModel(
     }
 
     fun modifyProduct(index: Int, newProduct: ProductItemState) {
-        shoppingList.modifyProduct(
-            oldProduct = _productItemsUiState.value[index].toProduct(),
-            newProduct = newProduct.toProduct(),
-        )
+        val productToModify = _productItemsUiState.value[index].toProduct2()
+        val modifiedProduct = newProduct.toProduct2()
+        shoppingListUI.modifyProduct(productToModify, modifiedProduct)
     }
 
     fun deleteAllProducts() {
-        shoppingList.deleteProducts(_productItemsUiState.value.map { it.toProduct() })
+        _productItemsUiState.value.map { productItem: ProductItemState ->
+            shoppingListUI.deleteProduct(productItem.toProduct2())
+        }
     }
 
-    fun deleteProducts() {
-        val productsToDelete = _productItemsUiState.value.filter { it.selected }
-        shoppingList.deleteProducts(
-            productsToDelete.map { it.toProduct() }
-        )
+    fun deleteSelectedProducts() {
+        val selectedProducts = _productItemsUiState.value.filter { it.selected }
+        selectedProducts.map { productItem: ProductItemState ->
+            shoppingListUI.deleteProduct(productItem.toProduct2())
+        }
     }
 
     fun goToNormalScreenMode() {
@@ -114,9 +114,9 @@ class ShoppingListViewModel(
         _screenStateUiState.update { ScreenModeState.ModifyingProductModeState(productToModifyIndex) }
     }
 
-    override fun stateAtTheMomentOfSubscribing(currentList: List<Product>) {
+    override fun currentState(products: List<Product>) {
         _productItemsUiState.update {
-            currentList.map { product ->
+            products.map { product ->
                 ProductItemState(product.description, false)
             }
         }
@@ -134,7 +134,7 @@ class ShoppingListViewModel(
     override fun productModified(oldProduct: Product, newProduct: Product) {
         _productItemsUiState.update {
             it.map { product ->
-                if (product.toProduct() == oldProduct) {
+                if (product.toProduct2() == oldProduct) {
                     return@map ProductItemState(newProduct.description, false)
                 }
                 return@map product
@@ -142,15 +142,9 @@ class ShoppingListViewModel(
         }
     }
 
-    override fun shoppingListRecreated(currentList: List<Product>) {
-        _productItemsUiState.update {
-            currentList.map { product -> ProductItemState.fromProduct(product) }
-        }
-    }
-
     override fun productDeleted(product: Product) {
         _productItemsUiState.update {
-            it.filter { productItemState -> productItemState.toProduct() != product }
+            it.filter { productItemState -> productItemState.toProduct2() != product }
         }
     }
 }

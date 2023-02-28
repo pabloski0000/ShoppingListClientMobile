@@ -10,7 +10,6 @@ import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.runBlocking
 import main.shoppilientmobile.android.core.AndroidContainer
 import main.shoppilientmobile.android.shoppingList.presentation.*
-import main.shoppilientmobile.android.userRegistrationFeatureAndroid.containers.RegistrationContainer
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.composables.routableComposables.FillNicknameRoutableComposable
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.composables.routableComposables.IntroduceCodeRoutableComposable
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.composables.routableComposables.RoleElectionRoutableComposable
@@ -19,7 +18,6 @@ import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.stateHol
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.stateHolders.RoleElectionViewModel
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.stateHoldersFactories.FillNicknameViewModelFactory
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.stateHoldersFactories.IntroduceCodeViewModelFactory
-import main.shoppilientmobile.domain.domainExposure.User
 import main.shoppilientmobile.domain.domainExposure.UserRole
 import main.shoppilientmobile.shoppingList.application.RemoteShoppingList
 import main.shoppilientmobile.userRegistrationFeature.repositories.RegistrationRepository
@@ -62,7 +60,7 @@ class App(
 
     fun getFirstScreen(): @Composable () -> Unit {
         val startDestination = if (userIsAlreadyRegistered(androidContainer)) {
-            SHOPPING_LIST_ROUTE2
+            SHOPPING_LIST_ROUTE
         } else {
             RoleElectionRoutableComposable.route
         }
@@ -86,7 +84,7 @@ class App(
 
     private fun userIsAlreadyRegistered(androidContainer: AndroidContainer): Boolean {
         val user = runBlocking {
-            androidContainer.getUserUseCase.getUser()
+            androidContainer.getLocalUserUseCase.getLocalUser()
         }
         return user != null
     }
@@ -99,24 +97,24 @@ class App(
             navController = navController,
             startDestination = startDestination,
         ) {
-            composable(route = SHOPPING_LIST_ROUTE2) {
-                val viewModel = viewModel<ShoppingListViewModel2>(
+            composable(route = SHOPPING_LIST_ROUTE) {
+                val viewModel = viewModel<ShoppingListViewModel>(
                     viewModelOwner,
                     "FirstViewModelInGraph",
                     shoppingListViewModelFactory,
                 )
-                ShoppingListScreen2(
+                ShoppingListScreen(
                     navController = navController,
                     viewModel = viewModel,
                 )
             }
-            composable(route = PRODUCT_FACTORY_ROUTE2) {
-                val viewModel = viewModel<ProductFactoryViewModel2>(
+            composable(route = PRODUCT_FACTORY_ROUTE) {
+                val viewModel = viewModel<ProductFactoryViewModel>(
                     viewModelOwner,
                     "SecondViewModelInGraph",
                     productFactoryViewModelFactory,
                 )
-                ProductFactoryScreen2(navController, viewModel)
+                ProductFactoryScreen(navController, viewModel)
             }
             composable(route = RoleElectionRoutableComposable.route) {
                 RoleElectionRoutableComposable.RoleElection(

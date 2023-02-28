@@ -1,6 +1,7 @@
 package main.shoppilientmobile.android.core.room
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 
@@ -14,4 +15,7 @@ interface UserDao {
 
     @Query("SELECT * FROM UserEntity WHERE isLocal = 1")
     suspend fun getLocalUser(): UserEntity
+
+    @Query("DELETE FROM UserEntity WHERE isLocal = 1")
+    suspend fun deleteLocalUser()
 }

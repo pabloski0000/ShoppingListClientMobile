@@ -11,12 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import kotlinx.coroutines.launch
-import main.shoppilientmobile.android.shoppingList.presentation.SHOPPING_LIST_ROUTE
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.stateHolders.FillNicknameViewModel
-import main.shoppilientmobile.domain.domainExposure.UserRole
-import main.shoppilientmobile.userRegistrationFeature.entities.Registration
 
 object FillNicknameRoutableComposable: RoutableComposable {
     override val route: String = "fill_nickname"

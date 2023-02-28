@@ -10,6 +10,6 @@ class ShoppingListViewModelFactory(
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         //return ShoppingListViewModel(shoppingList) as T
-        return ShoppingListViewModel2(androidShoppingListUI) as T
+        return ShoppingListViewModel(androidShoppingListUI) as T
     }
 }

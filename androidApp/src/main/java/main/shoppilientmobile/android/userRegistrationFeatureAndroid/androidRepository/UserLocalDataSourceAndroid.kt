@@ -28,6 +28,11 @@ class UserLocalDataSourceAndroid(
             .build()
     }
 
+    override suspend fun deleteLocalUser() {
+        val userEntity = userDao.getLocalUser()
+        userDao.deleteLocalUser()
+    }
+
     private fun adaptRoleSoItCanBeSaved(userRole: UserRole): String {
         return when (userRole) {
             UserRole.BASIC -> "BASIC"
