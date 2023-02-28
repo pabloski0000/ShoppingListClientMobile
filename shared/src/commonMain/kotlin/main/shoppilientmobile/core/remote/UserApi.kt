@@ -1,7 +1,6 @@
 package main.shoppilientmobile.core.remote
 
 import main.shoppilientmobile.core.storage.SecurityTokenKeeper
-import main.shoppilientmobile.domain.domainExposure.User
 
 class UserApi(
     private val asynchronousHttpClientImpl: AsynchronousHttpClientImpl,
