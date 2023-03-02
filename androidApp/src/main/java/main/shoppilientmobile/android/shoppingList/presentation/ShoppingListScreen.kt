@@ -1,9 +1,7 @@
 package main.shoppilientmobile.android.shoppingList.presentation
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
@@ -12,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.testTag
@@ -82,7 +81,7 @@ private fun ShoppingListScreenOnNormalMode(
         topBar = {
             ShoppingListScreenTopBar()
         },
-        productModifier = {},
+        showProductModifier = false,
         productItemStates = productItemsState.value,
         onClickOnAddProductButton = { screenContentState ->
             navController.navigate(PRODUCT_FACTORY_ROUTE)
@@ -132,7 +131,7 @@ private fun ShoppingListScreenOnDeletionMode(
                 allItemsAreSelected = allProductItemsAreSelected(productItemsStates.value),
             )
         },
-        productModifier = {},
+        showProductModifier = false,
         productItemStates = productItemsStates.value,
         onClickOnAddProductButton = {},
         onClickOnProductItem = { clickedProductIndex ->
@@ -174,8 +173,10 @@ private fun ShoppingListScreenOnModifyingMode(
         topBar = {
             ShoppingListScreenTopBar()
         },
-        productModifier = {
+        showProductModifier = true,
+        productModifier = { modifier ->
             ProductModifier(
+                modifier = modifier,
                 product = productItemToModify.value,
                 onProductChange = {
                     productItemToModify.value = it
@@ -209,7 +210,8 @@ private fun ShoppingListScreenOnModifyingMode(
 private fun ShoppingListScreenContent(
     modifier: Modifier = Modifier,
     topBar: @Composable () -> Unit,
-    productModifier: @Composable () -> Unit,
+    productModifier: @Composable (modifier: Modifier) -> Unit = {},
+    showProductModifier: Boolean,
     productItemStates: List<ProductItemState>,
     onClickOnAddProductButton: (ShoppingListScreenContentState) -> Unit,
     onClickOnProductItem: (index: Int) -> Unit,
@@ -228,17 +230,16 @@ private fun ShoppingListScreenContent(
             )
         },
     ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding),
-        ) {
-            ShoppingList(
-                productItemStates = productItemStates,
-                onLongClickOnProduct = onLongClickOnProductItem,
-                onClickOnProduct = onClickOnProductItem
-            )
-            productModifier()
+        ShoppingList(
+            modifier = Modifier.padding(padding),
+            productItemStates = productItemStates,
+            onLongClickOnProduct = onLongClickOnProductItem,
+            onClickOnProduct = onClickOnProductItem
+        )
+        if (showProductModifier) {
+            Box(modifier = Modifier.fillMaxSize()) {
+                productModifier(modifier = Modifier.align(Alignment.BottomCenter))
+            }
         }
     }
 }
