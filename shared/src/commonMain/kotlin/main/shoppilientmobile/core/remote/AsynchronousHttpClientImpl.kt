@@ -40,7 +40,7 @@ class AsynchronousHttpClientImpl(
         }
     }
 
-    override suspend fun makeRequest(httpRequest: HttpRequest): main.shoppilientmobile.core.remote.HttpResponse {
+    override suspend fun makeRequest(httpRequest: HttpRequest): HttpResponse {
         val response = httpClient.request {
             url(httpRequest.url)
             method = adaptHttpMethod(httpRequest.httpMethod)
@@ -51,14 +51,14 @@ class AsynchronousHttpClientImpl(
             }
             setBody(httpRequest.body)
         }
-        return main.shoppilientmobile.core.remote.HttpResponse(
+        return HttpResponse(
             statusCode = response.status.value,
             headers = response.headers.toMap(),
             body = response.bodyAsText(),
         )
     }
 
-    fun makeRequest2(httpRequest: HttpRequest): main.shoppilientmobile.core.remote.HttpResponse {
+    fun makeRequest2(httpRequest: HttpRequest): HttpResponse {
         return runBlocking(Dispatchers.Default) {
             val response: io.ktor.client.statement.HttpResponse
             coroutineScope {
@@ -72,7 +72,7 @@ class AsynchronousHttpClientImpl(
                     }
                     setBody(httpRequest.body)
                 }
-                main.shoppilientmobile.core.remote.HttpResponse(
+                HttpResponse(
                     statusCode = response.status.value,
                     headers = response.headers.toMap(),
                     body = response.bodyAsText(),
