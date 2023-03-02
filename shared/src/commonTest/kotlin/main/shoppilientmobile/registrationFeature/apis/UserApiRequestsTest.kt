@@ -4,24 +4,15 @@ import io.ktor.client.engine.mock.*
 import io.ktor.http.*
 import io.ktor.http.content.*
 import kotlinx.coroutines.runBlocking
-import main.shoppilientmobile.application.UserBuilderImpl
-import main.shoppilientmobile.core.builders.AsynchronousHttpClientBuilder
-import main.shoppilientmobile.core.remote.AsynchronousHttpClient
 import main.shoppilientmobile.core.remote.HttpMethod
-import main.shoppilientmobile.core.remote.HttpRequest
-import main.shoppilientmobile.domain.domainExposure.UserRole
 import main.shoppilientmobile.registrationFeature.apis.mocks.AsynchronousHttpClientMock
-import main.shoppilientmobile.registrationFeature.apis.mocks.SecurityTokenKeeperMock
-import main.shoppilientmobile.registrationFeature.apis.mocks.StreamingHttpClientMock
-import main.shoppilientmobile.userRegistrationFeature.dataSources.apis.UserApiImpl
-import main.shoppilientmobile.userRegistrationFeature.dataSources.apis.UserApiWithoutKtor
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class UserApiRequestsTest {
-    private lateinit var userApi: UserApiWithoutKtor
+
     private lateinit var httpClient: AsynchronousHttpClientMock
     val messageInformingOfStrangeBehaviourInMockEngine = "assert request headers are correct" +
             " cannot be done due to a strange behaviour in ktor library"
@@ -31,18 +22,11 @@ class UserApiRequestsTest {
     @BeforeTest
     fun setUp() {
         httpClient = AsynchronousHttpClientMock()
-        userApi = UserApiWithoutKtor(
-            httpClient = httpClient,
-            streamingHttpClient = StreamingHttpClientMock(),
-            securityTokenKeeper = SecurityTokenKeeperMock(),
-        )
+
     }
 
     @Test
     fun assertUserAsAdminRegistrationRequestIsCorrect(){
-        runBlocking {
-            userApi.registerAdmin(UserBuilderImpl().setRole(UserRole.ADMIN).build())
-        }
         val sentRequest = httpClient.lastRequest
         assertEquals(HttpMethod.POST, sentRequest.httpMethod)
         assertEquals("$httpsProtocol://$host/api/users/register-user-admin", sentRequest.url)

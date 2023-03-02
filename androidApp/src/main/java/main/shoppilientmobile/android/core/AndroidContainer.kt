@@ -21,7 +21,6 @@ import main.shoppilientmobile.dataSources.StreamingHttpClientAndroid
 import main.shoppilientmobile.shoppingList.application.*
 import main.shoppilientmobile.shoppingList.infrastructure.dataSources.apis.ServerShoppingListApi
 import main.shoppilientmobile.shoppingList.infrastructure.repositories.ServerShoppingList
-import main.shoppilientmobile.userRegistrationFeature.dataSources.apis.UserApiWithoutKtor
 import main.shoppilientmobile.userRegistrationFeature.repositories.UserRepositoryImpl
 import main.shoppilientmobile.userRegistrationFeature.useCases.useCasesInputOutputs.GetLocalUserUseCase
 
@@ -53,12 +52,6 @@ class AndroidContainer(
 
     val securityTokenKeeper = SecurityTokenKeeperImpl(
         keyValueLocalStorage = keyValueLocalStorage,
-    )
-
-    private val userApiWithoutKtor = UserApiWithoutKtor(
-        httpClient = httpClient,
-        streamingHttpClient = streamingHttpClient,
-        securityTokenKeeper = securityTokenKeeper
     )
 
     private val userApi = UserApi(
