@@ -4,6 +4,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import main.shoppilientmobile.core.remote.AsynchronousHttpClientImpl
@@ -11,6 +12,7 @@ import main.shoppilientmobile.core.remote.HttpMethod
 import main.shoppilientmobile.core.remote.HttpRequest
 import main.shoppilientmobile.core.remote.StreamingHttpClient
 import main.shoppilientmobile.core.storage.SecurityTokenKeeper
+import main.shoppilientmobile.domain.Product
 import main.shoppilientmobile.shoppingList.infrastructure.ServerShoppingListObserver
 import main.shoppilientmobile.shoppingList.infrastructure.repositories.ProductOnServerShoppingList
 
@@ -94,6 +96,25 @@ class ServerShoppingListApi(
                     }
                 }
             }.collect()
+        }
+    }
+
+    suspend fun getProducts(): List<Product> {
+        val httpRequest = HttpRequest(
+            httpMethod = HttpMethod.GET,
+            url = "https://lista-de-la-compra-pabloski.herokuapp.com/api/products",
+            headers = mapOf(
+                "Content-Type" to "application/json",
+                "Accept" to "application/json",
+            ),
+            body = "",
+        )
+        val response = asynchronousHttpClient.makeRequest(httpRequest)
+        val json = Json.parseToJsonElement(response.body).jsonArray
+        return json.map { jsonElement ->
+            Product(
+                description = jsonElement.jsonObject.getValue("name").jsonPrimitive.content
+            )
         }
     }
 
