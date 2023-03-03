@@ -39,9 +39,9 @@ fun ShoppingListScreen(
             )
         }
         is ShoppingListViewModel.ScreenModeState.DeletionModeState -> {
-            ShoppingListScreenOnDeletionMode(
+            ShoppingListScreenOnSelectionMode(
                 viewModel = viewModel,
-                deletionModeState = (screenState.value
+                state = (screenState.value
                         as ShoppingListViewModel.ScreenModeState.DeletionModeState),
                 onChangeToShoppingListScreenOnNormalMode = {
                     viewModel.goToNormalScreenMode()
@@ -101,9 +101,9 @@ private fun ShoppingListScreenOnNormalMode(
 }
 
 @Composable
-private fun ShoppingListScreenOnDeletionMode(
+private fun ShoppingListScreenOnSelectionMode(
     viewModel: ShoppingListViewModel,
-    deletionModeState: ShoppingListViewModel.ScreenModeState.DeletionModeState,
+    state: ShoppingListViewModel.ScreenModeState.DeletionModeState,
     onChangeToShoppingListScreenOnNormalMode: () -> Unit,
 ) {
     val productItemsStates = viewModel.productItemsUiState.collectAsState()
@@ -117,7 +117,7 @@ private fun ShoppingListScreenOnDeletionMode(
     }
     ShoppingListScreenContent(
         topBar = {
-            DeletionApplicationTopBar(
+            ShoppingListActionsTopBar(
                 onClickOnDeletionIcon = {
                     coroutineScope.launch {
                         viewModel.deleteSelectedProducts()

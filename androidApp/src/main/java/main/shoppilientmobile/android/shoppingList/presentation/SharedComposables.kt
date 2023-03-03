@@ -6,11 +6,7 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Deselect
-import androidx.compose.material.icons.filled.SelectAll
-import androidx.compose.material.icons.outlined.Done
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.rounded.Done
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -44,7 +40,7 @@ fun DefaultApplicationTopBar(
 }
 
 @Composable
-fun DeletionApplicationTopBar(
+fun ShoppingListActionsTopBar(
     modifier: Modifier = Modifier,
     onClickOnDeletionIcon: () -> Unit,
     onSelectAllItems: () -> Unit,
@@ -78,6 +74,9 @@ fun DeletionApplicationTopBar(
                     Icon(imageVector = Icons.Default.SelectAll, contentDescription = "Select all items")
                 }
             }
+            IconButton(onClick = { /*TODO*/ }) {
+                Icon(imageVector = Icons.Default.ShoppingCart, contentDescription = "Go to shopping mode")
+            }
         }
     )
 }
@@ -86,7 +85,7 @@ fun DeletionApplicationTopBar(
 @Composable
 fun Icons() {
     Box() {
-        Icon(imageVector = Icons.Rounded.Done, contentDescription = "")
+        Icon(imageVector = Icons.Default.ShoppingCart, contentDescription = "")
     }
 }
 
