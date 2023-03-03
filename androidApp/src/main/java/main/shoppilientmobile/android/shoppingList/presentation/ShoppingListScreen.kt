@@ -6,16 +6,14 @@ import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.testTag
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import kotlinx.coroutines.launch
 
 const val SHOPPING_LIST_ROUTE = "shopping_list_screen"
 
@@ -112,6 +110,7 @@ private fun ShoppingListScreenOnDeletionMode(
     if (! thereIsAtLeastOneProductItemSelected(productItemsStates.value)) {
         onChangeToShoppingListScreenOnNormalMode()
     }
+    val coroutineScope = rememberCoroutineScope()
 
     BackHandler() {
         onChangeToShoppingListScreenOnNormalMode()
@@ -120,7 +119,9 @@ private fun ShoppingListScreenOnDeletionMode(
         topBar = {
             DeletionApplicationTopBar(
                 onClickOnDeletionIcon = {
-                    viewModel.deleteSelectedProducts()
+                    coroutineScope.launch {
+                        viewModel.deleteSelectedProducts()
+                    }
                 },
                 onSelectAllItems = {
                     viewModel.selectAllProductsItems()
@@ -165,6 +166,7 @@ private fun ShoppingListScreenOnModifyingMode(
     val showKeyboard = remember {
         mutableStateOf(true)
     }
+    val coroutineScope = rememberCoroutineScope()
 
     BackHandler() {
         onChangeToShoppingListScreenOnNormalMode()
@@ -182,11 +184,13 @@ private fun ShoppingListScreenOnModifyingMode(
                     productItemToModify.value = it
                 },
                 onProductModified = {
-                    viewModel.modifyProduct(
-                        index = modifyingProductModeState.productToModifyIndex,
-                        newProduct = productItemToModify.value,
-                    )
-                    onChangeToShoppingListScreenOnNormalMode()
+                    coroutineScope.launch {
+                        viewModel.modifyProduct(
+                            index = modifyingProductModeState.productToModifyIndex,
+                            newProduct = productItemToModify.value,
+                        )
+                        onChangeToShoppingListScreenOnNormalMode()
+                    }
                 },
                 onClickOnGoBackIcon = onChangeToShoppingListScreenOnNormalMode,
             )

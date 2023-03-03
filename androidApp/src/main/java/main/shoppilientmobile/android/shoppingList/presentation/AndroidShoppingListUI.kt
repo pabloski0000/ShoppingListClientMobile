@@ -16,21 +16,21 @@ class AndroidShoppingListUI(
     private var observingShoppingList = false
 
 
-    fun addProducts(products: List<Product>) {
+    suspend fun addProducts(products: List<Product>) {
         products.map { addProductUseCase.addProduct(it.toProduct()) }
     }
 
-    fun addProduct(product: Product) {
+    suspend fun addProduct(product: Product) {
         addProductUseCase.addProduct(
             product.toProduct()
         )
     }
 
-    fun modifyProduct(oldProduct: Product, newProduct: Product) {
+    suspend fun modifyProduct(oldProduct: Product, newProduct: Product) {
         modifyProductUseCase.modifyProduct(oldProduct.toProduct(), newProduct.toProduct())
     }
 
-    fun deleteProduct(product: Product) {
+    suspend fun deleteProduct(product: Product) {
         deleteProductUseCase.deleteProduct(product.toProduct())
     }
 

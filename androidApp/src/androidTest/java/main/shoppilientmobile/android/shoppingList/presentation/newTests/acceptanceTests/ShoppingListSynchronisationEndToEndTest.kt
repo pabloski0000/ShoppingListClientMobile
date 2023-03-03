@@ -60,7 +60,9 @@ class ShoppingListSynchronisationEndToEndTest {
             Product("Apple"),
             Product("Lemon"),
         )
-        shoppingListUI.addProducts(products)
+        runBlocking {
+            shoppingListUI.addProducts(products)
+        }
         externalShoppingListSpy.assertShoppingListStateIsExactlyThisOrThrowException(
             products.map { it.toProduct() }
         )
@@ -81,15 +83,19 @@ class ShoppingListSynchronisationEndToEndTest {
             }
             return@mapIndexed product
         }
-        shoppingListUI.addProducts(oldProducts)
+        runBlocking {
+            shoppingListUI.addProducts(oldProducts)
+        }
         externalShoppingListSpy.assertShoppingListStateIsExactlyThisOrThrowException(
             oldProducts.map { it.toProduct() }
         )
         localShoppingListSpy.assertShoppingListStateIsExactlyThisOrThrowException(oldProducts)
-        shoppingListUI.modifyProduct(
-            oldProducts[modifiedProductIndex],
-            modifiedProducts[modifiedProductIndex],
-        )
+        runBlocking {
+            shoppingListUI.modifyProduct(
+                oldProducts[modifiedProductIndex],
+                modifiedProducts[modifiedProductIndex],
+            )
+        }
         externalShoppingListSpy.assertShoppingListStateIsExactlyThisOrThrowException(
             modifiedProducts.map { it.toProduct() }
         )
@@ -110,16 +116,20 @@ class ShoppingListSynchronisationEndToEndTest {
             Product("Banana for remove"),
             Product("Lemon for remove"),
         )
-        shoppingListUI.addProducts(shoppingListStateBeforeDeletion)
+        runBlocking {
+            shoppingListUI.addProducts(shoppingListStateBeforeDeletion)
+        }
         externalShoppingListSpy.assertShoppingListStateIsExactlyThisOrThrowException(
             shoppingListStateBeforeDeletion.map { it.toProduct() }
         )
         localShoppingListSpy.assertShoppingListStateIsExactlyThisOrThrowException(
             shoppingListStateBeforeDeletion
         )
-        shoppingListUI.deleteProduct(
-            shoppingListStateBeforeDeletion[productToDeleteIndex]
-        )
+        runBlocking {
+            shoppingListUI.deleteProduct(
+                shoppingListStateBeforeDeletion[productToDeleteIndex]
+            )
+        }
         externalShoppingListSpy.assertShoppingListStateIsExactlyThisOrThrowException(
             shoppingListStateAfterDeletion.map { it.toProduct() }
         )

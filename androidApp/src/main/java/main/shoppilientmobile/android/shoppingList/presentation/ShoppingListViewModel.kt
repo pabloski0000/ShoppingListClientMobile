@@ -79,19 +79,19 @@ class ShoppingListViewModel(
         }
     }
 
-    fun modifyProduct(index: Int, newProduct: ProductItemState) {
+    suspend fun modifyProduct(index: Int, newProduct: ProductItemState) {
         val productToModify = _productItemsUiState.value[index].toProduct2()
         val modifiedProduct = newProduct.toProduct2()
         shoppingListUI.modifyProduct(productToModify, modifiedProduct)
     }
 
-    fun deleteAllProducts() {
+    suspend fun deleteAllProducts() {
         _productItemsUiState.value.map { productItem: ProductItemState ->
             shoppingListUI.deleteProduct(productItem.toProduct2())
         }
     }
 
-    fun deleteSelectedProducts() {
+    suspend fun deleteSelectedProducts() {
         val selectedProducts = _productItemsUiState.value.filter { it.selected }
         selectedProducts.map { productItem: ProductItemState ->
             shoppingListUI.deleteProduct(productItem.toProduct2())

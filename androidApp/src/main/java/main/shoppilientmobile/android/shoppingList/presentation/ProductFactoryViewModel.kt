@@ -15,7 +15,7 @@ class ProductFactoryViewModel(
         _product.update { product }
     }
 
-    fun createProduct(product: String) {
+    suspend fun createProduct(product: String) {
         shoppingListUI.addProduct(Product(product))
     }
 }

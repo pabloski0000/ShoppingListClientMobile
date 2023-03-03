@@ -3,9 +3,9 @@ package main.shoppilientmobile.shoppingList.application
 import main.shoppilientmobile.domain.Product
 
 interface RemoteShoppingList {
-    fun addProduct(product: Product)
-    fun modifyProduct(oldProduct: Product, newProduct: Product)
-    fun deleteProduct(product: Product)
+    suspend fun addProduct(product: Product)
+    suspend fun modifyProduct(oldProduct: Product, newProduct: Product)
+    suspend fun deleteProduct(product: Product)
     fun deleteAllProducts()
     fun observe(observer: ShoppingListObserver)
 }

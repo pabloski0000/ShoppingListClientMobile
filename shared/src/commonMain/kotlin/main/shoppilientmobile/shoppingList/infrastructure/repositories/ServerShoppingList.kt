@@ -13,17 +13,17 @@ class ServerShoppingList(
     private var state = emptyList<ProductOnServerShoppingList>()
     private var observingRemoteShoppingList = false
 
-    override fun addProduct(product: Product) {
+    override suspend fun addProduct(product: Product) {
         serverShoppingListApi.addProduct(ProductOnServerShoppingList.fromProduct(product))
     }
 
-    override fun modifyProduct(oldProduct: Product, newProduct: Product) {
+    override suspend fun modifyProduct(oldProduct: Product, newProduct: Product) {
         val productToModify = state.find { it.toProduct() == oldProduct }!!
         val modifiedProduct = productToModify.copy(description = newProduct.description)
         serverShoppingListApi.modifyProduct(modifiedProduct)
     }
 
-    override fun deleteProduct(product: Product) {
+    override suspend fun deleteProduct(product: Product) {
         val productToDelete = state.find { it.toProduct() == product }!!
         serverShoppingListApi.deleteProduct(productToDelete)
     }

@@ -8,7 +8,7 @@ class FakeRemoteShoppingList : RemoteShoppingList {
     private var observers = emptyList<ShoppingListObserver>()
     private var fakeProductList = emptyList<Product>()
 
-    override fun addProduct(product: Product) {
+    override suspend fun addProduct(product: Product) {
         fakeProductList = listOf(*fakeProductList.toTypedArray(), product)
         observers.map { it.productAdded(product) }
     }
@@ -26,6 +26,10 @@ class FakeRemoteShoppingList : RemoteShoppingList {
     override fun deleteProduct(product: Product) {
         fakeProductList = fakeProductList.filter { it != product }
         observers.map { it.productDeleted(product) }
+    }
+
+    override fun deleteAllProducts() {
+        TODO("Not yet implemented")
     }
 
     override fun observe(observer: ShoppingListObserver) {

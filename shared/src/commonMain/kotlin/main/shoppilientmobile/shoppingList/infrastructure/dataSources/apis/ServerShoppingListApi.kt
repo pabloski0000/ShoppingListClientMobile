@@ -118,14 +118,14 @@ class ServerShoppingListApi(
         }
     }
 
-    fun addProduct(product: ProductOnServerShoppingList) {
+    suspend fun addProduct(product: ProductOnServerShoppingList) {
         val httpRequest = HttpRequest(
             httpMethod = HttpMethod.POST,
             url = "https://lista-de-la-compra-pabloski.herokuapp.com/api/products",
             headers = mapOf(
                 "Content-Type" to "application/json",
                 "Accept" to "application/json",
-                "Authorization" to "Bearer ${securityTokenKeeper.getSecurityToken2()}",
+                "Authorization" to "Bearer ${securityTokenKeeper.getSecurityToken()}",
             ),
             body = """
                 |{
@@ -133,17 +133,17 @@ class ServerShoppingListApi(
                 |}
             """.trimMargin(),
         )
-        asynchronousHttpClient.makeRequest2(httpRequest)
+        asynchronousHttpClient.makeRequest(httpRequest)
     }
 
-    fun modifyProduct(newProduct: ProductOnServerShoppingList) {
+    suspend fun modifyProduct(newProduct: ProductOnServerShoppingList) {
         val httpRequest = HttpRequest(
             httpMethod = HttpMethod.PUT,
             url = "https://lista-de-la-compra-pabloski.herokuapp.com/api/products/${newProduct.id}",
             headers = mapOf(
                 "Content-Type" to "application/json",
                 "Accept" to "application/json",
-                "Authorization" to "Bearer ${securityTokenKeeper.getSecurityToken2()}",
+                "Authorization" to "Bearer ${securityTokenKeeper.getSecurityToken()}",
             ),
             body = """
                 |{
@@ -151,20 +151,20 @@ class ServerShoppingListApi(
                 |}
             """.trimMargin(),
         )
-        asynchronousHttpClient.makeRequest2(httpRequest)
+        asynchronousHttpClient.makeRequest(httpRequest)
     }
 
-    fun deleteProduct(product: ProductOnServerShoppingList) {
+    suspend fun deleteProduct(product: ProductOnServerShoppingList) {
         val httpRequest = HttpRequest(
             httpMethod = HttpMethod.DELETE,
             url = "https://lista-de-la-compra-pabloski.herokuapp.com/api/products/${product.id}",
             headers = mapOf(
                 "Accept" to "application/json",
-                "Authorization" to "Bearer ${securityTokenKeeper.getSecurityToken2()}",
+                "Authorization" to "Bearer ${securityTokenKeeper.getSecurityToken()}",
             ),
             body = "",
         )
-        asynchronousHttpClient.makeRequest2(httpRequest)
+        asynchronousHttpClient.makeRequest(httpRequest)
     }
 
     fun deleteAllProducts() {

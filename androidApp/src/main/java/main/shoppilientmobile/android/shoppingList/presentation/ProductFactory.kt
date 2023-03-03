@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 const val PRODUCT_FACTORY_ROUTE = "product_factory"
 
@@ -38,12 +39,15 @@ fun ProductFactoryScreen(
         mutableStateOf(true)
     }
     val product = viewModel.product.collectAsState()
+    val coroutineScope = rememberCoroutineScope()
     ProductFactoryScreenContent(
         product = product.value,
         onProductChange = { viewModel.onProductChange(it) },
         onProductIntroduced = { productToCreate ->
-            viewModel.createProduct(productToCreate)
-            navController.popBackStack()
+            coroutineScope.launch {
+                viewModel.createProduct(productToCreate)
+                navController.popBackStack()
+            }
         },
         keyboardShower = keyboardShower
     )
