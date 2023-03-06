@@ -71,7 +71,7 @@ fun ProductFactoryScreenContent(
 ) {
     Scaffold(
         topBar = {
-            DefaultApplicationTopBar()
+            BasicTopBar()
         },
     ) { padding ->
         Column(modifier.padding(padding)) {

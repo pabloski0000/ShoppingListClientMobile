@@ -7,28 +7,33 @@ import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.rounded.Done
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 
-private val appBarTitle = "Shopping List"
+private const val appBarTitle = "Shopping List"
 
 @Composable
 fun ShoppingListScreenTopBar(
     modifier: Modifier = Modifier,
-) {
+    onClickOnShoppingCartIcon: () -> Unit,
+    ) {
     TopAppBar(
         modifier = modifier,
         title = {
             Text(text = appBarTitle)
         },
+        actions = {
+            IconButton(onClick = onClickOnShoppingCartIcon) {
+                Icon(imageVector = Icons.Default.ShoppingCart, contentDescription = "Go to shopping mode")
+            }
+        }
     )
 }
 
 @Composable
-fun DefaultApplicationTopBar(
+fun BasicTopBar(
     modifier: Modifier = Modifier,
 ) {
     TopAppBar(
@@ -73,9 +78,6 @@ fun ShoppingListActionsTopBar(
                 ) {
                     Icon(imageVector = Icons.Default.SelectAll, contentDescription = "Select all items")
                 }
-            }
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(imageVector = Icons.Default.ShoppingCart, contentDescription = "Go to shopping mode")
             }
         }
     )

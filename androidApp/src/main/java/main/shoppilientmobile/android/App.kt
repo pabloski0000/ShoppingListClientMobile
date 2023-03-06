@@ -65,7 +65,7 @@ class App(
             RoleElectionRoutableComposable.route
         }
         return {
-            AppNavHost(startDestination)
+            AppNavHost(startDestination, androidContainer)
         }
     }
 
@@ -90,7 +90,7 @@ class App(
     }
 
     @Composable
-    private fun AppNavHost(startDestination: String) {
+    private fun AppNavHost(startDestination: String, androidContainer: AndroidContainer) {
         val viewModelOwner = LocalViewModelStoreOwner.current!!
         val navController = rememberNavController()
         NavHost(
@@ -142,6 +142,12 @@ class App(
                 IntroduceCodeRoutableComposable.IntroduceCode(
                     viewModel = viewModel,
                     userNickname = userNickname,
+                )
+            }
+            composable(SHOPPING_MODE_SCREEN_ROUTE) {
+                ShoppingModeScreen(
+                    viewModel = androidContainer.shoppingModeViewModel,
+                    navController = navController,
                 )
             }
         }

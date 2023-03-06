@@ -35,6 +35,9 @@ fun ShoppingListScreen(
                 },
                 onChangeToShoppingListScreenOnDeletionMode = { screenOnDeletionModeState ->
                     viewModel.goToDeletionScreenMode(screenOnDeletionModeState.selectedProductItemsIndexes.first())
+                },
+                onClickOnShoppingCartIcon = {
+                    navController.navigate(SHOPPING_MODE_SCREEN_ROUTE)
                 }
             )
         }
@@ -73,11 +76,14 @@ private fun ShoppingListScreenOnNormalMode(
         (modifyingProductModeState: ShoppingListViewModel.ScreenModeState.ModifyingProductModeState) -> Unit,
     onChangeToShoppingListScreenOnDeletionMode:
         (deletionModeState: ShoppingListViewModel.ScreenModeState.DeletionModeState) -> Unit,
+    onClickOnShoppingCartIcon: () -> Unit,
 ) {
     val productItemsState = viewModel.productItemsUiState.collectAsState()
     ShoppingListScreenContent(
         topBar = {
-            ShoppingListScreenTopBar()
+            ShoppingListScreenTopBar(
+                onClickOnShoppingCartIcon = onClickOnShoppingCartIcon,
+            )
         },
         showProductModifier = false,
         productItemStates = productItemsState.value,
@@ -173,7 +179,9 @@ private fun ShoppingListScreenOnModifyingMode(
     }
     ShoppingListScreenContent(
         topBar = {
-            ShoppingListScreenTopBar()
+            ShoppingListScreenTopBar(
+                onClickOnShoppingCartIcon = {},
+            )
         },
         showProductModifier = true,
         productModifier = { modifier ->

@@ -11,6 +11,7 @@ import main.shoppilientmobile.android.shoppingList.presentation.ProductFactoryVi
 import main.shoppilientmobile.android.shoppingList.presentation.ShoppingListViewModelFactory
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.androidRepository.KeyValueLocalStorage
 import main.shoppilientmobile.android.core.room.RoomDb
+import main.shoppilientmobile.android.shoppingList.presentation.ShoppingModeViewModel
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.containers.RegistrationContainer
 import main.shoppilientmobile.core.remote.AsynchronousHttpClientImpl
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.androidRepository.SecurityTokenKeeperImpl
@@ -112,6 +113,10 @@ class AndroidContainer(
     )
 
     var registrationContainer: RegistrationContainer? = null
+
+    val shoppingModeViewModel = ShoppingModeViewModel(
+        androidShoppingListUI,
+    )
 
     val shoppingListViewModelFactory = ShoppingListViewModelFactory(shoppingList, androidShoppingListUI)
 
