@@ -9,6 +9,7 @@ plugins {
     id("com.android.application")
     kotlin("android")
     kotlin("kapt")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -81,4 +82,7 @@ dependencies {
     //AndroidX.Test
     androidTestImplementation("androidx.test:core:1.5.0")
     androidTestImplementation("androidx.test:core-ktx:1.5.0")
+    //Firebase
+    implementation(platform("com.google.firebase:firebase-bom:31.2.3"))
+    implementation("com.google.firebase:firebase-analytics-ktx")
 }
