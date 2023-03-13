@@ -10,6 +10,8 @@ import main.shoppilientmobile.domain.domainExposure.User
 import main.shoppilientmobile.userRegistrationFeature.dataSources.RegistrationRemoteDataSource
 import main.shoppilientmobile.userRegistrationFeature.dataSources.exceptions.RemoteDataSourceException
 import main.shoppilientmobile.userRegistrationFeature.entities.Registration
+import main.shoppilientmobile.userRegistrationFeature.useCases.exceptions.WrongCodeException
+import kotlin.coroutines.cancellation.CancellationException
 
 class RegistrationApi(
     private val httpClient: AsynchronousHttpClient,
@@ -65,6 +67,7 @@ class RegistrationApi(
         saveSecurityToken(response)
     }
 
+    @Throws(CancellationException::class, WrongCodeException::class)
     override suspend fun confirmUserRegistration(registration: Registration): User {
         val httpRequest = HttpRequest(
             httpMethod = HttpMethod.POST,
@@ -73,13 +76,13 @@ class RegistrationApi(
             body = """
                 {
                     "nickname": "${registration.nickname}",
-                    "code": ${registration.signature}
+                    "code": ${registration.signature!!.value}
                 }
             """.trimIndent(),
         )
         val response = httpClient.makeRequest(httpRequest)
-        if (response.statusCode !in 200..299) {
-            throw RemoteDataSourceException("Server failed at taking the registration")
+        if (response.statusCode == 403) {
+            throw WrongCodeException("The code: ${registration.signature} isn't correct")
         }
         saveSecurityToken(response)
         return createUser(registration)

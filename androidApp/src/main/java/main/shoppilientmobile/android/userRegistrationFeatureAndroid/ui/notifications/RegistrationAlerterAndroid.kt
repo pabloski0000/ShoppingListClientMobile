@@ -31,7 +31,7 @@ class RegistrationAlerterAndroid(
     private fun adaptRegistration(registration: Registration): Notification {
         return NotificationCompat.Builder(context, "jsd")
             .setContentTitle(registration.nickname)
-            .setContentTitle(registration.signature)
+            .setContentTitle(registration.signature!!.value.toString())
             .build()
     }
 

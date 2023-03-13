@@ -35,7 +35,6 @@ class RegistrationContainer(
 
     val registerUserUseCase = RegisterUserUseCase(
         registrationRepository,
-        userRepository,
     )
 
     val registerAdminUseCase = RegisterAdminUseCaseImpl(

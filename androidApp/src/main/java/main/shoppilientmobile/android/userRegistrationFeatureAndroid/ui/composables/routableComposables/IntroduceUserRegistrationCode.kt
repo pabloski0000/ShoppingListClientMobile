@@ -10,7 +10,10 @@ import androidx.compose.material.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.sp
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.stateHolders.IntroduceCodeViewModel
+import main.shoppilientmobile.userRegistrationFeature.useCases.exceptions.WrongCodeException
 
 object IntroduceCodeRoutableComposable: RoutableComposable {
     override val route = "introduce_user_registration_code"
@@ -30,9 +33,12 @@ object IntroduceCodeRoutableComposable: RoutableComposable {
                     viewModel.confirmRegistration(userNickname, code)
                 }
             )
-            FillNicknameRoutableComposable.ProcessInformationMessage(
-                message = userInformationMessage.message,
-                letterColor = userInformationMessage.color,
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = userInformationMessage.message,
+                fontSize = 26.sp,
+                textAlign = TextAlign.Center,
+                color = userInformationMessage.color,
             )
         }
     }

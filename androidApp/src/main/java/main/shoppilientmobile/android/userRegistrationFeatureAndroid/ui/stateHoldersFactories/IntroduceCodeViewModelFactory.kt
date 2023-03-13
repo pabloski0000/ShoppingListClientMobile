@@ -16,8 +16,6 @@ class IntroduceCodeViewModelFactory(
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return IntroduceCodeViewModel(
-            registrationRepository,
-            userRepository,
             navController,
             confirmUserRegistrationUseCase,
         ) as T

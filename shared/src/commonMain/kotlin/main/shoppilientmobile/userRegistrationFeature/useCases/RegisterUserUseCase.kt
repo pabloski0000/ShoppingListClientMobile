@@ -7,9 +7,8 @@ import main.shoppilientmobile.userRegistrationFeature.repositories.UserRepositor
 
 class RegisterUserUseCase(
     private val registrationRepository: RegistrationRepository,
-    private val userRepository: UserRepository,
 ) {
-    suspend fun registerUser(nickname: String): RegistrationValidator {
+    suspend fun registerUser(nickname: String) {
         val role = UserRole.BASIC
         registrationRepository.registerUser(
             Registration(
@@ -17,19 +16,6 @@ class RegisterUserUseCase(
                 role = role,
             )
         )
-        return object : RegistrationValidator {
-            override suspend fun confirmRegistration(code: String): Boolean {
-                val user = registrationRepository.confirmRegistration(
-                    Registration(
-                        nickname,
-                        role,
-                        code,
-                    )
-                )
-                userRepository.saveLocalUser(user)
-                return true
-            }
-        }
     }
 
 }
