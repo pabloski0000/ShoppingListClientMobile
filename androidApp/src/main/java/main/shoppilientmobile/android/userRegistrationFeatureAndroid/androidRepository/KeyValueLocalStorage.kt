@@ -21,61 +21,34 @@ class KeyValueLocalStorage(
     suspend fun store(value: String): Key {
         val key = getUniqueKey()
         try {
-            coroutineScope {
-                launch {
-                    try {
-                        saving = true
-                        dataStore.edit { mutablePreferences ->
-                            mutablePreferences[stringPreferencesKey(key)] = value
-                        }
-                    } finally {
-                        saving = false
-                    }
-                }
+            saving = true
+            dataStore.edit { mutablePreferences ->
+                mutablePreferences[stringPreferencesKey(key)] = value
             }
-            return key
-        } catch (e: Exception) {
-            throw StorageException("Error at storing data as Key-Value")
+        } finally {
+            saving = false
         }
+        return key
     }
 
     @kotlin.jvm.Throws(StorageException::class)
     suspend fun store(key: String, value: String) {
         try {
-            coroutineScope {
-                launch {
-                    try {
-                        saving = true
-                        dataStore.edit { mutablePreferences ->
-                            mutablePreferences[stringPreferencesKey(key)] = value
-                        }
-                    } finally {
-                        saving = false
-                    }
-                }
+            saving = true
+            dataStore.edit { mutablePreferences ->
+                mutablePreferences[stringPreferencesKey(key)] = value
             }
-        } catch (e: Exception) {
-            throw StorageException("Error at storing data as Key-Value")
+        } finally {
+            saving = false
         }
     }
 
     @kotlin.jvm.Throws(NotFoundKeyException::class)
     suspend fun getValue(key: String): String {
-        try {
-            return coroutineScope {
-                val value = async {
-                    delayUntilNothingIsBeingSaved()
-                    var result: String? = null
-                    result = dataStore.data.map { preferences ->
-                        preferences[stringPreferencesKey(key)]
-                    }.first()
-                    result ?: ""
-                }
-                return@coroutineScope value.await()
-            }
-        } catch (e: Exception) {
-            throw NotFoundKeyException("Key: $key does not exist in storage")
-        }
+        delayUntilNothingIsBeingSaved()
+        return dataStore.data.map { preferences ->
+            preferences[stringPreferencesKey(key)]
+        }.first() ?: ""
     }
 
     private fun delayUntilNothingIsBeingSaved() {

@@ -14,12 +14,8 @@ class SecurityTokenKeeperImpl (
     private val securityTokenKey: String = "security_token_key"
 
     override suspend fun getSecurityToken(): SecurityToken {
-        try {
-            val securityToken = keyValueLocalStorage.getValue(securityTokenKey)
-            return securityToken
-        } catch (e: NotFoundKeyException) {
-            throw ThereIsNoSecurityTokenException("Here there is no security token")
-        }
+        val securityToken = keyValueLocalStorage.getValue(securityTokenKey)
+        return securityToken
     }
     override fun getSecurityToken2(): SecurityToken {
         return try {
