@@ -8,12 +8,6 @@ import kotlinx.coroutines.flow.update
 class ProductFactoryViewModel(
     private val shoppingListUI: AndroidShoppingListUI,
 ) : ViewModel() {
-    private val _product = MutableStateFlow("")
-    val product = _product.asStateFlow()
-
-    fun onProductChange(product: String) {
-        _product.update { product }
-    }
 
     suspend fun createProduct(product: String) {
         shoppingListUI.addProduct(Product(product))

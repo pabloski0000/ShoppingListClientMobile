@@ -13,8 +13,10 @@ import main.shoppilientmobile.core.remote.HttpRequest
 import main.shoppilientmobile.core.remote.StreamingHttpClient
 import main.shoppilientmobile.core.storage.SecurityTokenKeeper
 import main.shoppilientmobile.domain.Product
+import main.shoppilientmobile.domain.exceptions.ProductAlreadyExistsException
 import main.shoppilientmobile.shoppingList.infrastructure.ServerShoppingListObserver
 import main.shoppilientmobile.shoppingList.infrastructure.repositories.ProductOnServerShoppingList
+import kotlin.coroutines.cancellation.CancellationException
 
 class ServerShoppingListApi(
     private val streamingHttpClient: StreamingHttpClient,
@@ -118,6 +120,7 @@ class ServerShoppingListApi(
         }
     }
 
+    @Throws(CancellationException::class, ProductAlreadyExistsException::class)
     suspend fun addProduct(product: ProductOnServerShoppingList) {
         val httpRequest = HttpRequest(
             httpMethod = HttpMethod.POST,
@@ -133,7 +136,10 @@ class ServerShoppingListApi(
                 |}
             """.trimMargin(),
         )
-        asynchronousHttpClient.makeRequest(httpRequest)
+        val response = asynchronousHttpClient.makeRequest(httpRequest)
+        if (response.statusCode == 409) {
+            throw ProductAlreadyExistsException("Product already exists on server")
+        }
     }
 
     suspend fun modifyProduct(newProduct: ProductOnServerShoppingList) {

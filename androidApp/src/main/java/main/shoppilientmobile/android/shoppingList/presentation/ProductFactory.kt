@@ -19,11 +19,14 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import main.shoppilientmobile.domain.exceptions.ProductAlreadyExistsException
 
 const val PRODUCT_FACTORY_ROUTE = "product_factory"
 
@@ -38,15 +41,20 @@ fun ProductFactoryScreen(
     val showKeyboard = remember {
         mutableStateOf(true)
     }
-    val product = viewModel.product.collectAsState()
+    val errorMessage = rememberSaveable {
+        mutableStateOf("")
+    }
     val coroutineScope = rememberCoroutineScope()
     ProductFactoryScreenContent(
-        product = product.value,
-        onProductChange = { viewModel.onProductChange(it) },
+        errorMessage = errorMessage.value.ifBlank { null },
         onProductIntroduced = { productToCreate ->
             coroutineScope.launch {
-                viewModel.createProduct(productToCreate)
-                navController.popBackStack()
+                try {
+                    viewModel.createProduct(productToCreate)
+                    navController.popBackStack()
+                } catch (e: ProductAlreadyExistsException) {
+                    errorMessage.value = "$productToCreate already exists on shopping list"
+                }
             }
         },
         keyboardShower = keyboardShower
@@ -64,8 +72,7 @@ fun ProductFactoryScreen(
 @Composable
 fun ProductFactoryScreenContent(
     modifier: Modifier = Modifier,
-    product: String,
-    onProductChange: (product: String) -> Unit,
+    errorMessage: String?,
     onProductIntroduced: (product: String) -> Unit,
     keyboardShower: FocusRequester,
 ) {
@@ -77,11 +84,18 @@ fun ProductFactoryScreenContent(
         Column(modifier.padding(padding)) {
             ProductFactory(
                 modifier = Modifier.fillMaxWidth(),
-                product = product,
-                onProductChange = onProductChange,
                 onDone = onProductIntroduced,
                 focusRequester = keyboardShower,
             )
+            if (errorMessage is String) {
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = errorMessage,
+                    fontSize = 26.sp,
+                    textAlign = TextAlign.Center,
+                    color = Color.Red,
+                )
+            }
         }
     }
 }
@@ -89,8 +103,6 @@ fun ProductFactoryScreenContent(
 @Composable
 fun ProductFactory(
     modifier: Modifier = Modifier,
-    product: String,
-    onProductChange: (product: String) -> Unit,
     onDone: (product: String) -> Unit,
     focusRequester: FocusRequester,
 ) {
@@ -101,8 +113,6 @@ fun ProductFactory(
         ProductFactoryTextField(
             modifier = Modifier
                 .padding(20.dp),
-            product = product,
-            onProductChange = onProductChange,
             onDone = onDone,
             focusRequester = focusRequester,
         )
@@ -112,8 +122,6 @@ fun ProductFactory(
 @Composable
 private fun ProductFactoryTextField(
     modifier: Modifier = Modifier,
-    product: String,
-    onProductChange: (product: String) -> Unit,
     onDone: (product: String) -> Unit,
     focusRequester: FocusRequester,
 ) {
