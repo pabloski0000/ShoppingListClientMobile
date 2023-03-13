@@ -8,6 +8,7 @@ import main.shoppilientmobile.userRegistrationFeature.repositories.RegistrationR
 import main.shoppilientmobile.userRegistrationFeature.repositories.UserRepository
 import main.shoppilientmobile.userRegistrationFeature.repositories.UserRoleLocalDataSource
 import main.shoppilientmobile.userRegistrationFeature.repositories.UserRoleRepository
+import main.shoppilientmobile.userRegistrationFeature.useCases.ConfirmUserRegistrationUseCase
 import main.shoppilientmobile.userRegistrationFeature.useCases.RegisterAdminUseCaseImpl
 import main.shoppilientmobile.userRegistrationFeature.useCases.RegisterUserUseCase
 
@@ -40,5 +41,10 @@ class RegistrationContainer(
     val registerAdminUseCase = RegisterAdminUseCaseImpl(
         registrationRepository = registrationRepository,
         userRepository = userRepository,
+    )
+
+    val confirmUserRegistrationUseCase = ConfirmUserRegistrationUseCase(
+        registrationRepository,
+        userRepository,
     )
 }
