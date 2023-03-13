@@ -43,7 +43,7 @@ class MainActivity : ComponentActivity() {
         return if (savedInstanceState == null) {
             true
         } else {
-            savedInstanceState.getInt(activityCreatedCounterBundleKey) > 0
+            savedInstanceState.getInt(activityCreatedCounterBundleKey) < 1
         }
     }
 }
