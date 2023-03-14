@@ -13,14 +13,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val app: App
-        if (activityIsBeingCreatedForTheFirstTime(savedInstanceState)) {
-            app = App(applicationContext)
-            (application as AndroidApplication).app = app
-            app.run()
-        } else {
-            app = (application as AndroidApplication).app!!
-        }
+        val app = (application as AndroidApplication).runAppIfNotAlreadyInitialised()
         setContent {
             MyApplicationTheme {
                 Surface(
