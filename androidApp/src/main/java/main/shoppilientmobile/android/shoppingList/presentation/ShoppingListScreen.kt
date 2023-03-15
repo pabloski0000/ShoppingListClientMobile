@@ -86,6 +86,7 @@ private fun ShoppingListScreenOnNormalMode(
             )
         },
         showProductModifier = false,
+        showAddProductButton = true,
         productItemStates = productItemsState.value,
         onClickOnAddProductButton = { screenContentState ->
             navController.navigate(PRODUCT_FACTORY_ROUTE)
@@ -139,6 +140,7 @@ private fun ShoppingListScreenOnSelectionMode(
             )
         },
         showProductModifier = false,
+        showAddProductButton = false,
         productItemStates = productItemsStates.value,
         onClickOnAddProductButton = {},
         onClickOnProductItem = { clickedProductIndex ->
@@ -184,6 +186,7 @@ private fun ShoppingListScreenOnModifyingMode(
             )
         },
         showProductModifier = true,
+        showAddProductButton = false,
         productModifier = { modifier ->
             ProductModifier(
                 modifier = modifier,
@@ -224,6 +227,7 @@ private fun ShoppingListScreenContent(
     topBar: @Composable () -> Unit,
     productModifier: @Composable (modifier: Modifier) -> Unit = {},
     showProductModifier: Boolean,
+    showAddProductButton: Boolean,
     productItemStates: List<ProductItemState>,
     onClickOnAddProductButton: (ShoppingListScreenContentState) -> Unit,
     onClickOnProductItem: (index: Int) -> Unit,
@@ -233,13 +237,15 @@ private fun ShoppingListScreenContent(
         modifier = modifier,
         topBar = topBar,
         floatingActionButton = {
-            AddProductButton(
-                onClick = {
-                    onClickOnAddProductButton(ShoppingListScreenContentState(
-                        productItemStates,
-                    ))
-                }
-            )
+            if (showAddProductButton) {
+                AddProductButton(
+                    onClick = {
+                        onClickOnAddProductButton(ShoppingListScreenContentState(
+                            productItemStates,
+                        ))
+                    }
+                )
+            }
         },
     ) { padding ->
         ShoppingList(
