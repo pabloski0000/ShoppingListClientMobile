@@ -3,10 +3,7 @@ package main.shoppilientmobile.shoppingList.infrastructure.dataSources.apis
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.jsonArray
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.*
 import main.shoppilientmobile.core.remote.AsynchronousHttpClientImpl
 import main.shoppilientmobile.core.remote.HttpMethod
 import main.shoppilientmobile.core.remote.HttpRequest
@@ -14,6 +11,8 @@ import main.shoppilientmobile.core.remote.StreamingHttpClient
 import main.shoppilientmobile.core.storage.SecurityTokenKeeper
 import main.shoppilientmobile.domain.Product
 import main.shoppilientmobile.domain.exceptions.ProductAlreadyExistsException
+import main.shoppilientmobile.domain.exceptions.ProductDescriptionExceedsMaximumLengthException
+import main.shoppilientmobile.domain.exceptions.ProductDescriptionIsShorterThanMinimumLengthException
 import main.shoppilientmobile.shoppingList.infrastructure.ServerShoppingListObserver
 import main.shoppilientmobile.shoppingList.infrastructure.repositories.ProductOnServerShoppingList
 import kotlin.coroutines.cancellation.CancellationException
@@ -137,8 +136,23 @@ class ServerShoppingListApi(
             """.trimMargin(),
         )
         val response = asynchronousHttpClient.makeRequest(httpRequest)
-        if (response.statusCode == 409) {
-            throw ProductAlreadyExistsException("Product already exists on server")
+        if (response.statusCode in 200..299) {
+            val jsonBodyResponse = Json.parseToJsonElement(response.body).jsonObject
+            val errorCode = jsonBodyResponse.getValue("errorCode").jsonPrimitive.int
+            val errorMessage = jsonBodyResponse.getValue("errorMessage").jsonPrimitive.content
+            when (errorCode) {
+                AddProductErrorCodes.PRODUCT_ALREADY_EXISTS_ON_LIST.code -> {
+                    throw ProductAlreadyExistsException(errorMessage)
+                }
+                AddProductErrorCodes.PRODUCT_EXCEEDS_MAXIMUM_LENGTH.code -> {
+                    throw ProductDescriptionExceedsMaximumLengthException(errorMessage)
+                }
+                AddProductErrorCodes.PRODUCT_IS_SHORTER_THAN_MINIMUM_LENGTH.code -> {
+                    throw ProductDescriptionIsShorterThanMinimumLengthException(errorMessage)
+                }
+            }
+        } else {
+            throw Exception("Status code: ${response.statusCode}. Response body: ${response.body}")
         }
     }
 

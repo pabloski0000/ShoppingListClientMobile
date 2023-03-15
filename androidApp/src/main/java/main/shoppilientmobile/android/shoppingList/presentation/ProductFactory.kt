@@ -27,6 +27,8 @@ import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import main.shoppilientmobile.domain.exceptions.ProductAlreadyExistsException
+import main.shoppilientmobile.domain.exceptions.ProductDescriptionExceedsMaximumLengthException
+import main.shoppilientmobile.domain.exceptions.ProductDescriptionIsShorterThanMinimumLengthException
 
 const val PRODUCT_FACTORY_ROUTE = "product_factory"
 
@@ -54,6 +56,11 @@ fun ProductFactoryScreen(
                     navController.popBackStack()
                 } catch (e: ProductAlreadyExistsException) {
                     errorMessage.value = "$productToCreate already exists on shopping list"
+                } catch (e: ProductDescriptionExceedsMaximumLengthException) {
+                    errorMessage.value = "This product has exceeded the maximum length. Try shortening"
+                } catch (e: ProductDescriptionIsShorterThanMinimumLengthException) {
+                    errorMessage.value = "This product has a shorter length than the minimum that" +
+                            " is required"
                 }
             }
         },

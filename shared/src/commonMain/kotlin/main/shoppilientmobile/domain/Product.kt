@@ -1,17 +1,17 @@
 package main.shoppilientmobile.domain
 
-import main.shoppilientmobile.shoppingList.domain.rules.ExceededMaximumProductDescriptionLengthException
+import main.shoppilientmobile.domain.exceptions.ProductDescriptionExceedsMaximumLengthException
+import main.shoppilientmobile.domain.exceptions.ProductDescriptionIsShorterThanMinimumLengthException
 import main.shoppilientmobile.shoppingList.domain.rules.ProductRules
-import main.shoppilientmobile.shoppingList.domain.rules.UnreachedMinimumProductDescriptionLengthException
 
 data class Product(val description: String) {
     init {
         if (description.length < ProductRules.minimumProductDescriptionLength) {
-            throw UnreachedMinimumProductDescriptionLengthException("A product has to at least" +
+            throw ProductDescriptionIsShorterThanMinimumLengthException("A product has to at least" +
                     "has a length of ${ProductRules.minimumProductDescriptionLength} characters")
         }
         if (description.length > ProductRules.maximumProductDescriptionLength) {
-            throw ExceededMaximumProductDescriptionLengthException("A product cannot exceed" +
+            throw ProductDescriptionExceedsMaximumLengthException("A product cannot exceed" +
                     "the maximum length of ${ProductRules.maximumProductDescriptionLength} characters")
         }
     }

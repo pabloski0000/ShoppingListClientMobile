@@ -1,8 +1,6 @@
 package main.shoppilientmobile.shoppingList
 
-import main.shoppilientmobile.shoppingList.domain.rules.ExceededMaximumProductDescriptionLengthException
 import main.shoppilientmobile.shoppingList.domain.rules.ProductRules
-import main.shoppilientmobile.shoppingList.domain.rules.UnreachedMinimumProductDescriptionLengthException
 import main.shoppilientmobile.domain.Product
 import kotlin.test.Test
 import kotlin.test.assertTrue
