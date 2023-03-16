@@ -5,15 +5,21 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.launch
+import main.shoppilientmobile.domain.exceptions.ProductDescriptionExceedsMaximumLengthException
+import main.shoppilientmobile.domain.exceptions.ProductDescriptionIsShorterThanMinimumLengthException
+import main.shoppilientmobile.domain.exceptions.ThereCannotBeTwoProductsWithTheSameNameException
 
 const val SHOPPING_LIST_ROUTE = "shopping_list_screen"
 
@@ -85,7 +91,6 @@ private fun ShoppingListScreenOnNormalMode(
                 onClickOnShoppingCartIcon = onClickOnShoppingCartIcon,
             )
         },
-        showProductModifier = false,
         showAddProductButton = true,
         productItemStates = productItemsState.value,
         onClickOnAddProductButton = { screenContentState ->
@@ -139,7 +144,6 @@ private fun ShoppingListScreenOnSelectionMode(
                 allItemsAreSelected = allProductItemsAreSelected(productItemsStates.value),
             )
         },
-        showProductModifier = false,
         showAddProductButton = false,
         productItemStates = productItemsStates.value,
         onClickOnAddProductButton = {},
@@ -168,11 +172,8 @@ private fun ShoppingListScreenOnModifyingMode(
             viewModel.productItemsUiState.value[modifyingProductModeState.productToModifyIndex]
         )
     }
-    val focusRequester = remember {
-        FocusRequester()
-    }
-    val showKeyboard = remember {
-        mutableStateOf(true)
+    val errorMessage = remember {
+        mutableStateOf("")
     }
     val coroutineScope = rememberCoroutineScope()
 
@@ -185,62 +186,42 @@ private fun ShoppingListScreenOnModifyingMode(
                 onClickOnShoppingCartIcon = {},
             )
         },
-        showProductModifier = true,
         showAddProductButton = false,
-        productModifier = { /*modifier ->
-            ProductModifier(
-                modifier = modifier,
-                product = productItemToModify.value,
-                onProductChange = {
-                    productItemToModify.value = it
-                },
-                onProductModified = {
-                    coroutineScope.launch {
-                        viewModel.modifyProduct(
-                            index = modifyingProductModeState.productToModifyIndex,
-                            newProduct = productItemToModify.value,
-                        )
-                        onChangeToShoppingListScreenOnNormalMode()
-                    }
-                },
-                onClickOnGoBackIcon = onChangeToShoppingListScreenOnNormalMode,
-            )
-        */},
         productToModify = productItemToModify.value,
         onProductModified = { modifiedProduct ->
             coroutineScope.launch {
-                viewModel.modifyProduct(
-                    index = modifyingProductModeState.productToModifyIndex,
-                    newProduct = modifiedProduct,
-                )
-                onChangeToShoppingListScreenOnNormalMode()
+                try {
+                    viewModel.modifyProduct(
+                        index = modifyingProductModeState.productToModifyIndex,
+                        newProduct = modifiedProduct,
+                    )
+                    onChangeToShoppingListScreenOnNormalMode()
+                } catch (e: ThereCannotBeTwoProductsWithTheSameNameException) {
+                    errorMessage.value = "There is another product with that description"
+                } catch (e: ProductDescriptionExceedsMaximumLengthException) {
+                    errorMessage.value = "Try shortening it. It is too long"
+                } catch (e: ProductDescriptionIsShorterThanMinimumLengthException) {
+                    errorMessage.value = "It has too few character. Make it longer!!!!"
+                }
             }
         },
+        errorMessageWhenModifyingProduct = errorMessage.value,
         onClickOnGoBackModifierButton = onChangeToShoppingListScreenOnNormalMode,
         productItemStates = productItemsState,
         onClickOnAddProductButton = {},
         onClickOnProductItem = {},
         onLongClickOnProductItem = {},
     )
-    /*LaunchedEffect(key1 = Unit) {
-        if (showKeyboard.value) {
-            awaitFrame()
-            delay(100)
-            focusRequester.requestFocus()
-            //showKeyboard.value = false
-        }
-    }*/
 }
 
 @Composable
 private fun ShoppingListScreenContent(
     modifier: Modifier = Modifier,
     topBar: @Composable () -> Unit,
-    productModifier: @Composable (modifier: Modifier) -> Unit = {},
     productToModify: ProductItemState? = null,
     onProductModified: (modifiedProduct: ProductItemState) -> Unit = {},
     onClickOnGoBackModifierButton: () -> Unit = {},
-    showProductModifier: Boolean,
+    errorMessageWhenModifyingProduct: String = "",
     showAddProductButton: Boolean,
     productItemStates: List<ProductItemState>,
     onClickOnAddProductButton: (ShoppingListScreenContentState) -> Unit,
@@ -268,14 +249,23 @@ private fun ShoppingListScreenContent(
             onLongClickOnProduct = onLongClickOnProductItem,
             onClickOnProduct = onClickOnProductItem
         )
-        if (showProductModifier && productToModify is ProductItemState) {
+        if (productToModify is ProductItemState) {
             val productToModifyRemembered = remember {
                 mutableStateOf(productToModify)
             }
-            Box(modifier = Modifier.fillMaxSize()) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Bottom,
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
                 //productModifier(modifier = Modifier.align(Alignment.BottomCenter))
+                Text(
+                    text = errorMessageWhenModifyingProduct,
+                    textAlign = TextAlign.Center,
+                    fontSize = 24.sp,
+                    color = Color.Red,
+                )
                 ProductModifier(
-                    modifier = Modifier.align(Alignment.BottomCenter),
                     product = productToModifyRemembered.value,
                     onProductChange = {
                         productToModifyRemembered.value = it

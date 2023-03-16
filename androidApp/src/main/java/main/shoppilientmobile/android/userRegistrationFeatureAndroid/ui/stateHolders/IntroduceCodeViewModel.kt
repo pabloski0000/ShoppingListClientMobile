@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import main.shoppilientmobile.android.shoppingList.presentation.SHOPPING_LIST_ROUTE
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.composables.ProcessInformationUiState
+import main.shoppilientmobile.domain.exceptions.*
 import main.shoppilientmobile.userRegistrationFeature.entities.RegistrationCode
 import main.shoppilientmobile.userRegistrationFeature.useCases.ConfirmUserRegistrationUseCase
 import main.shoppilientmobile.userRegistrationFeature.useCases.exceptions.WrongCodeException
@@ -31,10 +32,32 @@ class IntroduceCodeViewModel(
             try {
                 confirmUserRegistrationUseCase.confirmRegistration(nickname, code.toInt())
                 navController.navigate(SHOPPING_LIST_ROUTE)
-            } catch (e: WrongCodeException) {
+            } catch (e: ThereCannotBeTwoUsersWithTheSameNicknameException) {
+                _processInformationUiState.value = ProcessInformationUiState(
+                    message = e.message,
+                    color = Color.Red,
+                )
+            } catch (e: UserNicknameTooLongException) {
+                _processInformationUiState.value = ProcessInformationUiState(
+                    message = e.message,
+                    color = Color.Red,
+                )
+            } catch (e: UserNicknameTooShortException) {
+                _processInformationUiState.value = ProcessInformationUiState(
+                    message = e.message,
+                    color = Color.Red,
+                )
+            } catch (e: WrongUserNicknameOrPasswordException) {
                 _processInformationUiState.update {
                     ProcessInformationUiState(
-                        message = "Wrong code",
+                        message = e.message,
+                        color = Color.Red,
+                    )
+                }
+            } catch (e: UserDoesNotExistException) {
+                _processInformationUiState.update {
+                    ProcessInformationUiState(
+                        message = e.message,
                         color = Color.Red,
                     )
                 }

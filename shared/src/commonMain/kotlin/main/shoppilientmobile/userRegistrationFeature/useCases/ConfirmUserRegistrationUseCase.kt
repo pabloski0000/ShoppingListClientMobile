@@ -16,12 +16,7 @@ class ConfirmUserRegistrationUseCase(
 ) {
     @Throws(CancellationException::class, WrongCodeException::class)
     suspend fun confirmRegistration(nickname: String, code: Int) {
-        val registrationCode = try {
-            RegistrationCode(code)
-        } catch (e: InvalidValueObjectState) {
-            throw WrongCodeException("${RegistrationCode::class.simpleName} can't be instantiated" +
-                    " because of malformed registration code")
-        }
+        val registrationCode = RegistrationCode(code)
         registrationRepository.confirmRegistration(
             Registration(
                 nickname,

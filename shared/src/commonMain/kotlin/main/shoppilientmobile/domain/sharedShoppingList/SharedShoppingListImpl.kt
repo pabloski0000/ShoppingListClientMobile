@@ -3,7 +3,7 @@ package main.shoppilientmobile.domain.sharedShoppingList
 import main.shoppilientmobile.domain.Product
 import main.shoppilientmobile.domain.domainExposure.SharedShoppingList
 import main.shoppilientmobile.domain.domainExposure.User
-import main.shoppilientmobile.domain.exceptions.TwoProductWithTheSameNameCannotExistException
+import main.shoppilientmobile.domain.exceptions.ThereCannotBeTwoProductsWithTheSameNameException
 import main.shoppilientmobile.domain.exceptions.ProductDoesNotExistException
 
 open class SharedShoppingListImpl: SharedShoppingList {
@@ -16,7 +16,7 @@ open class SharedShoppingListImpl: SharedShoppingList {
 
     override fun addProduct(product: Product){
         if (products.contains(product))
-            throw TwoProductWithTheSameNameCannotExistException("This product already exists in the list")
+            throw ThereCannotBeTwoProductsWithTheSameNameException("This product already exists in the list")
         products.add(product)
     }
 

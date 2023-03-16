@@ -1,14 +1,16 @@
 package main.shoppilientmobile.userRegistrationFeature.dataSources.apis
 
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.int
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import main.shoppilientmobile.application.UserBuilderImpl
 import main.shoppilientmobile.core.storage.SecurityTokenKeeper
 import main.shoppilientmobile.core.remote.*
 import main.shoppilientmobile.domain.domainExposure.User
+import main.shoppilientmobile.domain.exceptions.*
 import main.shoppilientmobile.userRegistrationFeature.dataSources.RegistrationRemoteDataSource
-import main.shoppilientmobile.userRegistrationFeature.dataSources.exceptions.RemoteDataSourceException
+import main.shoppilientmobile.userRegistrationFeature.dataSources.apis.errorCodes.UserRegistrationErrorCodes
 import main.shoppilientmobile.userRegistrationFeature.entities.Registration
 import main.shoppilientmobile.userRegistrationFeature.useCases.exceptions.WrongCodeException
 import kotlin.coroutines.cancellation.CancellationException
@@ -42,7 +44,25 @@ class RegistrationApi(
             headers = headers,
             body = body,
         )
-        httpClient.makeRequest(httpRequest)
+        val response = httpClient.makeRequest(httpRequest)
+        if (response.statusCode in 200..299) {
+            val jsonBodyResponse = Json.parseToJsonElement(response.body).jsonObject
+            val errorCode = jsonBodyResponse.getValue("errorCode").jsonPrimitive.int
+            val errorMessage = jsonBodyResponse.getValue("errorMessage").jsonPrimitive.content
+            when (errorCode) {
+                UserRegistrationErrorCodes.USER_NICKNAME_TOO_LONG.code -> {
+                    throw UserNicknameTooLongException(errorMessage)
+                }
+                UserRegistrationErrorCodes.USER_NICKNAME_TOO_SHORT.code -> {
+                    throw UserNicknameTooShortException(errorMessage)
+                }
+                UserRegistrationErrorCodes.TWO_USERS_WITH_THE_SAME_NICKNAME.code -> {
+                    throw ThereCannotBeTwoUsersWithTheSameNicknameException(errorMessage)
+                }
+            }
+        } else {
+            throw Exception("Status code: ${response.statusCode}. Response body: ${response.body}")
+        }
     }
 
     private suspend fun signUpAdmin(registration: Registration) {
@@ -61,8 +81,23 @@ class RegistrationApi(
             body = body,
         )
         val response = httpClient.makeRequest(httpRequest)
-        if (response.statusCode !in 200..299) {
-            throw RemoteDataSourceException("Server failed at taking registration")
+        if (response.statusCode in 200..299) {
+            val jsonBodyResponse = Json.parseToJsonElement(response.body).jsonObject
+            val errorCode = jsonBodyResponse.getValue("errorCode").jsonPrimitive.int
+            val errorMessage = jsonBodyResponse.getValue("errorMessage").jsonPrimitive.content
+            when (errorCode) {
+                UserRegistrationErrorCodes.THERE_CAN_ONLY_BE_ONE_ADMIN.code -> {
+                    throw ThereCanOnlyBeOneAdmin(errorMessage)
+                }
+                UserRegistrationErrorCodes.USER_NICKNAME_TOO_LONG.code -> {
+                    throw UserNicknameTooLongException(errorMessage)
+                }
+                UserRegistrationErrorCodes.USER_NICKNAME_TOO_SHORT.code -> {
+                    throw UserNicknameTooShortException(errorMessage)
+                }
+            }
+        } else {
+            throw Exception("Status code: ${response.statusCode}. Response body: ${response.body}")
         }
         saveSecurityToken(response)
     }
@@ -81,8 +116,29 @@ class RegistrationApi(
             """.trimIndent(),
         )
         val response = httpClient.makeRequest(httpRequest)
-        if (response.statusCode == 403) {
-            throw WrongCodeException("The code: ${registration.signature} isn't correct")
+        if (response.statusCode in 200..299) {
+            val jsonBodyResponse = Json.parseToJsonElement(response.body).jsonObject
+            val errorCode = jsonBodyResponse.getValue("errorCode").jsonPrimitive.int
+            val errorMessage = jsonBodyResponse.getValue("errorMessage").jsonPrimitive.content
+            when (errorCode) {
+                UserRegistrationErrorCodes.USER_DOES_NOT_EXIST.code -> {
+                    throw UserDoesNotExistException(errorMessage)
+                }
+                UserRegistrationErrorCodes.USER_NICKNAME_TOO_LONG.code -> {
+                    throw UserNicknameTooLongException(errorMessage)
+                }
+                UserRegistrationErrorCodes.USER_NICKNAME_TOO_SHORT.code -> {
+                    throw UserNicknameTooShortException(errorMessage)
+                }
+                UserRegistrationErrorCodes.TWO_USERS_WITH_THE_SAME_NICKNAME.code -> {
+                    throw ThereCannotBeTwoUsersWithTheSameNicknameException(errorMessage)
+                }
+                UserRegistrationErrorCodes.WRONG_USER_NICKNAME_OR_PASSWORD.code -> {
+                    throw WrongUserNicknameOrPasswordException(errorMessage)
+                }
+            }
+        } else {
+            throw Exception("Status code: ${response.statusCode}. Response body: ${response.body}")
         }
         saveSecurityToken(response)
         return createUser(registration)

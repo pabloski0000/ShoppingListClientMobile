@@ -11,7 +11,7 @@ import main.shoppilientmobile.android.shoppingList.presentation.SHOPPING_LIST_RO
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.composables.ProcessInformationUiState
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.composables.routableComposables.IntroduceCodeRoutableComposable
 import main.shoppilientmobile.domain.domainExposure.UserRole
-import main.shoppilientmobile.domain.exceptions.InvalidUserNicknameException
+import main.shoppilientmobile.domain.exceptions.*
 import main.shoppilientmobile.userRegistrationFeature.dataSources.exceptions.RemoteDataSourceException
 import main.shoppilientmobile.userRegistrationFeature.repositories.UserRoleRepository
 import main.shoppilientmobile.userRegistrationFeature.useCases.RegisterAdminUseCase
@@ -33,26 +33,56 @@ class FillNicknameViewModel(
 
 
     fun registerUser(nickname: String) {
-        try {
-            viewModelScope.launch {
-                val userRole = userRoleRepository.getUserRoleRepository()
-                if (userRole == UserRole.ADMIN) {
+        viewModelScope.launch {
+            val userRole = userRoleRepository.getUserRoleRepository()
+            if (userRole == UserRole.ADMIN) {
+                try {
                     registerAdminUseCase.registerAdmin(nickname)
                     navController.navigate(SHOPPING_LIST_ROUTE)
                     showTheUserThatTheyAreRegistered()
-                } else {
+                } catch (e: ThereCanOnlyBeOneAdmin) {
+                    _processInformationUiState.value = ProcessInformationUiState(
+                        message = e.message,
+                        color = Color.Red,
+                    )
+                } catch (e: UserNicknameTooLongException) {
+                    _processInformationUiState.value = ProcessInformationUiState(
+                        message = e.message,
+                        color = Color.Red,
+                    )
+                } catch (e: UserNicknameTooShortException) {
+                    _processInformationUiState.value = ProcessInformationUiState(
+                        message = e.message,
+                        color = Color.Red,
+                    )
+                }
+            } else {
+                try {
                     registerUserUseCase.registerUser(nickname)
                     navController.navigate("${IntroduceCodeRoutableComposable.route}/$nickname")
                     showTheUserThatTheyAreRegistered()
+                } catch (e: ThereCannotBeTwoUsersWithTheSameNicknameException) {
+                    _processInformationUiState.value = ProcessInformationUiState(
+                        message = e.message,
+                        color = Color.Red,
+                    )
+                } catch (e: UserNicknameTooLongException) {
+                    _processInformationUiState.value = ProcessInformationUiState(
+                        message = e.message,
+                        color = Color.Red,
+                    )
+                } catch (e: UserNicknameTooShortException) {
+                    _processInformationUiState.value = ProcessInformationUiState(
+                        message = e.message,
+                        color = Color.Red,
+                    )
                 }
             }
-            _processInformationUiState.value = ProcessInformationUiState(
-                message = "Registering...",
-                color = Color.Blue,
-            )
-        } catch (e: Exception) {
-            informUserOfException(e)
         }
+        _processInformationUiState.value = ProcessInformationUiState(
+            message = "Registering...",
+            color = Color.Blue,
+        )
     }
 
     private fun showTheUserThatTheyAreRegistered() {
@@ -64,19 +94,29 @@ class FillNicknameViewModel(
 
     private fun <T> informUserOfException(exception: T) {
         when(exception) {
-            is InvalidUserNicknameException -> {
-                val userInformationMessage = ProcessInformationUiState(
-                    message = "Invalid nickname",
-                    color = Color.Red
+            is ThereCanOnlyBeOneAdmin -> {
+                _processInformationUiState.value = ProcessInformationUiState(
+                    message = exception.message,
+                    color = Color.Red,
                 )
-                _processInformationUiState.value = userInformationMessage
             }
-            is RemoteDataSourceException -> {
-                val userInformationMessage = ProcessInformationUiState(
-                    message = "Remote error. Hold on thirty seconds and try again, sorryyyyy :(",
-                    color = Color.Red
+            is UserNicknameTooLongException -> {
+                _processInformationUiState.value = ProcessInformationUiState(
+                    message = exception.message,
+                    color = Color.Red,
                 )
-                _processInformationUiState.value = userInformationMessage
+            }
+            is UserNicknameTooShortException -> {
+                _processInformationUiState.value = ProcessInformationUiState(
+                    message = exception.message,
+                    color = Color.Red,
+                )
+            }
+            is ThereCannotBeTwoUsersWithTheSameNicknameException -> {
+                _processInformationUiState.value = ProcessInformationUiState(
+                    message = exception.message,
+                    color = Color.Red,
+                )
             }
             else -> {
                 _processInformationUiState.value = _processInformationUiState.value.copy(

@@ -10,7 +10,7 @@ import main.shoppilientmobile.core.remote.HttpRequest
 import main.shoppilientmobile.core.remote.StreamingHttpClient
 import main.shoppilientmobile.core.storage.SecurityTokenKeeper
 import main.shoppilientmobile.domain.Product
-import main.shoppilientmobile.domain.exceptions.TwoProductWithTheSameNameCannotExistException
+import main.shoppilientmobile.domain.exceptions.ThereCannotBeTwoProductsWithTheSameNameException
 import main.shoppilientmobile.domain.exceptions.ProductDescriptionExceedsMaximumLengthException
 import main.shoppilientmobile.domain.exceptions.ProductDescriptionIsShorterThanMinimumLengthException
 import main.shoppilientmobile.domain.exceptions.ProductDoesNotExistException
@@ -120,7 +120,7 @@ class ServerShoppingListApi(
         }
     }
 
-    @Throws(CancellationException::class, TwoProductWithTheSameNameCannotExistException::class)
+    @Throws(CancellationException::class, ThereCannotBeTwoProductsWithTheSameNameException::class)
     suspend fun addProduct(product: ProductOnServerShoppingList) {
         val httpRequest = HttpRequest(
             httpMethod = HttpMethod.POST,
@@ -143,7 +143,7 @@ class ServerShoppingListApi(
             val errorMessage = jsonBodyResponse.getValue("errorMessage").jsonPrimitive.content
             when (errorCode) {
                 AddProductErrorCodes.PRODUCT_ALREADY_EXISTS_ON_LIST.code -> {
-                    throw TwoProductWithTheSameNameCannotExistException(errorMessage)
+                    throw ThereCannotBeTwoProductsWithTheSameNameException(errorMessage)
                 }
                 AddProductErrorCodes.PRODUCT_EXCEEDS_MAXIMUM_LENGTH.code -> {
                     throw ProductDescriptionExceedsMaximumLengthException(errorMessage)
@@ -179,7 +179,7 @@ class ServerShoppingListApi(
             val errorMessage = jsonBodyResponse.getValue("errorMessage").jsonPrimitive.content
             when (errorCode) {
                 ModifyProductErrorCodes.THERE_IS_ANOTHER_PRODUCT_WITH_THAT_NAME.code -> {
-                    throw TwoProductWithTheSameNameCannotExistException(errorMessage)
+                    throw ThereCannotBeTwoProductsWithTheSameNameException(errorMessage)
                 }
                 ModifyProductErrorCodes.PRODUCT_EXCEEDS_MAXIMUM_LENGTH.code -> {
                     throw ProductDescriptionExceedsMaximumLengthException(errorMessage)
