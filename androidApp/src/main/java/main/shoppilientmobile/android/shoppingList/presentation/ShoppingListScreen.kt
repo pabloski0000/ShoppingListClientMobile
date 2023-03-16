@@ -187,7 +187,7 @@ private fun ShoppingListScreenOnModifyingMode(
         },
         showProductModifier = true,
         showAddProductButton = false,
-        productModifier = { modifier ->
+        productModifier = { /*modifier ->
             ProductModifier(
                 modifier = modifier,
                 product = productItemToModify.value,
@@ -205,7 +205,18 @@ private fun ShoppingListScreenOnModifyingMode(
                 },
                 onClickOnGoBackIcon = onChangeToShoppingListScreenOnNormalMode,
             )
+        */},
+        productToModify = productItemToModify.value,
+        onProductModified = { modifiedProduct ->
+            coroutineScope.launch {
+                viewModel.modifyProduct(
+                    index = modifyingProductModeState.productToModifyIndex,
+                    newProduct = modifiedProduct,
+                )
+                onChangeToShoppingListScreenOnNormalMode()
+            }
         },
+        onClickOnGoBackModifierButton = onChangeToShoppingListScreenOnNormalMode,
         productItemStates = productItemsState,
         onClickOnAddProductButton = {},
         onClickOnProductItem = {},
@@ -226,6 +237,9 @@ private fun ShoppingListScreenContent(
     modifier: Modifier = Modifier,
     topBar: @Composable () -> Unit,
     productModifier: @Composable (modifier: Modifier) -> Unit = {},
+    productToModify: ProductItemState? = null,
+    onProductModified: (modifiedProduct: ProductItemState) -> Unit = {},
+    onClickOnGoBackModifierButton: () -> Unit = {},
     showProductModifier: Boolean,
     showAddProductButton: Boolean,
     productItemStates: List<ProductItemState>,
@@ -254,9 +268,21 @@ private fun ShoppingListScreenContent(
             onLongClickOnProduct = onLongClickOnProductItem,
             onClickOnProduct = onClickOnProductItem
         )
-        if (showProductModifier) {
+        if (showProductModifier && productToModify is ProductItemState) {
+            val productToModifyRemembered = remember {
+                mutableStateOf(productToModify)
+            }
             Box(modifier = Modifier.fillMaxSize()) {
-                productModifier(modifier = Modifier.align(Alignment.BottomCenter))
+                //productModifier(modifier = Modifier.align(Alignment.BottomCenter))
+                ProductModifier(
+                    modifier = Modifier.align(Alignment.BottomCenter),
+                    product = productToModifyRemembered.value,
+                    onProductChange = {
+                        productToModifyRemembered.value = it
+                    },
+                    onProductModified = onProductModified,
+                    onClickOnGoBackIcon = onClickOnGoBackModifierButton,
+                )
             }
         }
     }

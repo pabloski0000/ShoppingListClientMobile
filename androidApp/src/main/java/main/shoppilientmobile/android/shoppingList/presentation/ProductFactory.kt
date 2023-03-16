@@ -26,7 +26,7 @@ import androidx.navigation.NavController
 import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import main.shoppilientmobile.domain.exceptions.ProductAlreadyExistsException
+import main.shoppilientmobile.domain.exceptions.TwoProductWithTheSameNameCannotExistException
 import main.shoppilientmobile.domain.exceptions.ProductDescriptionExceedsMaximumLengthException
 import main.shoppilientmobile.domain.exceptions.ProductDescriptionIsShorterThanMinimumLengthException
 
@@ -54,7 +54,7 @@ fun ProductFactoryScreen(
                 try {
                     viewModel.createProduct(productToCreate)
                     navController.popBackStack()
-                } catch (e: ProductAlreadyExistsException) {
+                } catch (e: TwoProductWithTheSameNameCannotExistException) {
                     errorMessage.value = "$productToCreate already exists on shopping list"
                 } catch (e: ProductDescriptionExceedsMaximumLengthException) {
                     errorMessage.value = "This product has exceeded the maximum length. Try shortening"

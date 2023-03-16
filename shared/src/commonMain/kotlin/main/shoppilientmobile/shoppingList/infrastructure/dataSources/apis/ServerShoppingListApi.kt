@@ -10,9 +10,10 @@ import main.shoppilientmobile.core.remote.HttpRequest
 import main.shoppilientmobile.core.remote.StreamingHttpClient
 import main.shoppilientmobile.core.storage.SecurityTokenKeeper
 import main.shoppilientmobile.domain.Product
-import main.shoppilientmobile.domain.exceptions.ProductAlreadyExistsException
+import main.shoppilientmobile.domain.exceptions.TwoProductWithTheSameNameCannotExistException
 import main.shoppilientmobile.domain.exceptions.ProductDescriptionExceedsMaximumLengthException
 import main.shoppilientmobile.domain.exceptions.ProductDescriptionIsShorterThanMinimumLengthException
+import main.shoppilientmobile.domain.exceptions.ProductDoesNotExistException
 import main.shoppilientmobile.shoppingList.infrastructure.ServerShoppingListObserver
 import main.shoppilientmobile.shoppingList.infrastructure.repositories.ProductOnServerShoppingList
 import kotlin.coroutines.cancellation.CancellationException
@@ -119,7 +120,7 @@ class ServerShoppingListApi(
         }
     }
 
-    @Throws(CancellationException::class, ProductAlreadyExistsException::class)
+    @Throws(CancellationException::class, TwoProductWithTheSameNameCannotExistException::class)
     suspend fun addProduct(product: ProductOnServerShoppingList) {
         val httpRequest = HttpRequest(
             httpMethod = HttpMethod.POST,
@@ -142,7 +143,7 @@ class ServerShoppingListApi(
             val errorMessage = jsonBodyResponse.getValue("errorMessage").jsonPrimitive.content
             when (errorCode) {
                 AddProductErrorCodes.PRODUCT_ALREADY_EXISTS_ON_LIST.code -> {
-                    throw ProductAlreadyExistsException(errorMessage)
+                    throw TwoProductWithTheSameNameCannotExistException(errorMessage)
                 }
                 AddProductErrorCodes.PRODUCT_EXCEEDS_MAXIMUM_LENGTH.code -> {
                     throw ProductDescriptionExceedsMaximumLengthException(errorMessage)
@@ -171,7 +172,28 @@ class ServerShoppingListApi(
                 |}
             """.trimMargin(),
         )
-        asynchronousHttpClient.makeRequest(httpRequest)
+        val response = asynchronousHttpClient.makeRequest(httpRequest)
+        if (response.statusCode in 200..299) {
+            val jsonBodyResponse = Json.parseToJsonElement(response.body).jsonObject
+            val errorCode = jsonBodyResponse.getValue("errorCode").jsonPrimitive.int
+            val errorMessage = jsonBodyResponse.getValue("errorMessage").jsonPrimitive.content
+            when (errorCode) {
+                ModifyProductErrorCodes.THERE_IS_ANOTHER_PRODUCT_WITH_THAT_NAME.code -> {
+                    throw TwoProductWithTheSameNameCannotExistException(errorMessage)
+                }
+                ModifyProductErrorCodes.PRODUCT_EXCEEDS_MAXIMUM_LENGTH.code -> {
+                    throw ProductDescriptionExceedsMaximumLengthException(errorMessage)
+                }
+                ModifyProductErrorCodes.PRODUCT_IS_SHORTER_THAN_MINIMUM_LENGTH.code -> {
+                    throw ProductDescriptionIsShorterThanMinimumLengthException(errorMessage)
+                }
+                ModifyProductErrorCodes.PRODUCT_DOES_NOT_EXIST.code -> {
+                    throw ProductDoesNotExistException(errorMessage)
+                }
+            }
+        } else {
+            throw Exception("Status code: ${response.statusCode}. Response body: ${response.body}")
+        }
     }
 
     suspend fun deleteProduct(product: ProductOnServerShoppingList) {
