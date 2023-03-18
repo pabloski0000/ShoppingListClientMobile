@@ -55,7 +55,7 @@ fun ProductModifier(
         ) {
             val focusRequester = remember { FocusRequester() }
             val textValue = remember {
-                mutableStateOf(TextFieldValue(""))
+                mutableStateOf(TextFieldValue(product.content))
             }
             Spacer(modifier = Modifier.width(10.dp))
             Icon(
