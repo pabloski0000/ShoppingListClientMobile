@@ -13,7 +13,7 @@ class FakeRemoteShoppingList : RemoteShoppingList {
         observers.map { it.productAdded(product) }
     }
 
-    override fun modifyProduct(oldProduct: Product, newProduct: Product) {
+    override suspend fun modifyProduct(oldProduct: Product, newProduct: Product) {
         fakeProductList = fakeProductList.map { product ->
             if (product == oldProduct) {
                 return@map newProduct
@@ -23,7 +23,7 @@ class FakeRemoteShoppingList : RemoteShoppingList {
         observers.map { it.productModified(oldProduct, newProduct) }
     }
 
-    override fun deleteProduct(product: Product) {
+    override suspend fun deleteProduct(product: Product) {
         fakeProductList = fakeProductList.filter { it != product }
         observers.map { it.productDeleted(product) }
     }

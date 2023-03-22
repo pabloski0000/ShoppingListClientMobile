@@ -24,16 +24,12 @@ class AppRunner(
 
     fun runApp(): AndroidContainer {
         val androidContainer = AndroidContainer(context)
-        val httpClient = androidContainer.httpClient
         val userRepository = androidContainer.userRepository
-        val securityTokenKeeper = androidContainer.securityTokenKeeper
-        val shoppingListSynchroniserUseCase = androidContainer.shoppingListSynchroniserUseCase
+        registrationRepository = androidContainer.registrationRepository
         val registrationContainer = RegistrationContainer(
-            httpClient = httpClient,
-            securityTokenKeeper = securityTokenKeeper,
+            registrationRepository = registrationRepository,
             userRepository = userRepository,
             userRoleLocalDataSource = androidContainer.room.userRoleDao(),
-            shoppingListSynchroniserUseCase,
         )
         androidContainer.registrationContainer = registrationContainer
         roleElectionViewModel = RoleElectionViewModel(
@@ -42,7 +38,7 @@ class AppRunner(
         registerAdminUseCase = registrationContainer.registerAdminUseCase
         registerUserUseCase = registrationContainer.registerUserUseCase
         userRoleRepository = registrationContainer.userRoleRepository
-        registrationRepository = registrationContainer.registrationRepository
+        registrationRepository = androidContainer.registrationRepository
         shoppingListViewModelFactory = androidContainer.shoppingListViewModelFactory
         productFactoryViewModelFactory = androidContainer.productFactoryViewModelFactory
 

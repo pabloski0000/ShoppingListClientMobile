@@ -1,15 +1,17 @@
 package main.shoppilientmobile.android.shoppingList.presentation
 
-import main.shoppilientmobile.shoppingList.application.AddProductUseCase
-import main.shoppilientmobile.shoppingList.application.DeleteProductUseCase
-import main.shoppilientmobile.shoppingList.application.ModifyProductUseCase
-import main.shoppilientmobile.shoppingList.application.SynchroniseWithRemoteShoppingListUseCase
+import main.shoppilientmobile.domain.domainExposure.User
+import main.shoppilientmobile.domain.domainExposure.UserRole
+import main.shoppilientmobile.shoppingList.application.*
+import main.shoppilientmobile.userRegistrationFeature.useCases.useCasesInputOutputs.GetLocalUserUseCase
 
 class AndroidShoppingListUI(
     private val addProductUseCase: AddProductUseCase,
     private val modifyProductUseCase: ModifyProductUseCase,
     private val deleteProductUseCase: DeleteProductUseCase,
     private val synchroniseWithRemoteShoppingListUseCase: SynchroniseWithRemoteShoppingListUseCase,
+    private val getLocalUserUseCase: GetLocalUserUseCase,
+    private val listenToUserRegistrationsUseCase: ListenToUserRegistrationsUseCase,
 ) : main.shoppilientmobile.shoppingList.application.ShoppingListObserver {
     private var observers = emptySet<ShoppingListObserver>()
     private var shoppingList = emptyList<Product>()
@@ -41,6 +43,15 @@ class AndroidShoppingListUI(
         }
         observer.currentState(shoppingList)
         observers = setOf(*observers.toTypedArray(), observer)
+    }
+
+    suspend fun userIsAdmin(): Boolean {
+        val user = getLocalUserUseCase.getLocalUser()
+        return user is User && user.getRole() == UserRole.ADMIN
+    }
+
+    suspend fun listenToUserRegistrations(userRegistrationsListener: UserRegistrationsListener) {
+        listenToUserRegistrationsUseCase.listen(userRegistrationsListener)
     }
 
     override fun currentState(products: List<main.shoppilientmobile.domain.Product>) {

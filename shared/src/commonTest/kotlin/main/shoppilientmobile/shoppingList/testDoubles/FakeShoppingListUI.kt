@@ -38,17 +38,17 @@ class FakeShoppingListUI : ShoppingListUI, ShoppingListObserver {
         fakeProductList = fakeProductList.filter { it != product }
     }
 
-    fun addProducts(products: List<Product>) {
+    suspend fun addProducts(products: List<Product>) {
         products.map { product ->
             shoppingListUiListener?.addProduct(product)
         }
     }
 
-    fun modifyProduct(oldProduct: Product, newProduct: Product) {
+    suspend fun modifyProduct(oldProduct: Product, newProduct: Product) {
         shoppingListUiListener?.modifyProduct(oldProduct, newProduct)
     }
 
-    fun removeProduct(product: Product) {
+    suspend fun removeProduct(product: Product) {
         shoppingListUiListener?.removeProduct(product)
     }
 

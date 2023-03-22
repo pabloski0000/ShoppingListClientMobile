@@ -5,11 +5,15 @@ import main.shoppilientmobile.userRegistrationFeature.dataSources.UserLocalDataS
 
 class UserLocalDataSourceMock : UserLocalDataSource {
     private lateinit var _user: User
-    override suspend fun save(user: User) {
+    override suspend fun saveLocalUser(user: User) {
         _user = user
     }
 
-    override suspend fun getUser(): User {
+    override suspend fun getLocalUser(): User {
         return _user
+    }
+
+    override suspend fun deleteLocalUser() {
+        TODO("Not yet implemented")
     }
 }

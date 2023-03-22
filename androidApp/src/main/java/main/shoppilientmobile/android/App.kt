@@ -50,7 +50,7 @@ class App(
         registerAdminUseCase = registrationContainer.registerAdminUseCase
         registerUserUseCase = registrationContainer.registerUserUseCase
         userRoleRepository = registrationContainer.userRoleRepository
-        registrationRepository = registrationContainer.registrationRepository
+        registrationRepository = androidContainer.registrationRepository
         shoppingListViewModelFactory = androidContainer.shoppingListViewModelFactory
         productFactoryViewModelFactory = androidContainer.productFactoryViewModelFactory
         androidShoppingListUI = androidContainer.androidShoppingListUI
@@ -153,6 +153,11 @@ class App(
                 ShoppingModeScreen(
                     viewModel = androidContainer.shoppingModeViewModel,
                     navController = navController,
+                )
+            }
+            composable(USER_REGISTRATIONS_SCREEN_ROUTE) {
+                UserRegistrationsScreen(
+                    androidContainer.userRegistrationsViewModel,
                 )
             }
         }

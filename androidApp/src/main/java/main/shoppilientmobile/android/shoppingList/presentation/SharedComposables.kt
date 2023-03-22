@@ -15,9 +15,11 @@ import androidx.compose.ui.tooling.preview.Preview
 private const val appBarTitle = "Shopping List"
 
 @Composable
-fun ShoppingListScreenTopBar(
+fun DefaultTopBar(
     modifier: Modifier = Modifier,
     onClickOnShoppingCartIcon: () -> Unit,
+    showNotificationsIcon: Boolean = false,
+    onClickOnNotifications: () -> Unit = {},
     ) {
     TopAppBar(
         modifier = modifier,
@@ -27,6 +29,11 @@ fun ShoppingListScreenTopBar(
         actions = {
             IconButton(onClick = onClickOnShoppingCartIcon) {
                 Icon(imageVector = Icons.Default.ShoppingCart, contentDescription = "Go to shopping mode")
+            }
+            if (showNotificationsIcon) {
+                IconButton(onClick = onClickOnNotifications) {
+                    Icon(imageVector = Icons.Default.Notifications, contentDescription = "Notifications")
+                }
             }
         }
     )

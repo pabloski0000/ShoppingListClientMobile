@@ -85,11 +85,22 @@ private fun ShoppingListScreenOnNormalMode(
     onClickOnShoppingCartIcon: () -> Unit,
 ) {
     val productItemsState = viewModel.productItemsUiState.collectAsState()
+    val userIsAdmin = viewModel.userIsAdmin.collectAsState()
     ShoppingListScreenContent(
         topBar = {
-            ShoppingListScreenTopBar(
-                onClickOnShoppingCartIcon = onClickOnShoppingCartIcon,
-            )
+            if (userIsAdmin.value) {
+                DefaultTopBar(
+                    onClickOnShoppingCartIcon = onClickOnShoppingCartIcon,
+                    showNotificationsIcon = true,
+                    onClickOnNotifications = {
+                        navController.navigate(USER_REGISTRATIONS_SCREEN_ROUTE)
+                    },
+                )
+            } else {
+                DefaultTopBar(
+                    onClickOnShoppingCartIcon = onClickOnShoppingCartIcon,
+                )
+            }
         },
         showAddProductButton = true,
         productItemStates = productItemsState.value,
@@ -182,7 +193,7 @@ private fun ShoppingListScreenOnModifyingMode(
     }
     ShoppingListScreenContent(
         topBar = {
-            ShoppingListScreenTopBar(
+            DefaultTopBar(
                 onClickOnShoppingCartIcon = {},
             )
         },
@@ -258,7 +269,6 @@ private fun ShoppingListScreenContent(
                 verticalArrangement = Arrangement.Bottom,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                //productModifier(modifier = Modifier.align(Alignment.BottomCenter))
                 Text(
                     text = errorMessageWhenModifyingProduct,
                     textAlign = TextAlign.Center,

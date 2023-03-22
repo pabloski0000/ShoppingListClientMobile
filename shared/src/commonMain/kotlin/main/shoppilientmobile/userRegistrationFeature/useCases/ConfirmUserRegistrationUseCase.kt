@@ -26,7 +26,7 @@ class ConfirmUserRegistrationUseCase(
         )
         userRepository.saveLocalUser(
             UserBuilderImpl().giveItANickname(nickname)
-                .setRole(UserRole.ADMIN)
+                .setRole(UserRole.BASIC)
                 .build()
         )
     }

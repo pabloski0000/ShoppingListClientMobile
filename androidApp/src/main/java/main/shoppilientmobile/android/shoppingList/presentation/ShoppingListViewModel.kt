@@ -1,9 +1,13 @@
 package main.shoppilientmobile.android.shoppingList.presentation
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import main.shoppilientmobile.domain.domainExposure.User
+import main.shoppilientmobile.domain.domainExposure.UserRole
 
 class ShoppingListViewModel(
     private val shoppingListUI: AndroidShoppingListUI,
@@ -16,6 +20,9 @@ class ShoppingListViewModel(
     val screenStateUiState = _screenStateUiState.asStateFlow()
     private val _errorMessageUiState = MutableStateFlow(ErrorMessageUiState(""))
     val errorMessageUiState = _errorMessageUiState.asStateFlow()
+    private val _userIsAdmin = MutableStateFlow(false)
+    val userIsAdmin = _userIsAdmin.asStateFlow()
+
     private data class ScreenState(
         val screenMode: ScreenMode2,
         val screenModeState: ScreenModeState,
@@ -33,6 +40,9 @@ class ShoppingListViewModel(
 
     init {
         shoppingListUI.observeShoppingList(this)
+        viewModelScope.launch {
+            _userIsAdmin.update { shoppingListUI.userIsAdmin() }
+        }
     }
 
     fun selectProductItem(index: Int) {

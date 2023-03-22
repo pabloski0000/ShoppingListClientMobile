@@ -19,6 +19,7 @@ class StreamingHttpClientAndroid: StreamingHttpClient {
         val inputStreamBufferedReader = httpConnection.inputStream.bufferedReader()
         return flow {
             inputStreamBufferedReader.lineSequence().forEach { responseLine ->
+                println("Server response: $responseLine")
                 emit(responseLine)
             }
         }

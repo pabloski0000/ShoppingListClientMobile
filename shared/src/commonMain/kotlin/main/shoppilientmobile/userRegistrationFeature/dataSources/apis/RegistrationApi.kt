@@ -1,5 +1,7 @@
 package main.shoppilientmobile.userRegistrationFeature.dataSources.apis
 
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.int
 import kotlinx.serialization.json.jsonObject
@@ -8,15 +10,19 @@ import main.shoppilientmobile.application.UserBuilderImpl
 import main.shoppilientmobile.core.storage.SecurityTokenKeeper
 import main.shoppilientmobile.core.remote.*
 import main.shoppilientmobile.domain.domainExposure.User
+import main.shoppilientmobile.domain.domainExposure.UserRole
 import main.shoppilientmobile.domain.exceptions.*
+import main.shoppilientmobile.shoppingList.application.UserRegistrationsListener
 import main.shoppilientmobile.userRegistrationFeature.dataSources.RegistrationRemoteDataSource
 import main.shoppilientmobile.userRegistrationFeature.dataSources.apis.errorCodes.UserRegistrationErrorCodes
 import main.shoppilientmobile.userRegistrationFeature.entities.Registration
+import main.shoppilientmobile.userRegistrationFeature.entities.RegistrationCode
 import main.shoppilientmobile.userRegistrationFeature.useCases.exceptions.WrongCodeException
 import kotlin.coroutines.cancellation.CancellationException
 
 class RegistrationApi(
     private val httpClient: AsynchronousHttpClient,
+    private val streamingHttpClient: StreamingHttpClient,
     private val securityTokenKeeper: SecurityTokenKeeper,
 ): ShoppingListServerApi(), RegistrationRemoteDataSource {
     private val userBuilder = UserBuilderImpl()
@@ -142,6 +148,29 @@ class RegistrationApi(
         }
         saveSecurityToken(response)
         return createUser(registration)
+    }
+
+    override suspend fun listenToUserRegistrations(userRegistrationListener: UserRegistrationsListener) {
+        val url = "$protocolAndHost/api/users/alert-admin-to-confirm-registration"
+        val headers = mapOf(
+            "Accept" to "application/x-ndjson",
+            "Authorization" to "Bearer ${securityTokenKeeper.getSecurityToken()}",
+        )
+        val httpRequest = HttpRequest(
+            httpMethod = HttpMethod.GET,
+            url = url,
+            headers = headers,
+            body = "",
+        )
+        val response = streamingHttpClient.makeRequest(httpRequest)
+        response.map { responseChunk ->
+            val jsonResponse = Json.parseToJsonElement(responseChunk).jsonObject
+            val nickname = jsonResponse.getValue("nickname").jsonPrimitive.content
+            val code = jsonResponse.getValue("code").jsonPrimitive.int
+            userRegistrationListener.userRegistered(
+                Registration(nickname, UserRole.BASIC, RegistrationCode(code))
+            )
+        }.collect()
     }
 
     private suspend fun saveSecurityToken(response: HttpResponse) {
