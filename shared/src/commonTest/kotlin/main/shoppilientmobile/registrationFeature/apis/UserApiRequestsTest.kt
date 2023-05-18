@@ -5,7 +5,7 @@ import io.ktor.http.*
 import io.ktor.http.content.*
 import kotlinx.coroutines.runBlocking
 import main.shoppilientmobile.core.remote.HttpMethod
-import main.shoppilientmobile.registrationFeature.apis.mocks.AsynchronousHttpClientMock
+import main.shoppilientmobile.registrationFeature.apis.mocks.NonBlockingHttpClientMock
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -13,7 +13,7 @@ import kotlin.test.assertTrue
 
 class UserApiRequestsTest {
 
-    private lateinit var httpClient: AsynchronousHttpClientMock
+    private lateinit var httpClient: NonBlockingHttpClientMock
     val messageInformingOfStrangeBehaviourInMockEngine = "assert request headers are correct" +
             " cannot be done due to a strange behaviour in ktor library"
     private val httpsProtocol = "https"
@@ -21,7 +21,7 @@ class UserApiRequestsTest {
 
     @BeforeTest
     fun setUp() {
-        httpClient = AsynchronousHttpClientMock()
+        httpClient = NonBlockingHttpClientMock()
 
     }
 

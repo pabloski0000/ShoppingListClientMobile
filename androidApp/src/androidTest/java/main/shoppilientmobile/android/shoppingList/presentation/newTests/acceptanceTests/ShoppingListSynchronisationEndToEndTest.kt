@@ -9,8 +9,8 @@ import main.shoppilientmobile.android.shoppingList.presentation.AndroidShoppingL
 import main.shoppilientmobile.android.shoppingList.presentation.Product
 import main.shoppilientmobile.android.shoppingList.presentation.testDoubles.ExternalShoppingListSpy
 import main.shoppilientmobile.android.shoppingList.presentation.testDoubles.LocalShoppingListSpy
-import main.shoppilientmobile.domain.domainExposure.UserRole
 import main.shoppilientmobile.shoppingList.application.RemoteShoppingList
+import main.shoppilientmobile.shoppingList.application.RequestExceptionListener
 import main.shoppilientmobile.userRegistrationFeature.useCases.RegisterAdminUseCase
 import main.shoppilientmobile.userRegistrationFeature.useCases.useCasesInputOutputs.GetLocalUserUseCase
 import org.junit.Before
@@ -32,25 +32,27 @@ class ShoppingListSynchronisationEndToEndTest {
 
     @Before
     fun setUp() {
-        if (settingUpTestForTheFirstTime) {
-            val app = App(ApplicationProvider.getApplicationContext())
-            container = app.run()
-            getLocalUserUseCase = container.getLocalUserUseCase
-            registerAdminUseCase = container.registrationContainer!!.registerAdminUseCase
-            runBlocking {
-                if (getLocalUserUseCase.getLocalUser() == null) {
-                    registerAdminUseCase.registerAdmin("pabloski0000")
+        runBlocking {
+            if (settingUpTestForTheFirstTime) {
+                val app = App(ApplicationProvider.getApplicationContext())
+                container = app.run()
+                getLocalUserUseCase = container.getLocalUserUseCase
+                registerAdminUseCase = container.registrationContainer!!.registerAdminUseCase
+                runBlocking {
+                    if (getLocalUserUseCase.getLocalUser() == null) {
+                        registerAdminUseCase.registerAdmin("pabloski0000")
+                    }
                 }
+                localShoppingListSpy = LocalShoppingListSpy()
+                externalShoppingListSpy = ExternalShoppingListSpy()
+                settingUpTestForTheFirstTime = false
             }
-            localShoppingListSpy = LocalShoppingListSpy()
-            externalShoppingListSpy = ExternalShoppingListSpy()
-            settingUpTestForTheFirstTime = false
+            externalShoppingList = container.remoteShoppingList
+            externalShoppingList.deleteAllProducts()
+            shoppingListUI = container.androidShoppingListUI
+            shoppingListUI.observeShoppingList(localShoppingListSpy)
+            externalShoppingList.subscribe(externalShoppingListSpy)
         }
-        externalShoppingList = container.remoteShoppingList
-        externalShoppingList.deleteAllProducts()
-        shoppingListUI = container.androidShoppingListUI
-        shoppingListUI.observeShoppingList(localShoppingListSpy)
-        externalShoppingList.observe(externalShoppingListSpy)
     }
 
     @Test
@@ -61,7 +63,12 @@ class ShoppingListSynchronisationEndToEndTest {
             Product("Lemon"),
         )
         runBlocking {
-            shoppingListUI.addProducts(products)
+            shoppingListUI.addProducts(products, object : RequestExceptionListener {
+                override fun informUserOfError(explanation: String) {
+                    //TODO("Not yet implemented")
+                }
+
+            })
         }
         externalShoppingListSpy.assertShoppingListStateIsExactlyThisOrThrowException(
             products.map { it.toProduct() }
@@ -84,7 +91,12 @@ class ShoppingListSynchronisationEndToEndTest {
             return@mapIndexed product
         }
         runBlocking {
-            shoppingListUI.addProducts(oldProducts)
+            shoppingListUI.addProducts(oldProducts, object : RequestExceptionListener {
+                override fun informUserOfError(explanation: String) {
+                    //TODO("Not yet implemented")
+                }
+
+            })
         }
         externalShoppingListSpy.assertShoppingListStateIsExactlyThisOrThrowException(
             oldProducts.map { it.toProduct() }
@@ -117,7 +129,12 @@ class ShoppingListSynchronisationEndToEndTest {
             Product("Lemon for remove"),
         )
         runBlocking {
-            shoppingListUI.addProducts(shoppingListStateBeforeDeletion)
+            shoppingListUI.addProducts(shoppingListStateBeforeDeletion, object : RequestExceptionListener {
+                override fun informUserOfError(explanation: String) {
+                    //TODO("Not yet implemented")
+                }
+
+            })
         }
         externalShoppingListSpy.assertShoppingListStateIsExactlyThisOrThrowException(
             shoppingListStateBeforeDeletion.map { it.toProduct() }

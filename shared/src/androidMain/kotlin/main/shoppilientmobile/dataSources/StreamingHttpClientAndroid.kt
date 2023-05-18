@@ -10,7 +10,7 @@ import java.net.URL
 
 class StreamingHttpClientAndroid: StreamingHttpClient {
 
-    override suspend fun makeRequest(httpRequest: HttpRequest): Flow<String> {
+    override suspend fun makeStreamingRequest(httpRequest: HttpRequest): Flow<String> {
         val httpConnection = URL(httpRequest.url).openConnection() as HttpURLConnection
         httpConnection.requestMethod = adaptHttpMethod(httpRequest.httpMethod)
         httpRequest.headers.map { header ->
@@ -23,6 +23,10 @@ class StreamingHttpClientAndroid: StreamingHttpClient {
                 emit(responseLine)
             }
         }
+    }
+
+    override suspend fun stopStreamingRequest() {
+        //TODO("Not yet implemented")
     }
 
     private fun adaptHttpMethod(httpMethod: HttpMethod): String {

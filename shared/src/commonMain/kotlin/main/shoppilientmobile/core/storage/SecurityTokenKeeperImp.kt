@@ -1,14 +1,13 @@
-package main.shoppilientmobile.android.userRegistrationFeatureAndroid.androidRepository
+package main.shoppilientmobile.core.storage
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import main.shoppilientmobile.core.storage.exceptions.NotFoundKeyException
-import main.shoppilientmobile.core.storage.SecurityTokenKeeper
 import main.shoppilientmobile.core.storage.exceptions.ThereIsNoSecurityTokenException
 import main.shoppilientmobile.userRegistrationFeature.dataSources.apis.SecurityToken
 
-class SecurityTokenKeeperImpl (
-    private val keyValueLocalStorage: KeyValueLocalStorageImpl,
+class SecurityTokenKeeperImp(
+    private val keyValueLocalStorage: KeyValueLocalStorage,
 ): SecurityTokenKeeper {
     private val securityTokenKey: String = "security_token_key"
 
@@ -16,9 +15,10 @@ class SecurityTokenKeeperImpl (
         val securityToken = keyValueLocalStorage.getValue(securityTokenKey)
         return securityToken
     }
+
     override fun getSecurityToken2(): SecurityToken {
         return try {
-            runBlocking(Dispatchers.IO) {
+            runBlocking(Dispatchers.Unconfined) {
                 val securityToken = keyValueLocalStorage.getValue(securityTokenKey)
                 return@runBlocking securityToken
             }

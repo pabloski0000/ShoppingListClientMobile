@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import main.shoppilientmobile.domain.domainExposure.User
 import main.shoppilientmobile.domain.domainExposure.UserRole
+import main.shoppilientmobile.shoppingList.application.RequestExceptionListener
 
 class ShoppingListViewModel(
     private val shoppingListUI: AndroidShoppingListUI,
@@ -18,8 +19,8 @@ class ShoppingListViewModel(
         ScreenModeState.NormalModeState()
     )
     val screenStateUiState = _screenStateUiState.asStateFlow()
-    private val _errorMessageUiState = MutableStateFlow(ErrorMessageUiState(""))
-    val errorMessageUiState = _errorMessageUiState.asStateFlow()
+    private val _productCouldNotBeAddedErrorMessage = MutableStateFlow("")
+    val productCouldNotBeAddedErrorMessage = _productCouldNotBeAddedErrorMessage.asStateFlow()
     private val _userIsAdmin = MutableStateFlow(false)
     val userIsAdmin = _userIsAdmin.asStateFlow()
 
@@ -87,6 +88,16 @@ class ShoppingListViewModel(
                 return@map productItem
             }
         }
+    }
+
+    suspend fun addProduct(product: String) {
+        _productCouldNotBeAddedErrorMessage.update { "" }
+        val exceptionListener = object : RequestExceptionListener {
+            override fun informUserOfError(explanation: String) {
+                _productCouldNotBeAddedErrorMessage.update { explanation }
+            }
+        }
+        shoppingListUI.addProduct(Product(product), exceptionListener)
     }
 
     suspend fun modifyProduct(index: Int, newProduct: ProductItemState) {

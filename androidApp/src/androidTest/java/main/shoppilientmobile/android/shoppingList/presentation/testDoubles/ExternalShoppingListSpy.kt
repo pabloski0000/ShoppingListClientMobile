@@ -2,9 +2,9 @@ package main.shoppilientmobile.android.shoppingList.presentation.testDoubles
 
 import kotlinx.coroutines.*
 import main.shoppilientmobile.domain.Product
-import main.shoppilientmobile.shoppingList.application.ShoppingListObserver
+import main.shoppilientmobile.shoppingList.application.SharedShoppingListObserver
 
-class ExternalShoppingListSpy : ShoppingListObserver {
+class ExternalShoppingListSpy : SharedShoppingListObserver {
     private var state = emptyList<Product>()
 
     override fun currentState(products: List<Product>) {

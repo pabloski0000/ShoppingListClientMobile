@@ -39,8 +39,6 @@ class AppRunner(
         registerUserUseCase = registrationContainer.registerUserUseCase
         userRoleRepository = registrationContainer.userRoleRepository
         registrationRepository = androidContainer.registrationRepository
-        shoppingListViewModelFactory = androidContainer.shoppingListViewModelFactory
-        productFactoryViewModelFactory = androidContainer.productFactoryViewModelFactory
 
         return androidContainer
     }

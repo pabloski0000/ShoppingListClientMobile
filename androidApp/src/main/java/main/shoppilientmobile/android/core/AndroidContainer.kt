@@ -6,15 +6,16 @@ import androidx.datastore.preferences.preferencesDataStoreFile
 import androidx.room.Room
 import main.shoppilientmobile.android.shoppingList.data.AndroidShoppingList
 import main.shoppilientmobile.shoppingList.domain.ShoppingList
-import main.shoppilientmobile.android.userRegistrationFeatureAndroid.androidRepository.KeyValueLocalStorage
+import main.shoppilientmobile.android.userRegistrationFeatureAndroid.androidRepository.KeyValueLocalStorageImpl
 import main.shoppilientmobile.android.core.room.RoomDb
 import main.shoppilientmobile.android.shoppingList.presentation.*
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.containers.RegistrationContainer
-import main.shoppilientmobile.core.remote.AsynchronousHttpClientImpl
+import main.shoppilientmobile.core.remote.NonBlockingHttpClientImpl
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.androidRepository.SecurityTokenKeeperImpl
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.androidRepository.UserLocalDataSourceAndroid
 import main.shoppilientmobile.core.remote.UserApi
 import main.shoppilientmobile.core.remote.dataSources.UserRemoteDataSource
+import main.shoppilientmobile.core.storage.SecurityTokenKeeperImp
 import main.shoppilientmobile.dataSources.StreamingHttpClientAndroid
 import main.shoppilientmobile.shoppingList.application.*
 import main.shoppilientmobile.shoppingList.infrastructure.dataSources.apis.ServerShoppingListApi
@@ -42,11 +43,11 @@ class AndroidContainer(
 
     private val shoppingList: ShoppingList = AndroidShoppingList(shoppingListDao)
 
-    val httpClient = AsynchronousHttpClientImpl()
+    val httpClient = NonBlockingHttpClientImpl()
 
     val streamingHttpClient = StreamingHttpClientAndroid()
 
-    private val keyValueLocalStorage = KeyValueLocalStorage(
+    private val keyValueLocalStorage = KeyValueLocalStorageImpl(
         dataStore = dataStore
     )
 
@@ -54,19 +55,23 @@ class AndroidContainer(
         keyValueLocalStorage = keyValueLocalStorage,
     )
 
+    private val securityTokenKeeperImp = SecurityTokenKeeperImp(
+        keyValueLocalStorage = keyValueLocalStorage,
+    )
+
     private val userApi = UserApi(
         httpClient,
-        securityTokenKeeper,
+        securityTokenKeeperImp,
     )
 
     private val serverShoppingListApi = ServerShoppingListApi(
-        streamingHttpClient,
-        securityTokenKeeper,
+        httpClient,
+        httpClient,
     )
 
     private val registrationApi = RegistrationApi(
         httpClient = httpClient,
-        securityTokenKeeper = securityTokenKeeper,
+        securityTokenKeeper = securityTokenKeeperImp,
         streamingHttpClient = streamingHttpClient,
     )
 
@@ -106,7 +111,7 @@ class AndroidContainer(
     )
 
     private val synchroniseWithRemoteShoppingListUseCase = SynchroniseWithRemoteShoppingListUseCase(
-        remoteShoppingList
+        remoteShoppingList,
     )
 
     val shoppingListSynchroniserUseCase = ShoppingListSynchroniserUseCase(
@@ -117,6 +122,10 @@ class AndroidContainer(
     private val listenToUserRegistrationsUseCase = ListenToUserRegistrationsUseCase(
         userRepository,
         registrationRepository,
+    )
+
+    val observableAppState = ObservableAppState(
+        synchroniseWithRemoteShoppingListUseCase,
     )
 
     val androidShoppingListUI = AndroidShoppingListUI(
@@ -138,10 +147,12 @@ class AndroidContainer(
         androidShoppingListUI,
     )
 
-    val shoppingListViewModelFactory = ShoppingListViewModelFactory(shoppingList, androidShoppingListUI)
-
-    val productFactoryViewModelFactory = ProductFactoryViewModelFactory(
-        shoppingList,
+    val shoppingListViewModel = ShoppingListViewModel(
         androidShoppingListUI,
+    )
+
+    val productFactoryViewModel = ProductFactoryViewModel(
+        androidShoppingListUI,
+        shoppingListViewModel,
     )
 }

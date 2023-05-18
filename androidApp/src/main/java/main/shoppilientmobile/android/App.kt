@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.runBlocking
 import main.shoppilientmobile.android.core.AndroidContainer
+import main.shoppilientmobile.android.core.ObservableAppState
 import main.shoppilientmobile.android.shoppingList.presentation.*
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.composables.routableComposables.FillNicknameRoutableComposable
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.composables.routableComposables.IntroduceCodeRoutableComposable
@@ -24,7 +25,7 @@ import main.shoppilientmobile.userRegistrationFeature.repositories.RegistrationR
 import main.shoppilientmobile.userRegistrationFeature.repositories.UserRoleRepository
 import main.shoppilientmobile.userRegistrationFeature.useCases.RegisterAdminUseCase
 import main.shoppilientmobile.userRegistrationFeature.useCases.RegisterUserUseCase
-import main.shoppilientmobile.shoppingList.application.ShoppingListObserver
+import main.shoppilientmobile.shoppingList.application.SharedShoppingListObserver
 
 class App(
     private val context: Context,
@@ -40,9 +41,11 @@ class App(
     private lateinit var registrationRepository: RegistrationRepository
     private lateinit var androidShoppingListUI: AndroidShoppingListUI
     private lateinit var remoteShoppingList: RemoteShoppingList
+    private lateinit var observableAppState: ObservableAppState
 
     fun run(): AndroidContainer {
         androidContainer = appRunner.runApp()
+        observableAppState = androidContainer.observableAppState
         val registrationContainer = androidContainer.registrationContainer!!
         roleElectionViewModel = RoleElectionViewModel(
             userRoleRepository = registrationContainer.userRoleRepository,
@@ -51,8 +54,6 @@ class App(
         registerUserUseCase = registrationContainer.registerUserUseCase
         userRoleRepository = registrationContainer.userRoleRepository
         registrationRepository = androidContainer.registrationRepository
-        shoppingListViewModelFactory = androidContainer.shoppingListViewModelFactory
-        productFactoryViewModelFactory = androidContainer.productFactoryViewModelFactory
         androidShoppingListUI = androidContainer.androidShoppingListUI
         remoteShoppingList = androidContainer.remoteShoppingList
         return androidContainer
@@ -78,8 +79,16 @@ class App(
         }
     }
 
-    fun observeExternalShoppingList(observer: ShoppingListObserver) {
-        remoteShoppingList.observe(observer)
+    fun observeExternalShoppingList(observer: SharedShoppingListObserver) {
+        remoteShoppingList.subscribe(observer)
+    }
+
+    fun onStart() {
+        observableAppState.onStart()
+    }
+
+    fun onStop() {
+        observableAppState.onStop()
     }
 
     private fun userIsAlreadyRegistered(androidContainer: AndroidContainer): Boolean {
@@ -98,23 +107,10 @@ class App(
             startDestination = startDestination,
         ) {
             composable(route = SHOPPING_LIST_ROUTE) {
-                val viewModel = viewModel<ShoppingListViewModel>(
-                    viewModelOwner,
-                    "FirstViewModelInGraph",
-                    shoppingListViewModelFactory,
-                )
-                ShoppingListScreen(
-                    navController = navController,
-                    viewModel = viewModel,
-                )
+                ShoppingListScreen(navController, androidContainer.shoppingListViewModel)
             }
             composable(route = PRODUCT_FACTORY_ROUTE) {
-                val viewModel = viewModel<ProductFactoryViewModel>(
-                    viewModelOwner,
-                    "SecondViewModelInGraph",
-                    productFactoryViewModelFactory,
-                )
-                ProductFactoryScreen(navController, viewModel)
+                ProductFactoryScreen(navController, androidContainer.productFactoryViewModel)
             }
             composable(route = RoleElectionRoutableComposable.route) {
                 RoleElectionRoutableComposable.RoleElection(

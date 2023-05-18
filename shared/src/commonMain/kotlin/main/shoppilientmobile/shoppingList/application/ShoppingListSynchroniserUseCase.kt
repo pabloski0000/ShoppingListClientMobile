@@ -6,9 +6,9 @@ import main.shoppilientmobile.shoppingList.domain.ShoppingList
 class ShoppingListSynchroniserUseCase(
     private val remoteShoppingList: RemoteShoppingList,
     private val shoppingList: ShoppingList,
-) : ShoppingListObserver {
+) : SharedShoppingListObserver {
     fun synchroniseWithExternalShoppingList() {
-        remoteShoppingList.observe(this)
+        remoteShoppingList.subscribe(this)
     }
 
     override fun currentState(products: List<Product>) {

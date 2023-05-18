@@ -8,8 +8,7 @@ class ProductFactoryViewModelFactory(
     private val shoppingList: ShoppingList,
     private val androidShoppingListUI: AndroidShoppingListUI,
 ) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        //return ProductFactoryViewModel(shoppingList) as T
+    /*override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return ProductFactoryViewModel(androidShoppingListUI) as T
-    }
+    }*/
 }

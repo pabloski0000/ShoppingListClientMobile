@@ -29,21 +29,15 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 //Ktor
-                implementation("io.ktor:ktor-server-content-negotiation-jvm:$ktor_version")
-                implementation("io.ktor:ktor-server-core-jvm:$ktor_version")
-                implementation("io.ktor:ktor-serialization-jackson-jvm:$ktor_version")
-                implementation("io.ktor:ktor-server-netty-jvm:$ktor_version")
                 implementation("io.ktor:ktor-client-core:$ktor_version")
                 implementation("io.ktor:ktor-client-cio:$ktor_version")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
                 implementation("io.ktor:ktor-client-content-negotiation:$ktor_version")
                 implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
                 implementation("io.ktor:ktor-client-logging:$ktor_version")
-                implementation("io.ktor:ktor-network:$ktor_version")
+
                 //Logback
                 implementation("ch.qos.logback:logback-classic:$logback_version")
-                //Koin
-                api("io.insert-koin:koin-core:$version")
             }
         }
         val commonTest by getting {
@@ -52,10 +46,7 @@ kotlin {
                 implementation("io.ktor:ktor-client-mock:$ktor_version")
             }
         }
-        val androidMain by getting {
-            dependencies {
-            }
-        }
+        val androidMain by getting
         val androidTest by getting
         val iosX64Main by getting
         val iosArm64Main by getting
@@ -65,6 +56,9 @@ kotlin {
             iosX64Main.dependsOn(this)
             iosArm64Main.dependsOn(this)
             iosSimulatorArm64Main.dependsOn(this)
+            dependencies {
+                implementation("io.ktor:ktor-client-darwin:2.2.1")
+            }
         }
         val iosX64Test by getting
         val iosArm64Test by getting

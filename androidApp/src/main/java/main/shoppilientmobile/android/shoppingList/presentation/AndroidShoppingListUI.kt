@@ -12,19 +12,20 @@ class AndroidShoppingListUI(
     private val synchroniseWithRemoteShoppingListUseCase: SynchroniseWithRemoteShoppingListUseCase,
     private val getLocalUserUseCase: GetLocalUserUseCase,
     private val listenToUserRegistrationsUseCase: ListenToUserRegistrationsUseCase,
-) : main.shoppilientmobile.shoppingList.application.ShoppingListObserver {
+) : main.shoppilientmobile.shoppingList.application.SharedShoppingListObserver {
     private var observers = emptySet<ShoppingListObserver>()
     private var shoppingList = emptyList<Product>()
     private var observingShoppingList = false
 
 
-    suspend fun addProducts(products: List<Product>) {
-        products.map { addProductUseCase.addProduct(it.toProduct()) }
+    suspend fun addProducts(products: List<Product>, exceptionListener: RequestExceptionListener) {
+        products.map { addProductUseCase.addProduct(it.toProduct(), exceptionListener) }
     }
 
-    suspend fun addProduct(product: Product) {
+    suspend fun addProduct(product: Product, exceptionListener: RequestExceptionListener) {
         addProductUseCase.addProduct(
-            product.toProduct()
+            product.toProduct(),
+            exceptionListener,
         )
     }
 

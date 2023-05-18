@@ -5,7 +5,7 @@ import main.shoppilientmobile.core.remote.UserApi
 class UserRemoteDataSource(
     private val userApi: UserApi,
 ) {
-    fun deleteLocalUser() {
+    suspend fun deleteLocalUser() {
         userApi.deleteMyself()
     }
 }

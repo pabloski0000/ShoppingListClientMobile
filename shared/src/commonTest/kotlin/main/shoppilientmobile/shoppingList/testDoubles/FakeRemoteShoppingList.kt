@@ -2,13 +2,14 @@ package main.shoppilientmobile.shoppingList.testDoubles
 
 import main.shoppilientmobile.domain.Product
 import main.shoppilientmobile.shoppingList.application.RemoteShoppingList
-import main.shoppilientmobile.shoppingList.application.ShoppingListObserver
+import main.shoppilientmobile.shoppingList.application.RequestExceptionListener
+import main.shoppilientmobile.shoppingList.application.SharedShoppingListObserver
 
 class FakeRemoteShoppingList : RemoteShoppingList {
-    private var observers = emptyList<ShoppingListObserver>()
+    private var observers = emptyList<SharedShoppingListObserver>()
     private var fakeProductList = emptyList<Product>()
 
-    override suspend fun addProduct(product: Product) {
+    override suspend fun addProduct(product: Product, exceptionListener: RequestExceptionListener) {
         fakeProductList = listOf(*fakeProductList.toTypedArray(), product)
         observers.map { it.productAdded(product) }
     }
@@ -32,7 +33,7 @@ class FakeRemoteShoppingList : RemoteShoppingList {
         TODO("Not yet implemented")
     }
 
-    override fun observe(observer: ShoppingListObserver) {
+    override fun subscribe(observer: SharedShoppingListObserver) {
         observers = listOf(*observers.toTypedArray(), observer)
     }
 

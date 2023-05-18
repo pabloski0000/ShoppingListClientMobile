@@ -21,7 +21,7 @@ import main.shoppilientmobile.userRegistrationFeature.useCases.exceptions.WrongC
 import kotlin.coroutines.cancellation.CancellationException
 
 class RegistrationApi(
-    private val httpClient: AsynchronousHttpClient,
+    private val httpClient: NonBlockingHttpClient,
     private val streamingHttpClient: StreamingHttpClient,
     private val securityTokenKeeper: SecurityTokenKeeper,
 ): ShoppingListServerApi(), RegistrationRemoteDataSource {
@@ -162,7 +162,7 @@ class RegistrationApi(
             headers = headers,
             body = "",
         )
-        val response = streamingHttpClient.makeRequest(httpRequest)
+        val response = streamingHttpClient.makeStreamingRequest(httpRequest)
         response.map { responseChunk ->
             val jsonResponse = Json.parseToJsonElement(responseChunk).jsonObject
             val nickname = jsonResponse.getValue("nickname").jsonPrimitive.content

@@ -1,10 +1,10 @@
 package main.shoppilientmobile.registrationFeature.apis.mocks
 
-import main.shoppilientmobile.core.remote.AsynchronousHttpClient
+import main.shoppilientmobile.core.remote.NonBlockingHttpClient
 import main.shoppilientmobile.core.remote.HttpRequest
 import main.shoppilientmobile.core.remote.HttpResponse
 
-class AsynchronousHttpClientMock: AsynchronousHttpClient {
+class NonBlockingHttpClientMock: NonBlockingHttpClient {
     lateinit var lastRequest: HttpRequest
 
     override suspend fun makeRequest(httpRequest: HttpRequest): HttpResponse {

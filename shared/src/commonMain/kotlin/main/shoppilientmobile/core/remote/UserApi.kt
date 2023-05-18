@@ -3,10 +3,10 @@ package main.shoppilientmobile.core.remote
 import main.shoppilientmobile.core.storage.SecurityTokenKeeper
 
 class UserApi(
-    private val asynchronousHttpClientImpl: AsynchronousHttpClientImpl,
+    private val nonBlockingHttpClientImpl: NonBlockingHttpClientImpl,
     private val securityTokenKeeper: SecurityTokenKeeper,
 ) {
-    fun deleteMyself() {
+    suspend fun deleteMyself() {
         val httpRequest = HttpRequest(
             httpMethod = HttpMethod.DELETE,
             url = "https://lista-de-la-compra-pabloski.herokuapp.com/api/users/delete-myself",
@@ -15,6 +15,6 @@ class UserApi(
             ),
             body = "",
         )
-        asynchronousHttpClientImpl.makeRequest2(httpRequest)
+        nonBlockingHttpClientImpl.makeRequest(httpRequest)
     }
 }

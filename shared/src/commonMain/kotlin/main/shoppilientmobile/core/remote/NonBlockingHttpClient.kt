@@ -1,5 +1,5 @@
 package main.shoppilientmobile.core.remote
 
-interface AsynchronousHttpClient {
+interface NonBlockingHttpClient {
     suspend fun makeRequest(httpRequest: HttpRequest): HttpResponse
 }

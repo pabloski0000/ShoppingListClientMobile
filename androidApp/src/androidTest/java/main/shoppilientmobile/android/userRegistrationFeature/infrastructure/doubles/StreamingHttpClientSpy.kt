@@ -8,7 +8,7 @@ import main.shoppilientmobile.core.remote.StreamingHttpClient
 class StreamingHttpClientSpy : StreamingHttpClient {
     var lastRequest: HttpRequest? = null
 
-    override suspend fun makeRequest(httpRequest: HttpRequest): Flow<String> {
+    override suspend fun makeStreamingRequest(httpRequest: HttpRequest): Flow<String> {
         lastRequest = httpRequest
         return flowOf()
     }

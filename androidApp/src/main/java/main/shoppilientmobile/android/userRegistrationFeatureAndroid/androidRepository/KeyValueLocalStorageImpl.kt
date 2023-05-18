@@ -2,19 +2,15 @@ package main.shoppilientmobile.android.userRegistrationFeatureAndroid.androidRep
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.*
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
-import main.shoppilientmobile.android.userRegistrationFeatureAndroid.androidRepository.exceptions.NotFoundKeyException
+import main.shoppilientmobile.core.storage.exceptions.NotFoundKeyException
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.androidRepository.exceptions.StorageException
+import main.shoppilientmobile.core.storage.KeyValueLocalStorage
 import java.util.*
-import kotlin.reflect.KClass
 
-class KeyValueLocalStorage(
+class KeyValueLocalStorageImpl(
     private val dataStore: DataStore<Preferences>
-) {
+) : KeyValueLocalStorage {
     private var saving = false
 
     @kotlin.jvm.Throws(StorageException::class)
@@ -32,7 +28,7 @@ class KeyValueLocalStorage(
     }
 
     @kotlin.jvm.Throws(StorageException::class)
-    suspend fun store(key: String, value: String) {
+    override suspend fun store(key: String, value: String) {
         try {
             saving = true
             dataStore.edit { mutablePreferences ->
@@ -44,7 +40,7 @@ class KeyValueLocalStorage(
     }
 
     @kotlin.jvm.Throws(NotFoundKeyException::class)
-    suspend fun getValue(key: String): String {
+    override suspend fun getValue(key: String): String {
         delayUntilNothingIsBeingSaved()
         return dataStore.data.map { preferences ->
             preferences[stringPreferencesKey(key)]
