@@ -107,10 +107,10 @@ class App(
             startDestination = startDestination,
         ) {
             composable(route = SHOPPING_LIST_ROUTE) {
-                ShoppingListScreen(navController, androidContainer.shoppingListViewModel)
+                ShoppingListScreen(navController, androidContainer.shoppingListViewModelShared)
             }
             composable(route = PRODUCT_FACTORY_ROUTE) {
-                ProductFactoryScreen(navController, androidContainer.productFactoryViewModel)
+                ProductFactoryScreen(navController, androidContainer.shoppingListViewModelShared)
             }
             composable(route = RoleElectionRoutableComposable.route) {
                 RoleElectionRoutableComposable.RoleElection(

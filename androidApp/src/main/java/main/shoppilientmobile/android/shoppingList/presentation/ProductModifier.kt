@@ -32,6 +32,7 @@ import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import main.shoppilientmobile.android.core.composables.TextFieldWithDoneImeAction
+import main.shoppilientmobile.shoppingList.infrastructure.presentation.ProductItemState
 
 @Composable
 fun ProductModifier(

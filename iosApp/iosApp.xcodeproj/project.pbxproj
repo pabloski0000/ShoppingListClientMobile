@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -12,8 +12,15 @@
 		2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2152FB032600AC8F00CF470E /* iOSApp.swift */; };
 		7555FF83242A565900829871 /* ShoppingListScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF82242A565900829871 /* ShoppingListScreen.swift */; };
 		88039F352A0E1A9D0004068D /* AddProductViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88039F342A0E1A9D0004068D /* AddProductViewModel.swift */; };
-		88039F372A0E1B410004068D /* AddProductScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88039F362A0E1B410004068D /* AddProductScreen.swift */; };
-		8889F8022A03A02900C217E0 /* ShoppingListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8889F8012A03A02900C217E0 /* ShoppingListViewModel.swift */; };
+		88039F372A0E1B410004068D /* ProductShapperScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88039F362A0E1B410004068D /* ProductShapperScreen.swift */; };
+		880A502F2A1B4EA7000C540C /* KMPNativeCoroutinesAsync in Frameworks */ = {isa = PBXBuildFile; productRef = 880A502E2A1B4EA7000C540C /* KMPNativeCoroutinesAsync */; };
+		880A50312A1B4EA7000C540C /* KMPNativeCoroutinesCombine in Frameworks */ = {isa = PBXBuildFile; productRef = 880A50302A1B4EA7000C540C /* KMPNativeCoroutinesCombine */; };
+		880A50332A1B4EA7000C540C /* KMPNativeCoroutinesCore in Frameworks */ = {isa = PBXBuildFile; productRef = 880A50322A1B4EA7000C540C /* KMPNativeCoroutinesCore */; };
+		880A50352A1B4EA7000C540C /* KMPNativeCoroutinesRxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 880A50342A1B4EA7000C540C /* KMPNativeCoroutinesRxSwift */; };
+		8887A7AE2A177F0E001A5A97 /* KMMViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8887A7AD2A177F0E001A5A97 /* KMMViewModel.swift */; };
+		8887A7B12A178B28001A5A97 /* KMMViewModelCore in Frameworks */ = {isa = PBXBuildFile; productRef = 8887A7B02A178B28001A5A97 /* KMMViewModelCore */; };
+		8887A7B32A178B28001A5A97 /* KMMViewModelSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 8887A7B22A178B28001A5A97 /* KMMViewModelSwiftUI */; };
+		8889F8022A03A02900C217E0 /* ShoppingListViewModel2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8889F8012A03A02900C217E0 /* ShoppingListViewModel2.swift */; };
 		8889F8082A03AE1700C217E0 /* IosContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8889F8072A03AE1700C217E0 /* IosContainer.swift */; };
 /* End PBXBuildFile section */
 
@@ -38,8 +45,9 @@
 		7555FF82242A565900829871 /* ShoppingListScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShoppingListScreen.swift; sourceTree = "<group>"; };
 		7555FF8C242A565B00829871 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		88039F342A0E1A9D0004068D /* AddProductViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddProductViewModel.swift; sourceTree = "<group>"; };
-		88039F362A0E1B410004068D /* AddProductScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddProductScreen.swift; sourceTree = "<group>"; };
-		8889F8012A03A02900C217E0 /* ShoppingListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShoppingListViewModel.swift; sourceTree = "<group>"; };
+		88039F362A0E1B410004068D /* ProductShapperScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductShapperScreen.swift; sourceTree = "<group>"; };
+		8887A7AD2A177F0E001A5A97 /* KMMViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KMMViewModel.swift; sourceTree = "<group>"; };
+		8889F8012A03A02900C217E0 /* ShoppingListViewModel2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShoppingListViewModel2.swift; sourceTree = "<group>"; };
 		8889F8072A03AE1700C217E0 /* IosContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IosContainer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -48,6 +56,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8887A7B12A178B28001A5A97 /* KMMViewModelCore in Frameworks */,
+				880A50332A1B4EA7000C540C /* KMPNativeCoroutinesCore in Frameworks */,
+				880A50312A1B4EA7000C540C /* KMPNativeCoroutinesCombine in Frameworks */,
+				880A50352A1B4EA7000C540C /* KMPNativeCoroutinesRxSwift in Frameworks */,
+				8887A7B32A178B28001A5A97 /* KMMViewModelSwiftUI in Frameworks */,
+				880A502F2A1B4EA7000C540C /* KMPNativeCoroutinesAsync in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -88,6 +102,7 @@
 				2152FB032600AC8F00CF470E /* iOSApp.swift */,
 				058557D7273AAEEB004C7B11 /* Preview Content */,
 				8889F8072A03AE1700C217E0 /* IosContainer.swift */,
+				8887A7AD2A177F0E001A5A97 /* KMMViewModel.swift */,
 			);
 			path = iosApp;
 			sourceTree = "<group>";
@@ -103,9 +118,9 @@
 			isa = PBXGroup;
 			children = (
 				7555FF82242A565900829871 /* ShoppingListScreen.swift */,
-				8889F8012A03A02900C217E0 /* ShoppingListViewModel.swift */,
+				8889F8012A03A02900C217E0 /* ShoppingListViewModel2.swift */,
 				88039F342A0E1A9D0004068D /* AddProductViewModel.swift */,
-				88039F362A0E1B410004068D /* AddProductScreen.swift */,
+				88039F362A0E1B410004068D /* ProductShapperScreen.swift */,
 			);
 			path = shoppingList;
 			sourceTree = "<group>";
@@ -128,6 +143,14 @@
 			dependencies = (
 			);
 			name = iosApp;
+			packageProductDependencies = (
+				8887A7B02A178B28001A5A97 /* KMMViewModelCore */,
+				8887A7B22A178B28001A5A97 /* KMMViewModelSwiftUI */,
+				880A502E2A1B4EA7000C540C /* KMPNativeCoroutinesAsync */,
+				880A50302A1B4EA7000C540C /* KMPNativeCoroutinesCombine */,
+				880A50322A1B4EA7000C540C /* KMPNativeCoroutinesCore */,
+				880A50342A1B4EA7000C540C /* KMPNativeCoroutinesRxSwift */,
+			);
 			productName = iosApp;
 			productReference = 7555FF7B242A565900829871 /* iosApp.app */;
 			productType = "com.apple.product-type.application";
@@ -156,6 +179,10 @@
 				Base,
 			);
 			mainGroup = 7555FF72242A565900829871;
+			packageReferences = (
+				8887A7AF2A178B28001A5A97 /* XCRemoteSwiftPackageReference "KMM-ViewModel" */,
+				880A502D2A1B4EA7000C540C /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */,
+			);
 			productRefGroup = 7555FF7C242A565900829871 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -202,11 +229,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8889F8022A03A02900C217E0 /* ShoppingListViewModel.swift in Sources */,
-				88039F372A0E1B410004068D /* AddProductScreen.swift in Sources */,
+				8889F8022A03A02900C217E0 /* ShoppingListViewModel2.swift in Sources */,
+				88039F372A0E1B410004068D /* ProductShapperScreen.swift in Sources */,
 				2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */,
 				7555FF83242A565900829871 /* ShoppingListScreen.swift in Sources */,
 				88039F352A0E1A9D0004068D /* AddProductViewModel.swift in Sources */,
+				8887A7AE2A177F0E001A5A97 /* KMMViewModel.swift in Sources */,
 				8889F8082A03AE1700C217E0 /* IosContainer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -410,6 +438,58 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		880A502D2A1B4EA7000C540C /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/rickclephas/KMP-NativeCoroutines.git";
+			requirement = {
+				kind = exactVersion;
+				version = "1.0.0-ALPHA-8";
+			};
+		};
+		8887A7AF2A178B28001A5A97 /* XCRemoteSwiftPackageReference "KMM-ViewModel" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/rickclephas/KMM-ViewModel.git";
+			requirement = {
+				kind = exactVersion;
+				version = "1.0.0-ALPHA-8";
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		880A502E2A1B4EA7000C540C /* KMPNativeCoroutinesAsync */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 880A502D2A1B4EA7000C540C /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */;
+			productName = KMPNativeCoroutinesAsync;
+		};
+		880A50302A1B4EA7000C540C /* KMPNativeCoroutinesCombine */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 880A502D2A1B4EA7000C540C /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */;
+			productName = KMPNativeCoroutinesCombine;
+		};
+		880A50322A1B4EA7000C540C /* KMPNativeCoroutinesCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 880A502D2A1B4EA7000C540C /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */;
+			productName = KMPNativeCoroutinesCore;
+		};
+		880A50342A1B4EA7000C540C /* KMPNativeCoroutinesRxSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 880A502D2A1B4EA7000C540C /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */;
+			productName = KMPNativeCoroutinesRxSwift;
+		};
+		8887A7B02A178B28001A5A97 /* KMMViewModelCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8887A7AF2A178B28001A5A97 /* XCRemoteSwiftPackageReference "KMM-ViewModel" */;
+			productName = KMMViewModelCore;
+		};
+		8887A7B22A178B28001A5A97 /* KMMViewModelSwiftUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8887A7AF2A178B28001A5A97 /* XCRemoteSwiftPackageReference "KMM-ViewModel" */;
+			productName = KMMViewModelSwiftUI;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 7555FF73242A565900829871 /* Project object */;
 }

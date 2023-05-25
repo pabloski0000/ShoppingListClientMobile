@@ -10,7 +10,7 @@ import Foundation
 import shared
 
 extension ShoppingListScreen {
-    class ShoppingListViewModel: ObservableObject, SharedShoppingListObserver {
+    class ShoppingListViewModel2: ObservableObject, SharedShoppingListObserver {
         private let iosContainer = IosContainer.getIosContainer()
         private let synchroniseWithSharedShoppingListUseCase: SynchroniseWithRemoteShoppingListUseCase
         @Published private(set) var listOfProducts = [Product]()

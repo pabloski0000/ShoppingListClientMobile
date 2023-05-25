@@ -1,10 +1,14 @@
 package main.shoppilientmobile.shoppingList.infrastructure.repositories
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import main.shoppilientmobile.domain.Product
 import main.shoppilientmobile.domain.exceptions.ProductDescriptionExceedsMaximumLengthException
 import main.shoppilientmobile.domain.exceptions.ProductDescriptionIsShorterThanMinimumLengthException
 import main.shoppilientmobile.domain.exceptions.ThereCannotBeTwoProductsWithTheSameNameException
 import main.shoppilientmobile.shoppingList.application.RemoteShoppingList
+import main.shoppilientmobile.shoppingList.application.Response
 import main.shoppilientmobile.shoppingList.application.RequestExceptionListener
 import main.shoppilientmobile.shoppingList.application.SharedShoppingListObserver
 import main.shoppilientmobile.shoppingList.infrastructure.ServerShoppingListObserver
@@ -16,6 +20,7 @@ class ServerShoppingList(
     private var observers = setOf<SharedShoppingListObserver>()
     private var state = emptyList<ProductOnServerShoppingList>()
     private var currentlySubscribedToSharedShoppingList = false
+    private val coroutineScope = CoroutineScope(Job())
 
     override suspend fun addProduct(product: Product, exceptionListener: RequestExceptionListener) {
         try {
@@ -29,10 +34,42 @@ class ServerShoppingList(
         }
     }
 
+    override fun addProduct(product: Product, response: Response) {
+        coroutineScope.launch {
+            try {
+                serverShoppingListApi.addProduct(ProductOnServerShoppingList.fromProduct(product))
+                response(null)
+            }catch (e: ThereCannotBeTwoProductsWithTheSameNameException) {
+                response("Este producto ya existe en la lista")
+            } catch (e: ProductDescriptionExceedsMaximumLengthException) {
+                response("Es demasiado largo. Acórtalo")
+            } catch (e: ProductDescriptionIsShorterThanMinimumLengthException) {
+                response("Es demasiado corto. Alárgalo")
+            }
+        }
+    }
+
     override suspend fun modifyProduct(oldProduct: Product, newProduct: Product) {
         val productToModify = state.find { it.toProduct() == oldProduct }!!
         val modifiedProduct = productToModify.copy(description = newProduct.description)
         serverShoppingListApi.modifyProduct(modifiedProduct)
+    }
+
+    override fun modifyProduct(oldProduct: Product, newProduct: Product, response: Response) {
+        coroutineScope.launch {
+            val productToModify = state.find { it.toProduct() == oldProduct }!!
+            val modifiedProduct = productToModify.copy(description = newProduct.description)
+            try {
+                serverShoppingListApi.modifyProduct(modifiedProduct)
+                response(null)
+            } catch (e: ThereCannotBeTwoProductsWithTheSameNameException) {
+                response("Ya existe ese producto")
+            } catch (e: ProductDescriptionExceedsMaximumLengthException) {
+                response("Demasiado largo")
+            } catch (e: ProductDescriptionIsShorterThanMinimumLengthException) {
+                response("Demasiado corto")
+            }
+        }
     }
 
     override suspend fun deleteProduct(product: Product) {

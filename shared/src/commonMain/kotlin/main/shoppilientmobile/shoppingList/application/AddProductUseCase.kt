@@ -8,4 +8,8 @@ class AddProductUseCase(
     suspend fun addProduct(product: Product, exceptionListener: RequestExceptionListener) {
         remoteShoppingList.addProduct(product, exceptionListener)
     }
+
+    fun addProduct(product: Product, completionHandler: (errorExplanation: String?) -> Unit) {
+        remoteShoppingList.addProduct(product, completionHandler)
+    }
 }

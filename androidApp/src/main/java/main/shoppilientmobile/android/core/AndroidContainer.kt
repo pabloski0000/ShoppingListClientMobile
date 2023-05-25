@@ -19,6 +19,7 @@ import main.shoppilientmobile.core.storage.SecurityTokenKeeperImp
 import main.shoppilientmobile.dataSources.StreamingHttpClientAndroid
 import main.shoppilientmobile.shoppingList.application.*
 import main.shoppilientmobile.shoppingList.infrastructure.dataSources.apis.ServerShoppingListApi
+import main.shoppilientmobile.shoppingList.infrastructure.presentation.ShoppingListViewModelShared
 import main.shoppilientmobile.shoppingList.infrastructure.repositories.ServerShoppingList
 import main.shoppilientmobile.userRegistrationFeature.dataSources.apis.RegistrationApi
 import main.shoppilientmobile.userRegistrationFeature.repositories.RegistrationRepositoryImpl
@@ -151,8 +152,11 @@ class AndroidContainer(
         androidShoppingListUI,
     )
 
-    val productFactoryViewModel = ProductFactoryViewModel(
-        androidShoppingListUI,
-        shoppingListViewModel,
+    val shoppingListViewModelShared = ShoppingListViewModelShared(
+        synchroniseWithRemoteShoppingListUseCase,
+        addProductUseCase,
+        modifyProductUseCase,
+        deleteProductUseCase,
+        getLocalUserUseCase,
     )
 }

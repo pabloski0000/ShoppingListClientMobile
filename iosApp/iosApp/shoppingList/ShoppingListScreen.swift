@@ -1,28 +1,43 @@
 import SwiftUI
+import KMMViewModelSwiftUI
 import shared
 
 struct ShoppingListScreen: View {
-    @StateObject private var viewModel = ShoppingListViewModel()
+    @StateViewModel var viewModel = IosContainer.getIosContainer().shoppingListViewModelShared
+    @State var navigationLinkActive: Bool = true
     
     var body: some View {
         VStack {
             HStack {
                 Spacer()
-                NavigationLink(destination: AddProductScreen()) {
+                NavigationLink(destination: ProductShapperScreen(productOnScreen: "", mode: ProductShapperScreen.Mode.Create)) {
                     Image(systemName: "plus")
                 }
             }
             .frame(maxWidth: .infinity, minHeight: 20)
             .padding()
             List {
-                Text("List of products")
-                ForEach(viewModel.listOfProducts, id: \.description_) { product in
-                    Text(product.description())
+                Text("Lista de la compra")
+                ForEach(viewModel.productItemsUiState, id: \.content) { product in
+                    HStack {
+                        NavigationLink(destination: ProductShapperScreen(productOnScreen: product.content, mode: ProductShapperScreen.Mode.Modify)) {
+                            Text(product.content)
+                            EmptyView()
+                        }
+                        Image(systemName: "xmark")
+                            .onTapGesture {
+                                viewModel.deleteProducts(products: [product.content], completionHandler: {error in })
+                            }
+                    }
                 }
             }.onAppear() {
                 viewModel.loadSharedShoppingAndNotifyChanges()
             }
         }
+    }
+    
+    func navigateToProductShaperScreen(initialText: String) {
+        
     }
 }
 

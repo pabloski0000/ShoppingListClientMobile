@@ -25,14 +25,14 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import main.shoppilientmobile.shoppingList.infrastructure.presentation.ShoppingListViewModelShared
 
 const val PRODUCT_FACTORY_ROUTE = "product_factory"
 
 @Composable
 fun ProductFactoryScreen(
     navController: NavController,
-    viewModel: ProductFactoryViewModel,
+    viewModel: ShoppingListViewModelShared,
 ) {
     val keyboardShower = remember {
         FocusRequester()
@@ -40,22 +40,19 @@ fun ProductFactoryScreen(
     val showKeyboard = remember {
         mutableStateOf(true)
     }
-    val errorMessage = viewModel.errorMessage.collectAsState()
-    val coroutineScope = rememberCoroutineScope()
-    val requestState = viewModel.requestState.collectAsState()
+    val errorMessage = remember {
+        mutableStateOf("")
+    }
     ProductFactoryScreenContent(
         errorMessage = errorMessage.value.ifBlank { null },
         onProductIntroduced = { productToCreate ->
-            viewModel.createProductNonBlockingly(productToCreate)
-            navController.navigate(SHOPPING_LIST_ROUTE)
-            /*coroutineScope.launch {
-                while (requestState.value == ProductFactoryViewModel.RequestState.INITIALISED) {
-                    yield()
-                }
-                if (requestState.value == ProductFactoryViewModel.RequestState.FINISHED_SUCCESSFULLY) {
+            viewModel.addProduct(productToCreate) { response ->
+                if (response == null) {
                     navController.popBackStack()
+                } else {
+                    errorMessage.value = response
                 }
-            }*/
+            }
         },
         keyboardShower = keyboardShower
     )

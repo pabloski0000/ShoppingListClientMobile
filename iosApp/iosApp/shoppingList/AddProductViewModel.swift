@@ -9,7 +9,7 @@
 import Foundation
 import shared
 
-extension AddProductScreen {
+extension ProductShapperScreen {
     class AddProductViewModel: ObservableObject, RequestExceptionListener {
         private let addProductUseCase: AddProductUseCase = IosContainer.getIosContainer().addProductUseCase
         @Published private(set) var requestState: RequestState? = nil

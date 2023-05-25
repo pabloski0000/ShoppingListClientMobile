@@ -8,4 +8,8 @@ class ModifyProductUseCase(
     suspend fun modifyProduct(oldProduct: Product, newProduct: Product) {
         remoteShoppingList.modifyProduct(oldProduct, newProduct)
     }
+
+    fun modifyProduct(oldProduct: Product, newProduct: Product, response: Response) {
+        remoteShoppingList.modifyProduct(oldProduct, newProduct, response)
+    }
 }

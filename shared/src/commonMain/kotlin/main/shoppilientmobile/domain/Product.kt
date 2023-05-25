@@ -6,14 +6,14 @@ import main.shoppilientmobile.shoppingList.domain.rules.ProductRules
 
 data class Product(val description: String) {
     init {
-        if (description.length < ProductRules.minimumProductDescriptionLength) {
+        /*if (description.length < ProductRules.minimumProductDescriptionLength) {
             throw ProductDescriptionIsShorterThanMinimumLengthException("A product has to at least" +
                     "has a length of ${ProductRules.minimumProductDescriptionLength} characters")
         }
         if (description.length > ProductRules.maximumProductDescriptionLength) {
             throw ProductDescriptionExceedsMaximumLengthException("A product cannot exceed" +
                     "the maximum length of ${ProductRules.maximumProductDescriptionLength} characters")
-        }
+        }*/
     }
 
 

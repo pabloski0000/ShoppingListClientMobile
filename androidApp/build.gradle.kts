@@ -4,6 +4,8 @@ val room_version = "2.4.3"
 val mainFolderPath = "main.shoppilientmobile"
 val applicationLogicFolderPath = "$mainFolderPath.android"
 val testFolderPath = "$mainFolderPath.androidTest"
+val kmm_viewmodel_version = "1.0.0-ALPHA-8"
+
 
 plugins {
     id("com.android.application")
@@ -22,7 +24,7 @@ android {
         targetSdk = 32
         versionCode = 1
         versionName = "1.0"
-
+        compileSdk = 33
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
 
@@ -31,7 +33,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.3.2"
+        kotlinCompilerExtensionVersion = "1.4.7"
     }
     packagingOptions {
         resources {
@@ -87,4 +89,7 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:31.2.3"))
     implementation("com.google.firebase:firebase-analytics-ktx")
     implementation("com.google.firebase:firebase-crashlytics-ktx")
+    //KMM-ViewModel
+    implementation("com.rickclephas.kmm:kmm-viewmodel-core:$kmm_viewmodel_version")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
 }

@@ -1,6 +1,5 @@
 package main.shoppilientmobile.android.shoppingList.presentation
 
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.FloatingActionButton
@@ -13,83 +12,91 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.launch
-import main.shoppilientmobile.domain.exceptions.ProductDescriptionExceedsMaximumLengthException
-import main.shoppilientmobile.domain.exceptions.ProductDescriptionIsShorterThanMinimumLengthException
-import main.shoppilientmobile.domain.exceptions.ThereCannotBeTwoProductsWithTheSameNameException
+import main.shoppilientmobile.shoppingList.infrastructure.presentation.ProductItemState
+import main.shoppilientmobile.shoppingList.infrastructure.presentation.ShoppingListViewModelShared
 
 const val SHOPPING_LIST_ROUTE = "shopping_list_screen"
+
+private sealed class ScreenModeState {
+    class NormalModeState() : ScreenModeState()
+    data class DeletionModeState(val selectedProductItemsIndexes: List<Int>) : ScreenModeState()
+    data class ModifyingProductModeState(val productToModifyIndex: Int) : ScreenModeState()
+}
 
 @Composable
 fun ShoppingListScreen(
     navController: NavHostController,
-    viewModel: ShoppingListViewModel,
+    viewModel: ShoppingListViewModelShared,
 ) {
-    val screenState = viewModel.screenStateUiState.collectAsState()
+    val screenState = remember {
+        mutableStateOf<ScreenModeState>(ScreenModeState.NormalModeState())
+    }
     val productCouldNotBeAddedErrorMessage = viewModel.productCouldNotBeAddedErrorMessage.collectAsState()
 
     when (screenState.value) {
-        is ShoppingListViewModel.ScreenModeState.NormalModeState -> {
+        is ScreenModeState.NormalModeState -> {
             setUpNormalMode(viewModel)
             ShoppingListScreenOnNormalMode(
                 viewModel = viewModel,
                 navController = navController,
                 productCouldNotBeAddedErrorMessage = productCouldNotBeAddedErrorMessage.value,
                 onChangeToShoppingListScreenOnModifyingMode = { screenOnNormalModeState ->
-                    viewModel.goToModifyingProductScreenMode(screenOnNormalModeState.productToModifyIndex)
+                    screenState.value = ScreenModeState.ModifyingProductModeState(
+                        screenOnNormalModeState.productToModifyIndex
+                    )
                 },
                 onChangeToShoppingListScreenOnDeletionMode = { screenOnDeletionModeState ->
-                    viewModel.goToDeletionScreenMode(screenOnDeletionModeState.selectedProductItemsIndexes.first())
+                    screenState.value = ScreenModeState.DeletionModeState(
+                        screenOnDeletionModeState.selectedProductItemsIndexes
+                    )
                 },
                 onClickOnShoppingCartIcon = {
                     navController.navigate(SHOPPING_MODE_SCREEN_ROUTE)
                 }
             )
         }
-        is ShoppingListViewModel.ScreenModeState.DeletionModeState -> {
+        is ScreenModeState.DeletionModeState -> {
             ShoppingListScreenOnSelectionMode(
                 viewModel = viewModel,
-                state = (screenState.value
-                        as ShoppingListViewModel.ScreenModeState.DeletionModeState),
                 productCouldNotBeAddedErrorMessage = productCouldNotBeAddedErrorMessage.value,
                 onChangeToShoppingListScreenOnNormalMode = {
-                    viewModel.goToNormalScreenMode()
+                    screenState.value = ScreenModeState.NormalModeState()
                 },
             )
         }
-        is ShoppingListViewModel.ScreenModeState.ModifyingProductModeState -> {
+        is ScreenModeState.ModifyingProductModeState -> {
             ShoppingListScreenOnModifyingMode(
                 viewModel = viewModel,
                 modifyingProductModeState = (screenState.value
-                        as ShoppingListViewModel.ScreenModeState.ModifyingProductModeState),
+                        as ScreenModeState.ModifyingProductModeState),
                 productCouldNotBeAddedErrorMessage = productCouldNotBeAddedErrorMessage.value,
                 onChangeToShoppingListScreenOnNormalMode = {
-                    viewModel.goToNormalScreenMode()
+                    screenState.value = ScreenModeState.NormalModeState()
                 },
             )
         }
     }
 }
 
-private fun setUpNormalMode(viewModel: ShoppingListViewModel) {
+private fun setUpNormalMode(viewModel: ShoppingListViewModelShared) {
     viewModel.deselectAllProductItems()
 }
 
 @Composable
 private fun ShoppingListScreenOnNormalMode(
-    viewModel: ShoppingListViewModel,
+    viewModel: ShoppingListViewModelShared,
     navController: NavController,
     productCouldNotBeAddedErrorMessage: String,
     onChangeToShoppingListScreenOnModifyingMode:
-        (modifyingProductModeState: ShoppingListViewModel.ScreenModeState.ModifyingProductModeState) -> Unit,
+        (modifyingProductModeState: ScreenModeState.ModifyingProductModeState) -> Unit,
     onChangeToShoppingListScreenOnDeletionMode:
-        (deletionModeState: ShoppingListViewModel.ScreenModeState.DeletionModeState) -> Unit,
+        (deletionModeState: ScreenModeState.DeletionModeState) -> Unit,
     onClickOnShoppingCartIcon: () -> Unit,
 ) {
     val productItemsState = viewModel.productItemsUiState.collectAsState()
@@ -117,13 +124,13 @@ private fun ShoppingListScreenOnNormalMode(
         },
         onClickOnProductItem = { productItemIndex ->
             onChangeToShoppingListScreenOnModifyingMode(
-                ShoppingListViewModel.ScreenModeState.ModifyingProductModeState(productItemIndex)
+                ScreenModeState.ModifyingProductModeState(productItemIndex)
             )
         },
         onLongClickOnProductItem = { productItemIndex ->
             viewModel.selectProductItem(productItemIndex)
             onChangeToShoppingListScreenOnDeletionMode(
-                ShoppingListViewModel.ScreenModeState.DeletionModeState(
+                ScreenModeState.DeletionModeState(
                     selectedProductItemsIndexes = listOf(productItemIndex)
                 )
             )
@@ -134,8 +141,7 @@ private fun ShoppingListScreenOnNormalMode(
 
 @Composable
 private fun ShoppingListScreenOnSelectionMode(
-    viewModel: ShoppingListViewModel,
-    state: ShoppingListViewModel.ScreenModeState.DeletionModeState,
+    viewModel: ShoppingListViewModelShared,
     productCouldNotBeAddedErrorMessage: String,
     onChangeToShoppingListScreenOnNormalMode: () -> Unit,
     ) {
@@ -182,8 +188,8 @@ private fun ShoppingListScreenOnSelectionMode(
 
 @Composable
 private fun ShoppingListScreenOnModifyingMode(
-    viewModel: ShoppingListViewModel,
-    modifyingProductModeState: ShoppingListViewModel.ScreenModeState.ModifyingProductModeState,
+    viewModel: ShoppingListViewModelShared,
+    modifyingProductModeState: ScreenModeState.ModifyingProductModeState,
     productCouldNotBeAddedErrorMessage: String,
     onChangeToShoppingListScreenOnNormalMode: () -> Unit,
 ) {
@@ -198,7 +204,6 @@ private fun ShoppingListScreenOnModifyingMode(
     val errorMessage = remember {
         mutableStateOf("")
     }
-    val coroutineScope = rememberCoroutineScope()
 
     BackHandler() {
         onChangeToShoppingListScreenOnNormalMode()
@@ -212,19 +217,11 @@ private fun ShoppingListScreenOnModifyingMode(
         showAddProductButton = false,
         productToModify = productItemToModify.value,
         onProductModified = { modifiedProduct ->
-            coroutineScope.launch {
-                try {
-                    viewModel.modifyProduct(
-                        index = modifyingProductModeState.productToModifyIndex,
-                        newProduct = modifiedProduct,
-                    )
+            viewModel.modifyProduct(productItemToModify.value.content, modifiedProduct.content) { response ->
+                if (response == null) {
                     onChangeToShoppingListScreenOnNormalMode()
-                } catch (e: ThereCannotBeTwoProductsWithTheSameNameException) {
-                    errorMessage.value = "There is another product with that description"
-                } catch (e: ProductDescriptionExceedsMaximumLengthException) {
-                    errorMessage.value = "Try shortening it. It is too long"
-                } catch (e: ProductDescriptionIsShorterThanMinimumLengthException) {
-                    errorMessage.value = "It has too few character. Make it longer!!!!"
+                } else {
+                    errorMessage.value = response
                 }
             }
         },
@@ -270,7 +267,6 @@ private fun ShoppingListScreenContent(
         },
         scaffoldState = scaffoldState,
     ) { padding ->
-        val coroutineScope = rememberCoroutineScope()
         ShoppingList(
             modifier = Modifier.padding(padding),
             productItemStates = productItemStates,
@@ -331,12 +327,6 @@ private fun thereIsAtLeastOneProductItemSelected(
     productItemStates: List<ProductItemState>,
 ): Boolean {
     return productItemStates.any { it.selected }
-}
-
-private fun setUpShoppingListOnDeletionMode(nominatedProductItemIndexes: List<Int>, viewModel: ShoppingListViewModel) {
-    nominatedProductItemIndexes.map { nominatedProduct ->
-        viewModel.selectProductItem(nominatedProduct)
-    }
 }
 
 private data class ShoppingListScreenContentState(

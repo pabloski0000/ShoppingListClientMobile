@@ -13,8 +13,8 @@ import main.shoppilientmobile.shoppingList.application.RequestExceptionListener
 class ShoppingListViewModel(
     private val shoppingListUI: AndroidShoppingListUI,
 ) : ViewModel(), ShoppingListObserver {
-    private val _productItemsUiState = MutableStateFlow(emptyList<ProductItemState>())
-    val productItemsUiState = _productItemsUiState.asStateFlow()
+    /*private val _productItemsUiState = MutableStateFlow(emptyList<ProductItemState>())
+    val productItemsUiState = _productItemsUiState.asStateFlow()*/
     private val _screenStateUiState: MutableStateFlow<ScreenModeState> = MutableStateFlow(
         ScreenModeState.NormalModeState()
     )
@@ -46,7 +46,7 @@ class ShoppingListViewModel(
         }
     }
 
-    fun selectProductItem(index: Int) {
+    /*fun selectProductItem(index: Int) {
         _productItemsUiState.update {
             it.mapIndexed { indexInList, productItemState ->
                 if (indexInList == index) {
@@ -133,39 +133,39 @@ class ShoppingListViewModel(
 
     fun goToModifyingProductScreenMode(productToModifyIndex: Int) {
         _screenStateUiState.update { ScreenModeState.ModifyingProductModeState(productToModifyIndex) }
-    }
+    }*/
 
     override fun currentState(products: List<Product>) {
-        _productItemsUiState.update {
+        /*_productItemsUiState.update {
             products.map { product ->
                 ProductItemState(product.description, false)
             }
-        }
+        }*/
     }
 
     override fun productAdded(product: Product) {
-        _productItemsUiState.update {
+        /*_productItemsUiState.update {
             listOf(
                 ProductItemState(product.description, false),
                 *it.toTypedArray(),
             )
-        }
+        }*/
     }
 
     override fun productModified(oldProduct: Product, newProduct: Product) {
-        _productItemsUiState.update {
+        /*_productItemsUiState.update {
             it.map { product ->
                 if (product.toProduct2() == oldProduct) {
                     return@map ProductItemState(newProduct.description, false)
                 }
                 return@map product
             }
-        }
+        }*/
     }
 
     override fun productDeleted(product: Product) {
-        _productItemsUiState.update {
+        /*_productItemsUiState.update {
             it.filter { productItemState -> productItemState.toProduct2() != product }
-        }
+        }*/
     }
 }
