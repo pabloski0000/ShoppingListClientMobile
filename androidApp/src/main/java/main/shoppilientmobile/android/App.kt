@@ -9,7 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.runBlocking
 import main.shoppilientmobile.android.core.AndroidContainer
-import main.shoppilientmobile.android.core.ObservableAppState
+import main.shoppilientmobile.android.core.AppStateNotifier
 import main.shoppilientmobile.android.shoppingList.presentation.*
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.composables.routableComposables.FillNicknameRoutableComposable
 import main.shoppilientmobile.android.userRegistrationFeatureAndroid.ui.composables.routableComposables.IntroduceCodeRoutableComposable
@@ -41,11 +41,11 @@ class App(
     private lateinit var registrationRepository: RegistrationRepository
     private lateinit var androidShoppingListUI: AndroidShoppingListUI
     private lateinit var remoteShoppingList: RemoteShoppingList
-    private lateinit var observableAppState: ObservableAppState
+    private lateinit var appStateNotifier: AppStateNotifier
 
     fun run(): AndroidContainer {
         androidContainer = appRunner.runApp()
-        observableAppState = androidContainer.observableAppState
+        appStateNotifier = androidContainer.appStateNotifier
         val registrationContainer = androidContainer.registrationContainer!!
         roleElectionViewModel = RoleElectionViewModel(
             userRoleRepository = registrationContainer.userRoleRepository,
@@ -84,11 +84,11 @@ class App(
     }
 
     fun onStart() {
-        observableAppState.onStart()
+        appStateNotifier.onStart()
     }
 
     fun onStop() {
-        observableAppState.onStop()
+        appStateNotifier.onStop()
     }
 
     private fun userIsAlreadyRegistered(androidContainer: AndroidContainer): Boolean {

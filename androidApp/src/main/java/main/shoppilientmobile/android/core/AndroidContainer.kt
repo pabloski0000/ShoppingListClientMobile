@@ -125,7 +125,7 @@ class AndroidContainer(
         registrationRepository,
     )
 
-    val observableAppState = ObservableAppState(
+    val appStateNotifier = AppStateNotifier(
         synchroniseWithRemoteShoppingListUseCase,
     )
 

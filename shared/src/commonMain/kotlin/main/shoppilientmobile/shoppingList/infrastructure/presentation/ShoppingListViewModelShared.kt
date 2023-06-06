@@ -45,10 +45,6 @@ class ShoppingListViewModelShared(
         }
     }
 
-    fun loadSharedShoppingAndNotifyChanges() {
-
-    }
-
     fun selectProductItem(index: Int) {
         _productItemsUiState.update {
             it.mapIndexed { indexInList, productItemState ->

@@ -19,6 +19,7 @@ class IosContainer {
     let modifyProductUseCase: ModifyProductUseCase
     let deleteProductUseCase: DeleteProductUseCase
     let shoppingListViewModelShared: ShoppingListViewModelShared
+    private let appStateNotifier: AppStateNotifier
     
     init() {
         nonBlockingHttpClient = NonBlockingHttpClientImpl(httpClientEngineFactory: HttpClientEngineFactoryBuilder().buildDarwinEngineFactory())
@@ -35,6 +36,7 @@ class IosContainer {
             deleteProductUseCase: deleteProductUseCase,
             getLocalUserUseCase: nil
         )
+        appStateNotifier = AppStateNotifier(synchroniseWithRemoteShoppingListUseCase: synchroniseWithRemoteShoppingListUseCase)
     }
     
     static func getIosContainer() -> IosContainer {

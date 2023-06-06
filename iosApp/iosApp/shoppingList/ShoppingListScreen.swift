@@ -1,6 +1,7 @@
 import SwiftUI
 import KMMViewModelSwiftUI
 import shared
+import FirebaseAnalyticsSwift
 
 struct ShoppingListScreen: View {
     @StateViewModel var viewModel = IosContainer.getIosContainer().shoppingListViewModelShared
@@ -12,6 +13,7 @@ struct ShoppingListScreen: View {
                 Spacer()
                 NavigationLink(destination: ProductShapperScreen(productOnScreen: "", mode: ProductShapperScreen.Mode.Create)) {
                     Image(systemName: "plus")
+                    
                 }
             }
             .frame(maxWidth: .infinity, minHeight: 20)
@@ -19,10 +21,9 @@ struct ShoppingListScreen: View {
             List {
                 Text("Lista de la compra")
                 ForEach(viewModel.productItemsUiState, id: \.content) { product in
-                    HStack {
-                        NavigationLink(destination: ProductShapperScreen(productOnScreen: product.content, mode: ProductShapperScreen.Mode.Modify)) {
-                            Text(product.content)
-                            EmptyView()
+                    HStack(spacing: 30) {
+                        NavigationLink(product.content) {
+                            ProductShapperScreen(productOnScreen: product.content, mode: ProductShapperScreen.Mode.Modify)
                         }
                         Image(systemName: "xmark")
                             .onTapGesture {
@@ -30,10 +31,9 @@ struct ShoppingListScreen: View {
                             }
                     }
                 }
-            }.onAppear() {
-                viewModel.loadSharedShoppingAndNotifyChanges()
             }
         }
+        .analyticsScreen(name: "\(ShoppingListScreen.self)")
     }
     
     func navigateToProductShaperScreen(initialText: String) {

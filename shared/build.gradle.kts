@@ -27,6 +27,7 @@ kotlin {
     ).forEach {
         it.binaries.framework {
             baseName = "shared"
+            linkerOpts("-undefined", "dynamic_lookup")
         }
     }
 
@@ -72,6 +73,7 @@ kotlin {
             iosSimulatorArm64Main.dependsOn(this)
             dependencies {
                 implementation("io.ktor:ktor-client-darwin:2.2.1")
+                implementation("com.rickclephas.kmp:nsexception-kt-crashlytics:0.1.7")
             }
         }
         val iosX64Test by getting
